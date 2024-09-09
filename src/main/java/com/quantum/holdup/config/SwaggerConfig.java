@@ -1,4 +1,4 @@
-package com.ohgiraffers.holdup.config;
+package com.quantum.holdup.config;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Info;
