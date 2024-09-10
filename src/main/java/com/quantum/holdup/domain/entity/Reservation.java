@@ -15,18 +15,26 @@ public class Reservation {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private long id; // 예약 아이디
+    private LocalDateTime startDate; // 이용 시작일시
+    private LocalDateTime endDate; // 이용 종료일시
+    private String content; // 예약 설명
+    private boolean isAccept; // 예약 접수 여부
+    private boolean isEnd; // 예약 종료 여부
+    private LocalDateTime createDate; // 예약 신청일시
 
-    private LocalDateTime createDate;
+    @PrePersist
+    protected void onCreate() { // 생성일시를 자동으로 입력해주는 메소드
+        this.createDate = LocalDateTime.now();
+    }
 
-    private LocalDateTime startDate;
-
-    private LocalDateTime endDate;
-
-    private String content;
-
-    private boolean isAccept;
-
-    private boolean isEnd;
+    public Reservation(LocalDateTime createDate, LocalDateTime startDate, LocalDateTime endDate, String content) {
+        this.createDate = createDate;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.content = content;
+        this.isAccept = false;
+        this.isEnd = false;
+    }
 
 }
