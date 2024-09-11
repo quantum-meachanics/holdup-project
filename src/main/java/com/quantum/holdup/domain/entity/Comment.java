@@ -21,6 +21,18 @@ public class Comment {
     private boolean isHide; // 댓글 숨기기 여부
     private LocalDateTime createDate; // 댓글 작성일시
 
+    @ManyToOne
+    @JoinColumn(name = "MEMBER_ID")
+    private Member member; // 댓글 작성자
+
+    @ManyToOne
+    @JoinColumn(name = "REVIEW_ID")
+    private Review review; // 댓글이 달린 리뷰글
+
+    @ManyToOne
+    @JoinColumn(name = "REPORT_ID")
+    private Report report; // 댓글이 달린 신고글
+
     @PrePersist
     protected void onCreate() { // 작성일시를 자동으로 입력해주는 메소드
         this.createDate = LocalDateTime.now();

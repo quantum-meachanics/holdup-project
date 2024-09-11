@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Entity
 @Table
@@ -28,10 +27,13 @@ public class Space {
     private boolean isHide; // 공간 숨기기 여부
     private LocalDateTime createDate; // 공간 둥록일시
 
+    @ManyToOne
+    @JoinColumn(name = "MEMBER_ID")
+    private Member member; // 공간 등록자
 
-    @OneToMany
-    @JoinColumn(name = "RESERVATION_ID")
-    private List<Reservation> reservations; // 공간에 생성된 예약
+//    @OneToMany
+//    @JoinColumn(name = "RESERVATION_ID")
+//    private List<Reservation> reservations; // 공간에 생성된 예약
 
     @PrePersist
     protected void creatAt() { // 생성일시를 자동으로 입력해주는 메소드
