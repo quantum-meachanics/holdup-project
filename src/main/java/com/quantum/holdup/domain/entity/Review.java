@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Entity
 @Table
@@ -24,9 +23,13 @@ public class Review {
     private int rating; // 리뷰 별점
     private LocalDateTime createDate; // 리뷰 작성일시
 
-    @OneToMany
-    @JoinColumn(name = "COMMENT_ID")
-    private List<Comment> comments; // 리뷰에 달린 댓글
+    @ManyToOne
+    @JoinColumn(name = "MEMBER_ID")
+    private Member member; // 리뷰글 작성자
+
+//    @OneToMany
+//    @JoinColumn(name = "COMMENT_ID")
+//    private List<Comment> comments; // 리뷰에 달린 댓글
 
     @PrePersist
     protected void onCreate() { // 생성일시를 자동으로 입력해주는 메소드
