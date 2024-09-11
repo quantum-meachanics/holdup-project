@@ -4,9 +4,11 @@ import com.quantum.holdup.domain.dto.CreateMemberDTO;
 import com.quantum.holdup.domain.dto.LoginMemberDTO;
 import com.quantum.holdup.domain.dto.MemberDTO;
 import com.quantum.holdup.domain.entity.Member;
+import com.quantum.holdup.domain.entity.Role;
 import com.quantum.holdup.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,6 +19,9 @@ public class MemberService {
 
     @Autowired
     private final MemberRepository repo;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     // 전체 멤버 조회 메소드
     public List<MemberDTO> findAllMember() {
@@ -46,13 +51,17 @@ public class MemberService {
     // 멤버 등록 메소드
     public CreateMemberDTO createMember(CreateMemberDTO memberInfo) {
 
+        // 비밀번호 암호화
+        String encryptedPassword = passwordEncoder.encode(memberInfo.getPassword());
+
         Member newMember = Member.builder()
                 .email(memberInfo.getEmail())
-                .password(memberInfo.getPassword())
+                .password(passwordEncoder.encode(memberInfo.getPassword()))
                 .nickname(memberInfo.getNickname())
                 .phone(memberInfo.getPhone())
                 .name(memberInfo.getName())
                 .birthday(memberInfo.getBirthday())
+                .role(Role.USER)
                 .build();
 
         repo.save(newMember);
@@ -66,10 +75,6 @@ public class MemberService {
                 newMember.getBirthday()
                 );
     }
+}
 
-    public CustomUserDetails login(LoginMemberDTO login) {
-        Member member = repo.findByEmail(login);
-        return new CustomUserDetails(member);
-        }
-    }
 

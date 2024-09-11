@@ -2,6 +2,7 @@ package com.quantum.holdup.filter;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.quantum.holdup.domain.dto.MemberDTO;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -53,6 +54,7 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
      * */
     private UsernamePasswordAuthenticationToken getAuthRequest(HttpServletRequest request) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
 
         objectMapper.configure(JsonParser.Feature.AUTO_CLOSE_SOURCE,true);
         MemberDTO member = objectMapper.readValue(request.getInputStream(), MemberDTO.class);

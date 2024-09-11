@@ -1,6 +1,6 @@
 package com.quantum.holdup.domain.dto;
 
-import com.quantum.holdup.domain.entity.RoleType;
+import com.quantum.holdup.domain.entity.Role;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,6 +27,5 @@ public class MemberDTO {
     private boolean isLeave; // 회원 탈퇴 여부
     private boolean isBan; // 회원 정지 여부
     private LocalDateTime entDate; // 회원가입일시
-    private RoleType role; // 회원 등급
-
+    private Role role; // 회원 등급
 }

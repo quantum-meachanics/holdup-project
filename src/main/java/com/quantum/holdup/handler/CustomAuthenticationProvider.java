@@ -1,6 +1,5 @@
 package com.quantum.holdup.handler;
 
-
 import com.quantum.holdup.service.CustomUserDetailService;
 import com.quantum.holdup.service.CustomUserDetails;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,14 +32,14 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         UsernamePasswordAuthenticationToken loginToken = (UsernamePasswordAuthenticationToken) authentication;
 
         // 사용자가 입력한 ID
-        String email = loginToken.getName();
+        String memberId = loginToken.getName();
 
         // 사용자가 입력한 password
         String password = (String) loginToken.getCredentials();
 
         // 사용자가 입력한 ID로 찾아온 CustomUserDetail
         // CustomUserDetailService의 loadUserByUsername메소드로 찾아 올 수 있다.
-        CustomUserDetails member = (CustomUserDetails) detailsService.loadUserByUsername(email);
+        CustomUserDetails member = (CustomUserDetails) detailsService.loadUserByUsername(memberId);
 
         // passwordEncoder의 matches 메소드로
         // 사용자가 입력한 password 와 db에서 찾아온 password가 일치하는지 확인한다. (암호화된 비밀번호를 해독함)

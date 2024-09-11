@@ -1,12 +1,10 @@
 package com.quantum.holdup.config;
 
-
 import com.quantum.holdup.filter.CustomAuthenticationFilter;
 import com.quantum.holdup.filter.JwtAuthorizationFilter;
 import com.quantum.holdup.handler.CustomAuthFailUserHandler;
 import com.quantum.holdup.handler.CustomAuthSuccessHandler;
 import com.quantum.holdup.handler.CustomAuthenticationProvider;
-import jakarta.servlet.Filter;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,8 +18,6 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.AuthenticationFailureHandler;
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
@@ -69,7 +65,7 @@ public class WebSecurityConfig {
                 .addFilterBefore(jwtAuthorizationFilter(), BasicAuthenticationFilter.class)
 
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/member/**", "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**").permitAll() // Swagger 관련 리소스와 회원가입 경로 허용
+                        .requestMatchers("/member/**", "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**","/login").permitAll() // Swagger 관련 리소스와 회원가입 경로 허용
                         .anyRequest()
                         .authenticated() // 나머지 요청은 인증 필요
                 );
@@ -115,8 +111,7 @@ public class WebSecurityConfig {
         CustomAuthenticationFilter customAuthenticationFilter = new CustomAuthenticationFilter(authenticationManager());
 
         // /login 으로 post 요청이 들어오면 필터가 동작한다.
-        customAuthenticationFilter.setFilterProcessesUrl("" +
-                "/member/login");
+        customAuthenticationFilter.setFilterProcessesUrl("/login");
 
         // 인증 성공시 동작할 핸들러 설정
         customAuthenticationFilter.setAuthenticationSuccessHandler(customAuthLoginSuccessHandler());
@@ -136,9 +131,9 @@ public class WebSecurityConfig {
      * 7. spring security 기반의 사용자의 정보가 맞을 경우 결과를 수행하는 handler
      *
      * @return customAuthLoginSuccessHandler
-     */
+     * */
     @Bean
-    public AuthenticationSuccessHandler customAuthLoginSuccessHandler(){
+    public CustomAuthSuccessHandler customAuthLoginSuccessHandler(){
         return new CustomAuthSuccessHandler();
     }
 
@@ -147,19 +142,18 @@ public class WebSecurityConfig {
      * 8. Spring security의 사용자 정보가 맞지 않은 경우 행되는 메서드
      *
      * @return CustomAuthFailUreHandler
-     */
+     * */
     @Bean
-    public AuthenticationFailureHandler customAuthFailUserHandler(){
+    public CustomAuthFailUserHandler customAuthFailUserHandler(){
         return new CustomAuthFailUserHandler();
     }
 
     /**
      * 9. 사용자 요청시 수행되는 메소드
-     *
      * @return JwtAuthorizationFilter
-     */
+     * */
     @Bean
-    public Filter jwtAuthorizationFilter(){
+    public JwtAuthorizationFilter jwtAuthorizationFilter(){
         return new JwtAuthorizationFilter(authenticationManager());
     }
 

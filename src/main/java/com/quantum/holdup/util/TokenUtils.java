@@ -1,5 +1,6 @@
 package com.quantum.holdup.util;
 
+
 import com.quantum.holdup.domain.entity.Member;
 import io.jsonwebtoken.*;
 import jakarta.xml.bind.DatatypeConverter;
@@ -20,10 +21,8 @@ import java.util.Map;
 @Component
 public class TokenUtils {
 
-
     private static String jwtSecretKey;
     private static Long tokenValidateTime;
-
 
     @Value("${jwt.key}")
     public void setJwtSecretKey(String jwtSecretKey) {
@@ -133,9 +132,9 @@ public class TokenUtils {
     private static Map<String, Object> createClaims(Member member){
         Map<String, Object> claims = new HashMap<>();
 
-        claims.put("Name", member.getName());
-        claims.put("Role", member.getRole());
-        claims.put("Email", member.getEmail());
+        claims.put("memberName", member.getName());
+        claims.put("memberRole", member.getRole());
+        claims.put("memberEmail", member.getEmail());
 
         return claims;
     }

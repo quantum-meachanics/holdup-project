@@ -2,7 +2,7 @@ package com.quantum.holdup.filter;
 
 import com.quantum.holdup.common.AuthConstants;
 import com.quantum.holdup.domain.entity.Member;
-import com.quantum.holdup.domain.entity.RoleType;
+import com.quantum.holdup.domain.entity.Role;
 import com.quantum.holdup.service.CustomUserDetails;
 import com.quantum.holdup.util.TokenUtils;
 import io.jsonwebtoken.Claims;
@@ -51,7 +51,8 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
          * 권한이 필요없는 리소스 추출
          * */
         List<String> roleLeessList = Arrays.asList(
-                "/auth/signup",             // 회원가입
+                "/member/signup",             // 회원가입
+                "/login",             // 회원가입
                 "/swagger-ui/(.*)",        //swagger 설정
                 "/swagger-ui/index.html",  //swagger 설정
                 "/v3/api-docs",              //swagger 설정
@@ -81,15 +82,15 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                 // 검증 결과가 True(유효한토큰) 이면 이후 처리를 진행한다.
                 if(TokenUtils.isValidToken(token)){
 
-                    // payload 에 담긴 (토큰에 담겨있는 정보들)
+                    // payload에 담긴 (토큰에 담겨있는 정보들)
                     Claims claims = TokenUtils.getClaimsFromToken(token);
 
                     // 토큰에 담긴 정보로 Member 객체를 만든다.
                     // (security context에 등록될 인증 객체(UserDetail)를 만들기 위해)
                     Member member = Member.builder()
-                            .name(claims.get("memberName").toString())
+                            .password(claims.get("memberName").toString())
                             .email(claims.get("memberEmail").toString())
-                            .role(RoleType.valueOf(claims.get("memberRole").toString()))
+                            .role(Role.valueOf(claims.get("memberRole").toString()))
                             .build();
 
                     // 토큰에 담겨있던 정보로 인증 객체를 만든다.

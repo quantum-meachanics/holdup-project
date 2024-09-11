@@ -33,14 +33,6 @@ public class MemberController {
                 ));
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<?> loginMember(@RequestBody LoginMemberDTO login){
-        return  ResponseEntity.ok()
-                .body(new ResponseMessage(
-                        "로그인에 성공하였습니다.",
-                         service.login(login)
-                ));
-    }
 }
 
 
