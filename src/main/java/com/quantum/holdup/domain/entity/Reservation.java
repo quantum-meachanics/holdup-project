@@ -35,7 +35,8 @@ public class Reservation {
         this.createDate = LocalDateTime.now();
     }
 
-    public Reservation(LocalDateTime startDate, LocalDateTime endDate) {
+    public Reservation(LocalDateTime createDate, LocalDateTime startDate, LocalDateTime endDate, String content) {
+        this.createDate = createDate;
         this.startDate = startDate;
         this.endDate = endDate;
         this.isAccept = false;
