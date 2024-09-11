@@ -3,6 +3,7 @@ package com.quantum.holdup.filter;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.quantum.holdup.domain.dto.LoginMemberDTO;
 import com.quantum.holdup.domain.dto.MemberDTO;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -57,7 +58,7 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         objectMapper.registerModule(new JavaTimeModule());
 
         objectMapper.configure(JsonParser.Feature.AUTO_CLOSE_SOURCE,true);
-        MemberDTO member = objectMapper.readValue(request.getInputStream(), MemberDTO.class);
+        LoginMemberDTO member = objectMapper.readValue(request.getInputStream(), LoginMemberDTO.class);
 
         return new UsernamePasswordAuthenticationToken(member.getEmail(), member.getPassword());
     }
