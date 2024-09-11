@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Entity
 @Table
@@ -31,29 +30,29 @@ public class Member {
     private boolean isBan; // 회원 정지 여부
     private LocalDateTime entDate; // 회원가입일시
 
-    @OneToMany
-    @JoinColumn(name = "SPACE_ID")
-    private List<Space> spaces; // 회원이 등록한 공간
-
-    @OneToMany
-    @JoinColumn(name = "REVIEW_ID")
-    private List<Review> reviews; // 회원이 작성한 리뷰
-
-    @OneToMany
-    @JoinColumn(name = "INQUIRY_ID")
-    private List<Inquiry> inquiries; // 회원이 작성한 문의글
-
-    @OneToMany
-    @JoinColumn(name = "REPORT_ID")
-    private List<Report> reports; // 회원이 작성한 신고글
-
-    @OneToMany
-    @JoinColumn(name = "COMMENT_ID")
-    private List<Comment> comments; // 회원이 작성한 댓글
-
-    @OneToMany
-    @JoinColumn(name = "RESERVATION_ID")
-    private List<Reservation> reservations; // 회원이 신청한 예약
+//    @OneToMany
+//    @JoinColumn(name = "SPACE_ID")
+//    private List<Space> spaces; // 회원이 등록한 공간
+//
+//    @OneToMany
+//    @JoinColumn(name = "REVIEW_ID")
+//    private List<Review> reviews; // 회원이 작성한 리뷰
+//
+//    @OneToMany
+//    @JoinColumn(name = "INQUIRY_ID")
+//    private List<Inquiry> inquiries; // 회원이 작성한 문의글
+//
+//    @OneToMany
+//    @JoinColumn(name = "REPORT_ID")
+//    private List<Report> reports; // 회원이 작성한 신고글
+//
+//    @OneToMany
+//    @JoinColumn(name = "COMMENT_ID")
+//    private List<Comment> comments; // 회원이 작성한 댓글
+//
+//    @OneToMany
+//    @JoinColumn(name = "RESERVATION_ID")
+//    private List<Reservation> reservations; // 회원이 신청한 예약
 
     @PrePersist
     protected void onCreate() { // 가입일시를 자동으로 입력해주는 메소드
