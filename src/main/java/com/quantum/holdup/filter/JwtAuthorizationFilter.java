@@ -59,7 +59,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                 "/v3/api-docs/(.*)",         //swagger 설정
                 "/swagger-resources",        //swagger 설정
                 "/swagger-resources/(.*)",    //swagger 설정
-                "/report/**"
+                "/report/(.*)"
         );
 
         if(roleLeessList.stream().anyMatch(uri -> roleLeessList.stream().anyMatch(pattern -> Pattern.matches(pattern, request.getRequestURI())))){
