@@ -17,12 +17,12 @@ public class Space {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id; // 공간 아이디
-    private String address; // 공간 주소
     private String title; // 공간 제목
+    private String address; // 공간 주소
     private String description; // 공간 설명
     private long width; // 공간 너비
-    private long depth; // 공간 깊이
     private long height; // 공간 높이
+    private long depth; // 공간 깊이
     private int number; // 공간 갯수
     private int price; // 공간 가격
     private boolean isHide; // 공간 숨기기 여부
@@ -42,13 +42,13 @@ public class Space {
     }
 
     @Builder(toBuilder = true)
-    public Space(String address, String title, String description, long width, long depth, long height, int number, int price) {
-        this.address = address;
+    public Space(String title, String address, String description, long width, long height, long depth, int number, int price) {
         this.title = title;
+        this.address = address;
         this.description = description;
         this.width = width;
-        this.depth = depth;
         this.height = height;
+        this.depth = depth;
         this.number = number;
         this.price = price;
         this.isHide = false;
