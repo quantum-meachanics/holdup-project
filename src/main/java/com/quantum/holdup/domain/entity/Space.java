@@ -17,8 +17,9 @@ public class Space {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id; // 공간 아이디
+    private String address; // 공간 주소
     private String title; // 공간 제목
-    private String content; // 공간 설명
+    private String description; // 공간 설명
     private long width; // 공간 너비
     private long depth; // 공간 깊이
     private long height; // 공간 높이
@@ -29,7 +30,7 @@ public class Space {
 
     @ManyToOne
     @JoinColumn(name = "MEMBER_ID")
-    private Member member; // 공간 등록자
+    private Member owner; // 공간 등록자
 
 //    @OneToMany
 //    @JoinColumn(name = "RESERVATION_ID")
@@ -41,9 +42,10 @@ public class Space {
     }
 
     @Builder(toBuilder = true)
-    public Space(String title, String content, long width, long depth, long height, int number, int price) {
+    public Space(String address, String title, String description, long width, long depth, long height, int number, int price) {
+        this.address = address;
         this.title = title;
-        this.content = content;
+        this.description = description;
         this.width = width;
         this.depth = depth;
         this.height = height;

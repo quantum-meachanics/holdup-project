@@ -18,14 +18,13 @@ public class Reservation {
     private long id; // 예약 아이디
     private LocalDateTime startDate; // 이용 시작일시
     private LocalDateTime endDate; // 이용 종료일시
-    private String content; // 예약 설명
     private boolean isAccept; // 예약 접수 여부
     private boolean isEnd; // 예약 종료 여부
     private LocalDateTime createDate; // 예약 신청일시
 
     @ManyToOne
     @JoinColumn(name = "MEMBER_ID")
-    private Member member; // 예약 신청자
+    private Member client; // 예약 신청자
 
     @ManyToOne
     @JoinColumn(name = "SPACE_ID")
@@ -36,11 +35,9 @@ public class Reservation {
         this.createDate = LocalDateTime.now();
     }
 
-    public Reservation(LocalDateTime createDate, LocalDateTime startDate, LocalDateTime endDate, String content) {
-        this.createDate = createDate;
+    public Reservation(LocalDateTime startDate, LocalDateTime endDate) {
         this.startDate = startDate;
         this.endDate = endDate;
-        this.content = content;
         this.isAccept = false;
         this.isEnd = false;
     }

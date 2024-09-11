@@ -1,18 +1,19 @@
 package com.quantum.holdup.domain.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Entity
 @Table
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@Setter
-public class Member{
+public class Member {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -75,6 +76,5 @@ public class Member{
         this.isBan = false;
         this.role = role;
     }
-
 
 }
