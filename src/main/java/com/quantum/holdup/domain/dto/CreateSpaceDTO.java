@@ -11,7 +11,6 @@ import lombok.Setter;
 @Setter
 public class CreateSpaceDTO {
 
-    private String ownerNickname; // 공간 등록자 닉네임
     private String title; // 공간 제목
     private String address; // 공간 주소
     private String description; // 공간 설명
