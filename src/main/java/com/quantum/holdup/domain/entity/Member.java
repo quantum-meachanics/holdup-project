@@ -28,12 +28,15 @@ public class Member {
     private int point; // 회원 보유 포인트
     private boolean isLeave; // 회원 탈퇴 여부
     private boolean isBan; // 회원 정지 여부
-    private LocalDateTime entDate; // 회원가입일시
+    private LocalDateTime entDate; // 회원가입일시\
+
+    @Enumerated(value = EnumType.STRING)
+    private Role role; // 회원 등급
 
 //    @OneToMany
 //    @JoinColumn(name = "SPACE_ID")
 //    private List<Space> spaces; // 회원이 등록한 공간
-//
+
 //    @OneToMany
 //    @JoinColumn(name = "REVIEW_ID")
 //    private List<Review> reviews; // 회원이 작성한 리뷰
@@ -60,7 +63,7 @@ public class Member {
     }
 
     @Builder(toBuilder = true)
-    public Member(String email, String password, String nickname, String phone, String name, LocalDate birthday) {
+    public Member(String email, String password, String nickname, String phone, String name, LocalDate birthday, Role role) {
         this.email = email;
         this.password = password;
         this.nickname = nickname;
@@ -71,6 +74,7 @@ public class Member {
         this.point = 0;
         this.isLeave = false;
         this.isBan = false;
+        this.role = role;
     }
 
 }

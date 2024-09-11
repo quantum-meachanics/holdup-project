@@ -1,6 +1,7 @@
 package com.quantum.holdup.controller;
 
 import com.quantum.holdup.domain.dto.CreateMemberDTO;
+import com.quantum.holdup.domain.dto.LoginMemberDTO;
 import com.quantum.holdup.message.ResponseMessage;
 import com.quantum.holdup.service.MemberService;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +15,7 @@ public class MemberController {
 
     private final MemberService service;
 
-    @GetMapping("/member")
+    @GetMapping("/list")
     public ResponseEntity<ResponseMessage> findAllMembers() {
         return ResponseEntity.ok()
                 .body(new ResponseMessage(
@@ -23,7 +24,7 @@ public class MemberController {
                 ));
     }
 
-    @PostMapping("/member")
+    @PostMapping("/signup")
     public ResponseEntity<?> createMember(@RequestBody CreateMemberDTO memberInfo) {
         return ResponseEntity.ok()
                 .body(new ResponseMessage(
@@ -31,4 +32,8 @@ public class MemberController {
                         service.createMember(memberInfo)
                 ));
     }
+
 }
+
+
+
