@@ -4,6 +4,8 @@ import com.quantum.holdup.Page.Pagination;
 import com.quantum.holdup.Page.PagingButtonInfo;
 import com.quantum.holdup.domain.dto.CreateReportDTO;
 import com.quantum.holdup.domain.dto.ReportDTO;
+import com.quantum.holdup.domain.dto.UpdateReportDTO;
+import com.quantum.holdup.domain.entity.Member;
 import com.quantum.holdup.domain.entity.Report;
 import com.quantum.holdup.repository.MemberRepository;
 import com.quantum.holdup.repository.ReportRepository;
@@ -84,9 +86,14 @@ public class ReportService {
                 .build();
     }
 
-    public Page<ReportDTO> searchByMemberId(String memberId, Pageable pageable) {
+    public Page<ReportDTO> searchByMemberId(String nickname, Pageable pageable) {
 
-        Page<Report> reportsEntityList = repo.findByMemberId(memberId, pageable);
+        // Member 엔티티를 먼저 찾습니다.
+        Member member = (Member) mRepo.findByNickname(nickname)
+                .orElseThrow(() -> new NoSuchElementException("Member not found with nickname: " + nickname));
+
+        // 찾은 Member를 이용해 Report를 검색합니다.
+        Page<Report> reportsEntityList = repo.findByMember(member, pageable);
 
         PagingButtonInfo paging = Pagination.getPagingButtonInfo(reportsEntityList);
 
@@ -100,5 +107,32 @@ public class ReportService {
             return reportDTO;
         });
 
+    }
+
+    public ReportDTO updateReport(Long id, UpdateReportDTO modifyInfo) {
+
+        Report reportEntity = repo.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Post not found with postId " + id));
+
+        reportEntity.setTitle(modifyInfo.getTitle());
+        reportEntity.setContent(modifyInfo.getContent());
+
+        // 수정된 엔티티 저장
+        repo.save(reportEntity);
+
+        return new ReportDTO(reportEntity.getId(), reportEntity.getTitle(), reportEntity.getContent());
+    }
+
+    public boolean deleteReport(long id) {
+        try {
+            if (repo.existsById(id)) {
+                repo.deleteById(id);
+                return true; // 게시글 삭제 성공
+            } else {
+                return false;
+            }
+        } catch (Exception e) {
+            return false;
+        }
     }
 }

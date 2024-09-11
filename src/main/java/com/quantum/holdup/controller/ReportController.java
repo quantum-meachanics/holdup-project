@@ -1,8 +1,12 @@
 package com.quantum.holdup.controller;
 
 import com.quantum.holdup.domain.dto.CreateReportDTO;
+import com.quantum.holdup.domain.dto.MemberDTO;
 import com.quantum.holdup.domain.dto.ReportDTO;
+import com.quantum.holdup.domain.dto.UpdateReportDTO;
+import com.quantum.holdup.domain.entity.Member;
 import com.quantum.holdup.message.ResponseMessage;
+import com.quantum.holdup.service.MemberService;
 import com.quantum.holdup.service.ReportService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -11,6 +15,9 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 
 @RestController
 @RequestMapping("/report")
@@ -18,16 +25,19 @@ import org.springframework.web.bind.annotation.*;
 public class ReportController {
 
     private final ReportService service;
+    private final MemberService memberService;
 
     // 신고글 전체조회
     @GetMapping("/report")
-    public ResponseEntity<ResponseMessage> findAllReport(@PageableDefault Pageable pageable, String memberId,
+    public ResponseEntity<ResponseMessage> findAllReport(@PageableDefault Pageable pageable, String nickname,
                                                          @RequestParam(value = "searchType", required = false) String searchType){
 
         Page<ReportDTO> reports;
 
-        if (memberId != null && !memberId.isEmpty() && "memberId".equals(searchType)) {
-            reports = service.searchByMemberId(memberId, pageable);
+        MemberDTO member = new MemberDTO();
+
+        if (member.getNickname() != null && !nickname.isEmpty() && "nickname".equals(searchType)) {
+            reports = service.searchByMemberId(nickname, pageable);
         } else {
             reports = service.findAllReport(pageable);
         }
@@ -59,6 +69,44 @@ public class ReportController {
                 .body(new ResponseMessage(
                         "아이디로 게시글 조회 성공"
                         , reports)
+                );
+    }
+
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> modifyPost(@PathVariable Long id, @RequestBody UpdateReportDTO modifyInfo) {
+
+        ReportDTO updatedPost = service.updateReport(id, modifyInfo);
+
+        return ResponseEntity.ok()
+                .body(new ResponseMessage(
+                        "게시글 수정 완료",
+                        updatedPost)
+                );
+    }
+
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deletePost(@PathVariable long id) {
+
+        Map<String, Object> responseMap = new HashMap<>();
+
+        boolean isDeleted = service.deleteReport(id);
+
+        String msg;
+
+        if (isDeleted) {
+            msg = "게시글 삭제에 성공하였습니다.";
+        } else {
+            msg = "게시글 삭제에 실패하였습니다.";
+        }
+        responseMap.put("result", msg);
+
+        return ResponseEntity
+                .ok()
+                .body(new ResponseMessage(
+                        "게시글 삭제 성공",
+                        responseMap)
                 );
     }
 }
