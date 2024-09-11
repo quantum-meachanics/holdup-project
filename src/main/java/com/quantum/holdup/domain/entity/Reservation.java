@@ -23,6 +23,14 @@ public class Reservation {
     private boolean isEnd; // 예약 종료 여부
     private LocalDateTime createDate; // 예약 신청일시
 
+    @ManyToOne
+    @JoinColumn(name = "MEMBER_ID")
+    private Member member; // 예약 신청자
+
+    @ManyToOne
+    @JoinColumn(name = "SPACE_ID")
+    private Space space; // 예약 신청한 공간
+
     @PrePersist
     protected void onCreate() { // 생성일시를 자동으로 입력해주는 메소드
         this.createDate = LocalDateTime.now();
