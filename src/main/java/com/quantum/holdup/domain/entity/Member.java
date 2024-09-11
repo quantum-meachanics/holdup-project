@@ -29,7 +29,8 @@ public class Member {
     private int point; // 회원 보유 포인트
     private boolean isLeave; // 회원 탈퇴 여부
     private boolean isBan; // 회원 정지 여부
-    private LocalDateTime entDate; // 회원가입일시
+    private LocalDateTime entDate; // 회원가입일시\
+    private RoleType role; // 회원 등급
 
     @OneToMany
     @JoinColumn(name = "SPACE_ID")
@@ -61,7 +62,7 @@ public class Member {
     }
 
     @Builder(toBuilder = true)
-    public Member(String email, String password, String nickname, String phone, String name, LocalDate birthday) {
+    public Member(String email, String password, String nickname, String phone, String name, LocalDate birthday, RoleType role) {
         this.email = email;
         this.password = password;
         this.nickname = nickname;
@@ -72,6 +73,7 @@ public class Member {
         this.point = 0;
         this.isLeave = false;
         this.isBan = false;
+        this.role = RoleType.valueOf("USER");
     }
 
 }

@@ -2,6 +2,8 @@ package com.quantum.holdup.config;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Info;
+import org.springdoc.core.models.GroupedOpenApi;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @OpenAPIDefinition(
@@ -11,4 +13,12 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class SwaggerConfig {
 
+    @Bean
+    public GroupedOpenApi chatOpenApi() {
+        String[] paths = {"/api/v1/**","/member/**"};    // Swagger에서 처리 되었으면 하는 경로 설정
+        return GroupedOpenApi.builder()
+                .group("api-v1")
+                .pathsToMatch(paths)
+                .build();
+    }
 }

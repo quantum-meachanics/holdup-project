@@ -28,6 +28,7 @@ public class Space {
     private boolean isHide; // 공간 숨기기 여부
     private LocalDateTime createDate; // 공간 둥록일시
 
+
     @OneToMany
     @JoinColumn(name = "RESERVATION_ID")
     private List<Reservation> reservations; // 공간에 생성된 예약

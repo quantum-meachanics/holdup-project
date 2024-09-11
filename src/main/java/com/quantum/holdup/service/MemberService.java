@@ -1,6 +1,7 @@
 package com.quantum.holdup.service;
 
 import com.quantum.holdup.domain.dto.CreateMemberDTO;
+import com.quantum.holdup.domain.dto.LoginMemberDTO;
 import com.quantum.holdup.domain.dto.MemberDTO;
 import com.quantum.holdup.domain.entity.Member;
 import com.quantum.holdup.repository.MemberRepository;
@@ -35,7 +36,8 @@ public class MemberService {
                         memberEntity.getPoint(),
                         memberEntity.isLeave(),
                         memberEntity.isBan(),
-                        memberEntity.getEntDate() // 엔티티에서 가져온 값들을 DTO객체에 넣어줌
+                        memberEntity.getEntDate(), // 엔티티에서 가져온 값들을 DTO객체에 넣어줌
+                        memberEntity.getRole()
                 )).toList(); // 리스트로 변환
 
         return memberDTOList;
@@ -64,4 +66,10 @@ public class MemberService {
                 newMember.getBirthday()
                 );
     }
-}
+
+    public CustomUserDetails login(LoginMemberDTO login) {
+        Member member = repo.findByEmail(login);
+        return new CustomUserDetails(member);
+        }
+    }
+
