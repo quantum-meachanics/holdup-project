@@ -65,7 +65,7 @@ public class WebSecurityConfig {
                 .addFilterBefore(jwtAuthorizationFilter(), BasicAuthenticationFilter.class)
 
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/member/**", "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**","/login").permitAll() // Swagger 관련 리소스와 회원가입 경로 허용
+                        .requestMatchers("/member/**", "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**","/login","/report/**").permitAll() // Swagger 관련 리소스와 회원가입 경로 허용
                         .anyRequest()
                         .authenticated() // 나머지 요청은 인증 필요
                 );
