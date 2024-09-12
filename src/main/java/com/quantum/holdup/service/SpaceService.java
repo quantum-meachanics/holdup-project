@@ -16,13 +16,17 @@ public class SpaceService {
     private final SpaceRepository spaceRepo;
     private final MemberRepository memberRepo;
 
+    // 공간 등록 메소드
     public Object createSpace(CreateSpaceDTO spaceInfo) {
 
+        // 로그인 되어있는 사용자의 이메일 가져옴
         String ownerEamil = SecurityContextHolder.getContext().getAuthentication().getName();
 
+        // 가져온 이메일로 사용자 찾기
         Member owner = (Member) memberRepo.findByEmail(ownerEamil)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
+        // 새로운 공간 엔티티 생성
         Space newSpace = Space.builder()
                 .title(spaceInfo.getTitle())
                 .address(spaceInfo.getAddress())
@@ -35,8 +39,10 @@ public class SpaceService {
                 .owner(owner)
                 .build();
 
+        // 생성한 공간 엔티티 저장
         spaceRepo.save(newSpace);
 
+        // DTO 형식으로 반환
         return new CreateSpaceDTO(
                 newSpace.getTitle(),
                 newSpace.getAddress(),
@@ -45,8 +51,7 @@ public class SpaceService {
                 newSpace.getHeight(),
                 newSpace.getDepth(),
                 newSpace.getNumber(),
-                newSpace.getPrice(),
-                newSpace.getOwner()
+                newSpace.getPrice()
         );
     }
 }

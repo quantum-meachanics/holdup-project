@@ -10,13 +10,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-
 /*
-* AuthenticationProvider
-*
-* 커스텀 인증 제공자
-* 사용자가 입력한 사용자이름과 비밀번호를 데이터베이스의 정보와 비교하여 사용자 자격을 증명
-* */
+ * AuthenticationProvider
+ *
+ * 커스텀 인증 제공자
+ * 사용자가 입력한 사용자이름과 비밀번호를 데이터베이스의 정보와 비교하여 사용자 자격을 증명
+ * */
 public class CustomAuthenticationProvider implements AuthenticationProvider {
 
     @Autowired
@@ -26,7 +25,8 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
     private CustomUserDetailService detailsService;
 
     @Override
-    public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+    public Authentication authenticate(Authentication authentication)
+            throws AuthenticationException {
 
         // 로그인 요청 정보를 가지고 있는 token
         UsernamePasswordAuthenticationToken loginToken = (UsernamePasswordAuthenticationToken) authentication;

@@ -18,15 +18,17 @@ import java.io.PrintWriter;
 import java.util.HashMap;
 
 /*
-* Login 성공했을때 동작하는 Handler
-*
-* JWT를 생성하고, responseHeader(응답 헤더) 넘겨주는 역할
-* */
+ * Login 성공했을때 동작하는 Handler
+ *
+ * JWT를 생성하고, responseHeader(응답 헤더) 넘겨주는 역할
+ * */
 @Configuration
 public class CustomAuthSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
 
     @Override
-    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws ServletException, IOException {
+    public void onAuthenticationSuccess(
+            HttpServletRequest request, HttpServletResponse response, Authentication authentication)
+            throws ServletException, IOException {
 
         // Security Context에 저장된 로그인한 사용자 정보를 꺼내온다.
         Member member = ((CustomUserDetails) authentication.getPrincipal()).getMember();

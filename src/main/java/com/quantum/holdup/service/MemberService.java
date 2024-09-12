@@ -1,7 +1,6 @@
 package com.quantum.holdup.service;
 
 import com.quantum.holdup.domain.dto.CreateMemberDTO;
-import com.quantum.holdup.domain.dto.LoginMemberDTO;
 import com.quantum.holdup.domain.dto.MemberDTO;
 import com.quantum.holdup.domain.entity.Member;
 import com.quantum.holdup.domain.entity.Role;
@@ -76,7 +75,7 @@ public class MemberService {
                 newMember.getName(),
                 newMember.getAddress(),
                 newMember.getBirthday()
-                );
+        );
     }
 }
 
