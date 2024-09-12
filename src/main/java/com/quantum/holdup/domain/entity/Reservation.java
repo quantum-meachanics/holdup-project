@@ -2,6 +2,7 @@ package com.quantum.holdup.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -23,22 +24,25 @@ public class Reservation {
     private LocalDateTime createDate; // 예약 신청일시
 
     @ManyToOne
-    @JoinColumn(name = "MEMBER_ID")
-    private Member client; // 예약 신청자
-
-    @ManyToOne
     @JoinColumn(name = "SPACE_ID")
     private Space space; // 예약 신청한 공간
+
+    @ManyToOne
+    @JoinColumn(name = "MEMBER_ID")
+    private Member client; // 예약 신청자
 
     @PrePersist
     protected void onCreate() { // 생성일시를 자동으로 입력해주는 메소드
         this.createDate = LocalDateTime.now();
     }
 
-    public Reservation(LocalDateTime createDate, LocalDateTime startDate, LocalDateTime endDate, String content) {
-        this.createDate = createDate;
+    @Builder(toBuilder = true)
+    public Reservation(LocalDateTime startDate, LocalDateTime endDate, Space space, Member client) {
         this.startDate = startDate;
         this.endDate = endDate;
+        this.space = space;
+        this.client = client;
+
         this.isAccept = false;
         this.isEnd = false;
     }
