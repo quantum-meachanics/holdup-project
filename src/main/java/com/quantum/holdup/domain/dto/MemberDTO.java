@@ -21,6 +21,7 @@ public class MemberDTO {
     private String nickname; // 회원 닉네임
     private String phone; // 회원 휴대전화번호
     private String name; // 회원 본명
+    private String address; // 회원 주소
     private LocalDate birthday; // 회원 생년월일
     private int credit; // 회원 보유 크레딧
     private int point; // 회원 보유 포인트

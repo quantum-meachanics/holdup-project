@@ -36,6 +36,7 @@ public class MemberService {
                         memberEntity.getNickname(),
                         memberEntity.getPhone(),
                         memberEntity.getName(),
+                        memberEntity.getAddress(),
                         memberEntity.getBirthday(),
                         memberEntity.getCredit(),
                         memberEntity.getPoint(),
@@ -60,6 +61,7 @@ public class MemberService {
                 .nickname(memberInfo.getNickname())
                 .phone(memberInfo.getPhone())
                 .name(memberInfo.getName())
+                .address(memberInfo.getAddress())
                 .birthday(memberInfo.getBirthday())
                 .role(Role.USER)
                 .build();
@@ -72,6 +74,7 @@ public class MemberService {
                 newMember.getNickname(),
                 newMember.getPhone(),
                 newMember.getName(),
+                newMember.getAddress(),
                 newMember.getBirthday()
                 );
     }

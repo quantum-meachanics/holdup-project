@@ -2,6 +2,7 @@ package com.quantum.holdup.config;
 
 import com.quantum.holdup.filter.CustomAuthenticationFilter;
 import com.quantum.holdup.filter.JwtAuthorizationFilter;
+import com.quantum.holdup.filter.JwtPostAuthorizationFilter;
 import com.quantum.holdup.handler.CustomAuthFailUserHandler;
 import com.quantum.holdup.handler.CustomAuthSuccessHandler;
 import com.quantum.holdup.handler.CustomAuthenticationProvider;
@@ -63,9 +64,10 @@ public class WebSecurityConfig {
 
                 // header 에 token이 담겨져 왔을 경우 인가처리를 해주는 필터
                 .addFilterBefore(jwtAuthorizationFilter(), BasicAuthenticationFilter.class)
+                .addFilterBefore(jwtPostAuthorizationFilter(), BasicAuthenticationFilter.class)
 
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/member/**", "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**","/login","/report/**").permitAll() // Swagger 관련 리소스와 회원가입 경로 허용
+                        .requestMatchers("/member/**", "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**").permitAll() // Swagger 관련 리소스와 회원가입 경로 허용
                         .anyRequest()
                         .authenticated() // 나머지 요청은 인증 필요
                 );
@@ -155,6 +157,11 @@ public class WebSecurityConfig {
     @Bean
     public JwtAuthorizationFilter jwtAuthorizationFilter(){
         return new JwtAuthorizationFilter(authenticationManager());
+    }
+
+    @Bean
+    public JwtPostAuthorizationFilter jwtPostAuthorizationFilter(){
+        return new JwtPostAuthorizationFilter(authenticationManager());
     }
 
 }
