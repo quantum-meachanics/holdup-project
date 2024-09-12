@@ -34,10 +34,11 @@ public class Report {
     }
 
     @Builder(toBuilder = true)
-    public Report(String title, String content) {
+    public Report(String title, String content , Member member) {
         this.title = title;
         this.content = content;
         this.isHide = false;
+        this.member = member;
     }
 
 }
