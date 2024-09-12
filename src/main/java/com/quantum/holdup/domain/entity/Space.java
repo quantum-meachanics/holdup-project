@@ -42,7 +42,7 @@ public class Space {
     }
 
     @Builder(toBuilder = true)
-    public Space(String title, String address, String description, long width, long height, long depth, int number, int price) {
+    public Space(String title, String address, String description, long width, long height, long depth, int number, int price, Member owner) {
         this.title = title;
         this.address = address;
         this.description = description;
@@ -51,6 +51,7 @@ public class Space {
         this.depth = depth;
         this.number = number;
         this.price = price;
+        this.owner = owner;
         this.isHide = false;
     }
 }

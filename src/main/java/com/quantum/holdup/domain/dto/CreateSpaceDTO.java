@@ -1,5 +1,6 @@
 package com.quantum.holdup.domain.dto;
 
+import com.quantum.holdup.domain.entity.Member;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,5 +20,7 @@ public class CreateSpaceDTO {
     private long height; // 공간 높이
     private int number; // 공간 갯수
     private int price; // 공간 가격
+
+    private Member owner; // 공간 등록자
 
 }
