@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,11 +25,11 @@ public class SpaceController {
 
     @Operation(summary = "공간 등록")
     @PostMapping("/createSpace")
-    public ResponseEntity<?> createSpace(@AuthenticationPrincipal Member owner, @RequestBody CreateSpaceDTO spaceInfo) {
+    public ResponseEntity<?> createSpace(@RequestBody CreateSpaceDTO spaceInfo) {
         return ResponseEntity.ok()
                 .body(new ResponseMessage(
                         "공간 등록 성공",
-                        service.createSpace(owner, spaceInfo)
+                        service.createSpace(spaceInfo)
                 ));
     }
 

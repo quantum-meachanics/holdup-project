@@ -43,7 +43,10 @@ public class JwtPostAuthorizationFilter extends BasicAuthenticationFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
         // 게시글 조회 URL
-        List<String> postReadUrlList = Arrays.asList("/report/(.*)");
+        List<String> postReadUrlList = Arrays.asList(
+                "/report/(.*)",
+                "/spaces/(.*)"
+                );
 
         if (postReadUrlList.stream().anyMatch(uri -> Pattern.matches(uri, request.getRequestURI()))) {
             String header = request.getHeader(AuthConstants.AUTH_HEADER);
