@@ -18,6 +18,7 @@ public class CreateMemberDTO {
     private String nickname; // 회원 닉네임
     private String phone; // 회원 휴대전화번호
     private String name; // 회원 본명
+    private String address; // 회원 주소
     private LocalDate birthday; // 회원 생년월일
 
 }

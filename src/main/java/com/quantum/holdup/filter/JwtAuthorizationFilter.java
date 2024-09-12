@@ -52,14 +52,12 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
          * */
         List<String> roleLeessList = Arrays.asList(
                 "/member/signup",             // 회원가입
-                "/login",             // 회원가입
                 "/swagger-ui/(.*)",        //swagger 설정
                 "/swagger-ui/index.html",  //swagger 설정
                 "/v3/api-docs",              //swagger 설정
                 "/v3/api-docs/(.*)",         //swagger 설정
                 "/swagger-resources",        //swagger 설정
-                "/swagger-resources/(.*)",    //swagger 설정
-                "/report/(.*)"
+                "/swagger-resources/(.*)"    //swagger 설정
         );
 
         if(roleLeessList.stream().anyMatch(uri -> roleLeessList.stream().anyMatch(pattern -> Pattern.matches(pattern, request.getRequestURI())))){
@@ -83,7 +81,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                 // 검증 결과가 True(유효한토큰) 이면 이후 처리를 진행한다.
                 if(TokenUtils.isValidToken(token)){
 
-                    // payload에 담긴 (토큰에 담겨있는 정보들)
+                    // payload 에 담긴 (토큰에 담겨있는 정보들)
                     Claims claims = TokenUtils.getClaimsFromToken(token);
 
                     // 토큰에 담긴 정보로 Member 객체를 만든다.

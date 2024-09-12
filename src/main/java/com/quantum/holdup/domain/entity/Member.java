@@ -23,6 +23,7 @@ public class Member {
     private String nickname; // 회원 닉네임
     private String phone; // 회원 휴대전화번호
     private String name; // 회원 본명
+    private String address; // 회원 주소
     private LocalDate birthday; // 회원 생년월일
     private int credit; // 회원 보유 크레딧
     private int point; // 회원 보유 포인트
@@ -63,12 +64,13 @@ public class Member {
     }
 
     @Builder(toBuilder = true)
-    public Member(String email, String password, String nickname, String phone, String name, LocalDate birthday, Role role) {
+    public Member(String email, String password, String nickname, String phone, String name, LocalDate birthday, Role role , String address) {
         this.email = email;
         this.password = password;
         this.nickname = nickname;
         this.phone = phone;
         this.name = name;
+        this.address = address;
         this.birthday = birthday;
         this.credit = 0;
         this.point = 0;
