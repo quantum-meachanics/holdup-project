@@ -10,8 +10,8 @@ import lombok.Setter;
 @Setter
 public class UpdateInquiryDTO {
 
-    private String title; // 신고글 제목
-    private String content; // 신고글 본문
+    private String title; // 문의글 제목
+    private String content; // 문의글 본문
 
     @Builder
     public UpdateInquiryDTO(String title, String content) {
