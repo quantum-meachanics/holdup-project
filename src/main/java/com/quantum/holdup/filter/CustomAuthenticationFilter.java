@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.quantum.holdup.domain.dto.LoginMemberDTO;
-import com.quantum.holdup.domain.dto.MemberDTO;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -16,15 +15,15 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import java.io.IOException;
 
 /*
-* 로그인 URL로 POST 요청이 오면
-* 요청을 가로채서 아이디와 비밀번호를 추출한다.
-*
-* 작동방식
-* 1. 로그인 URL로 오는 요청을 가로챈다
-* 2. 로그인 정보를 추출한다.
-* 3. 인증처리 AuthenticationManger 를 통해 실제 인증을 처리한다.
-* 4. 인증에 성공하면 인증 정보를 저장한  Authentication을 반환한다.
-* */
+ * 로그인 URL로 POST 요청이 오면
+ * 요청을 가로채서 아이디와 비밀번호를 추출한다.
+ *
+ * 작동방식
+ * 1. 로그인 URL로 오는 요청을 가로챈다
+ * 2. 로그인 정보를 추출한다.
+ * 3. 인증처리 AuthenticationManger 를 통해 실제 인증을 처리한다.
+ * 4. 인증에 성공하면 인증 정보를 저장한  Authentication을 반환한다.
+ * */
 public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     public CustomAuthenticationFilter(AuthenticationManager authenticationManager) {
@@ -32,7 +31,9 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
     }
 
     @Override
-    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
+    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
+            throws AuthenticationException {
+
         // 로그인 정보를 추출해서 AuthenticationManger를 통해 로그인 정보를 넘겨준다.
         UsernamePasswordAuthenticationToken authRequest;
 
@@ -52,12 +53,14 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
      * @param request - httpServletRequest
      * @return UserPasswordAuthenticationToken
      * @throw Excpetion e
-     * */
-    private UsernamePasswordAuthenticationToken getAuthRequest(HttpServletRequest request) throws IOException {
+     */
+    private UsernamePasswordAuthenticationToken getAuthRequest(HttpServletRequest request)
+            throws IOException {
+
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
 
-        objectMapper.configure(JsonParser.Feature.AUTO_CLOSE_SOURCE,true);
+        objectMapper.configure(JsonParser.Feature.AUTO_CLOSE_SOURCE, true);
         LoginMemberDTO member = objectMapper.readValue(request.getInputStream(), LoginMemberDTO.class);
 
         return new UsernamePasswordAuthenticationToken(member.getEmail(), member.getPassword());

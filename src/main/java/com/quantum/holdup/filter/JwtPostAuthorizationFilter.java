@@ -30,7 +30,7 @@ import java.util.regex.Pattern;
 
 /**
  * JWT를 사용해 게시글 작성 권한을 처리하는 필터
- *
+ * <p>
  * HTTP 요청이 들어올 때 JWT 토큰을 확인하고 유효한 토큰의 경우
  * 사용자 정보를 인증 컨텍스트에 등록하여 해당 요청이 인증된 사용자로서 처리되도록 한다.
  */
@@ -41,12 +41,14 @@ public class JwtPostAuthorizationFilter extends BasicAuthenticationFilter {
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+            throws IOException, ServletException {
+
         // 게시글 조회 URL
         List<String> postReadUrlList = Arrays.asList(
                 "/report/(.*)",
                 "/spaces/(.*)"
-                );
+        );
 
         if (postReadUrlList.stream().anyMatch(uri -> Pattern.matches(uri, request.getRequestURI()))) {
             String header = request.getHeader(AuthConstants.AUTH_HEADER);
@@ -123,6 +125,7 @@ public class JwtPostAuthorizationFilter extends BasicAuthenticationFilter {
         jsonMap.put("message", resultMsg);
         jsonMap.put("reason", e.getMessage());
         JSONObject jsonObject = new JSONObject(jsonMap);
+
         return jsonObject;
     }
 }

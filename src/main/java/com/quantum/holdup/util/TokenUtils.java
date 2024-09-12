@@ -1,6 +1,5 @@
 package com.quantum.holdup.util;
 
-
 import com.quantum.holdup.domain.entity.Member;
 import io.jsonwebtoken.*;
 import jakarta.xml.bind.DatatypeConverter;
@@ -15,9 +14,9 @@ import java.util.Map;
 
 /**
  * 토큰을 관리하기 위한 utils 모음 클래스
- *  yml -> jwt-key, jwt-time 설정이 필요하다.
- *  jwt lib 버전 "io.jsonwebtoken:jjwt:0.9.1" 사용
- * */
+ * yml -> jwt-key, jwt-time 설정이 필요하다.
+ * jwt lib 버전 "io.jsonwebtoken:jjwt:0.9.1" 사용
+ */
 @Component
 public class TokenUtils {
 
@@ -36,56 +35,58 @@ public class TokenUtils {
 
     /**
      * header의 token을 분리하는 메서드
+     *
      * @param header: Authrization의 header값을 가져온다.
      * @return token: Authrization의 token 부분을 반환한다.
-     * */
-    public static String splitHeader(String header){
-        if(!header.equals("")){
+     */
+    public static String splitHeader(String header) {
+        if (!header.equals("")) {
             return header.split(" ")[1];
-        }else{
+        } else {
             return null;
         }
     }
 
     /**
      * 유효한 토큰인지 확인하는 메서드
+     *
      * @param token : 토큰
      * @return boolean : 유효 여부
      * @throws ExpiredJwtException, {@link JwtException} {@link NullPointerException}
-     * */
-    public static boolean isValidToken(String token){
-
-        try{
+     */
+    public static boolean isValidToken(String token) {
+        try {
             Claims claims = getClaimsFromToken(token);
             return true;
-        }catch (ExpiredJwtException e){
+        } catch (ExpiredJwtException e) {
             e.printStackTrace();
             return false;
-        }catch (JwtException e){
+        } catch (JwtException e) {
             e.printStackTrace();
             return false;
-        }catch (NullPointerException e){
+        } catch (NullPointerException e) {
             e.printStackTrace();
             return false;
         }
     }
 
-
     /**
      * 토큰을 복호화 하는 메서드
+     *
      * @param token
      * @return Claims
-     * */
-    public static Claims getClaimsFromToken(String token){
+     */
+    public static Claims getClaimsFromToken(String token) {
         return Jwts.parser().setSigningKey(DatatypeConverter.parseBase64Binary(jwtSecretKey))
                 .parseClaimsJws(token).getBody();
     }
 
     /**
      * token을 생성하는 메서드
+     *
      * @param member 사용자객체
      * @return String - token
-     * */
+     */
     public static String generateJwtToken(Member member) {
         // 토큰 만료시간 설정
         Date expireTime = new Date(System.currentTimeMillis() + tokenValidateTime);
@@ -102,15 +103,15 @@ public class TokenUtils {
                 // 토큰 시그니쳐  설정
                 .signWith(SignatureAlgorithm.HS256, createSignature());
 
-
         return builder.compact();
     }
 
     /**
      * token의 header를 설정하는 부분이다.
+     *
      * @return Map<String, Object> - header의 설정 정보
-     * */
-    private static Map<String, Object> createHeader(){
+     */
+    private static Map<String, Object> createHeader() {
         Map<String, Object> header = new HashMap<>();
 
         // 토큰 타입
@@ -128,8 +129,8 @@ public class TokenUtils {
      *
      * @param member - 사용자 정보
      * @return Map<String, Object> - cliams 정보
-     * */
-    private static Map<String, Object> createClaims(Member member){
+     */
+    private static Map<String, Object> createClaims(Member member) {
         Map<String, Object> claims = new HashMap<>();
 
         claims.put("memberName", member.getName());
@@ -144,8 +145,8 @@ public class TokenUtils {
      * JWT 서명을 발급해주는 메서드이다.
      *
      * @return key
-     * */
-    private static Key createSignature(){
+     */
+    private static Key createSignature() {
 
         // HS256 알고리즘을 사용해서 Base64로 인코딩된 비밀키를 바이트 배열로 변환
         byte[] secretBytes = DatatypeConverter.parseBase64Binary(jwtSecretKey);
@@ -153,5 +154,4 @@ public class TokenUtils {
         // 서명에 사용할 수 있는 Key 객체로 변환하는 과정
         return new SecretKeySpec(secretBytes, SignatureAlgorithm.HS256.getJcaName());
     }
-
 }

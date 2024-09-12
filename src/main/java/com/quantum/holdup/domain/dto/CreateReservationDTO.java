@@ -5,13 +5,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
-public class CreateReportDTO {
+public class CreateReservationDTO {
 
-    private String title; // 신고글 제목
-    private String content; // 신고글 본문
+    private LocalDateTime startDate; // 이용 시작일시
+    private LocalDateTime endDate; // 이용 종료일시
 
 }

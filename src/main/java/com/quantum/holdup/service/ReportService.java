@@ -28,7 +28,6 @@ public class ReportService {
     private final ReportRepository repo;
     private final MemberRepository mRepo;
 
-
     public Page<ReportDTO> findAllReport(Pageable pageable) {
 
         // 페이지 번호 조정 (0보다 크면 1을 빼고) 및 정렬 설정

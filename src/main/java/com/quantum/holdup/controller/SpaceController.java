@@ -1,7 +1,6 @@
 package com.quantum.holdup.controller;
 
 import com.quantum.holdup.domain.dto.CreateSpaceDTO;
-import com.quantum.holdup.domain.entity.Member;
 import com.quantum.holdup.message.ResponseMessage;
 import com.quantum.holdup.service.SpaceService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -9,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,5 +30,4 @@ public class SpaceController {
                         service.createSpace(spaceInfo)
                 ));
     }
-
 }
