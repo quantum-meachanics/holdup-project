@@ -15,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.NoSuchElementException;
@@ -61,8 +62,13 @@ public class ReportService {
 
     public CreateReportDTO createReport(CreateReportDTO reportInfo) {
 
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        Member member = (Member) mRepo.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
         Report newReport = Report.builder()
                 .title(reportInfo.getTitle())
+                .member(member)
                 .content(reportInfo.getContent())
                 .build();
 
