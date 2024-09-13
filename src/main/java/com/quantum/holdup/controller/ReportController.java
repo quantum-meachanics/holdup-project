@@ -1,19 +1,15 @@
 package com.quantum.holdup.controller;
 
 import com.quantum.holdup.domain.dto.CreateReportDTO;
-import com.quantum.holdup.domain.dto.MemberDTO;
 import com.quantum.holdup.domain.dto.ReportDTO;
 import com.quantum.holdup.domain.dto.UpdateReportDTO;
-import com.quantum.holdup.domain.entity.Member;
 import com.quantum.holdup.message.ResponseMessage;
-import com.quantum.holdup.service.MemberService;
 import com.quantum.holdup.service.ReportService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -21,24 +17,22 @@ import java.util.Map;
 
 
 @RestController
-@RequestMapping("/report")
+@RequestMapping("/reports")
 @RequiredArgsConstructor
 public class ReportController {
 
     private final ReportService service;
-    private final MemberService memberService;
 
     // 신고글 전체조회
     @GetMapping("/report")
-    public ResponseEntity<ResponseMessage> findAllReport(@PageableDefault Pageable pageable, String nickname,
-                                                         @RequestParam(value = "searchType", required = false) String searchType){
+    public ResponseEntity<ResponseMessage> findAllReport(@PageableDefault Pageable pageable,
+                                                         @RequestParam(value = "nickname", required = false) String nickname,
+                                                         @RequestParam(value = "searchType", required = false) String searchType) {
 
         Page<ReportDTO> reports;
 
-        MemberDTO member = new MemberDTO();
-
-        if (member.getNickname() != null && !nickname.isEmpty() && "nickname".equals(searchType)) {
-            reports = service.searchByMemberId(nickname, pageable);
+        if (nickname != null && !nickname.isEmpty() && "nickname".equals(searchType)) {
+            reports = service.searchByNickname(nickname, pageable);
         } else {
             reports = service.findAllReport(pageable);
         }
@@ -73,10 +67,11 @@ public class ReportController {
                 );
     }
 
+    // 신고글 수정
     @PutMapping("/{id}")
     public ResponseEntity<?> modifyPost(@PathVariable Long id, @RequestBody UpdateReportDTO modifyInfo) {
 
-        ReportDTO updatedPost = service.updateReport(id, modifyInfo);
+        UpdateReportDTO updatedPost = service.updateReport(id, modifyInfo);
 
         return ResponseEntity.ok()
                 .body(new ResponseMessage(
@@ -85,7 +80,7 @@ public class ReportController {
                 );
     }
 
-
+    // 신고글 삭제
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deletePost(@PathVariable long id) {
 

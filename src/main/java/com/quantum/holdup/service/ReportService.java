@@ -49,7 +49,41 @@ public class ReportService {
             ReportDTO reportDTO = new ReportDTO(
                     reportEntity.getId(),
                     reportEntity.getTitle(),
-                    reportEntity.getContent()
+                    reportEntity.getContent(),
+                    reportEntity.getMember().getNickname()
+            );
+
+            // 각 ReportDTO에 페이징 정보 설정
+            reportDTO.setPagingInfo(paging);
+            return reportDTO;
+        });
+
+    }
+
+    public ReportDTO findReportById(long id) {
+
+        Report postEntity = repo.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Post not found with id " + id));
+
+        return ReportDTO.builder()
+                .id(postEntity.getId())
+                .title(postEntity.getTitle())
+                .content(postEntity.getContent())
+                .build();
+    }
+
+    public Page<ReportDTO> searchByNickname(String nickname, Pageable pageable) {
+
+        Page<Report> reportsEntityList = repo.findByMemberNickname(nickname, pageable);
+        PagingButtonInfo paging = Pagination.getPagingButtonInfo(reportsEntityList);
+
+        return reportsEntityList.map(reportEntity -> {
+            // 각 Report 엔티티로부터 새로운 ReportDTO 생성
+            ReportDTO reportDTO = new ReportDTO(
+                    reportEntity.getId(),
+                    reportEntity.getTitle(),
+                    reportEntity.getContent(),
+                    reportEntity.getMember().getNickname()
             );
 
             // 각 ReportDTO에 페이징 정보 설정
@@ -67,65 +101,36 @@ public class ReportService {
 
         Report newReport = Report.builder()
                 .title(reportInfo.getTitle())
-                .member(member)
                 .content(reportInfo.getContent())
+                .member(member)
                 .build();
 
         repo.save(newReport);
 
         return new CreateReportDTO(
+                newReport.getTitle(),
                 newReport.getContent(),
-                newReport.getContent()
+                member.getNickname()
         );
     }
 
-    public ReportDTO findReportById(long id) {
-
-        Report postEntity = repo.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("Post not found with id " + id));
-
-        return ReportDTO.builder()
-                .id(postEntity.getId())
-                .title(postEntity.getTitle())
-                .content(postEntity.getContent())
-                .build();
-    }
-
-    public Page<ReportDTO> searchByMemberId(String nickname, Pageable pageable) {
-
-        // Member 엔티티를 먼저 찾습니다.
-        Member member = (Member) mRepo.findByNickname(nickname)
-                .orElseThrow(() -> new NoSuchElementException("Member not found with nickname: " + nickname));
-
-        // 찾은 Member를 이용해 Report를 검색합니다.
-        Page<Report> reportsEntityList = repo.findByMember(member, pageable);
-
-        PagingButtonInfo paging = Pagination.getPagingButtonInfo(reportsEntityList);
-
-        return reportsEntityList.map(reportEntity -> {
-            ReportDTO reportDTO = new ReportDTO(
-                    reportEntity.getId(),
-                    reportEntity.getTitle(),
-                    reportEntity.getContent()
-            );
-            reportDTO.setPagingInfo(paging);
-            return reportDTO;
-        });
-
-    }
-
-    public ReportDTO updateReport(Long id, UpdateReportDTO modifyInfo) {
+    public UpdateReportDTO updateReport(Long id, UpdateReportDTO modifyInfo) {
 
         Report reportEntity = repo.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Post not found with postId " + id));
 
-        reportEntity.setTitle(modifyInfo.getTitle());
-        reportEntity.setContent(modifyInfo.getContent());
+        // toBuilder()를 사용하여 기존 객체를 기반으로 새 객체 생성
+        Report updatedReport = reportEntity.toBuilder()
+                .id(id)
+                .title(modifyInfo.getTitle())
+                .content(modifyInfo.getContent())
+                .build();
 
-        // 수정된 엔티티 저장
-        repo.save(reportEntity);
+        // 새로운 엔티티 저장
+        repo.save(updatedReport);
 
-        return new ReportDTO(reportEntity.getId(), reportEntity.getTitle(), reportEntity.getContent());
+        // ReportDTO 생성 및 반환
+        return new UpdateReportDTO(updatedReport.getTitle(), updatedReport.getContent());
     }
 
     public boolean deleteReport(long id) {

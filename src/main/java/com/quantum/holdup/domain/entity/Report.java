@@ -1,7 +1,10 @@
 package com.quantum.holdup.domain.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
@@ -9,7 +12,6 @@ import java.time.LocalDateTime;
 @Table
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@Setter
 public class Report {
 
     @Id
@@ -34,7 +36,8 @@ public class Report {
     }
 
     @Builder(toBuilder = true)
-    public Report(String title, String content , Member member) {
+    public Report(long id, String title, String content, Member member) {
+        this.id = id;
         this.title = title;
         this.content = content;
         this.isHide = false;
