@@ -53,6 +53,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
          * */
         List<String> roleLeessList = Arrays.asList(
                 "/member/signup",             // 회원가입
+                "/member/login",
                 "/swagger-ui/(.*)",        //swagger 설정
                 "/swagger-ui/index.html",  //swagger 설정
                 "/v3/api-docs",              //swagger 설정
