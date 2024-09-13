@@ -17,7 +17,7 @@ import java.util.List;
 public class MemberService {
 
     private final MemberRepository repo;
-    private PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
     // 전체 멤버 조회 메소드
     public List<MemberDTO> findAllMember() {
