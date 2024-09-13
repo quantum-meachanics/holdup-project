@@ -21,6 +21,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
+import java.util.Collections;
 
 @Configuration
 @EnableMethodSecurity
@@ -42,7 +48,6 @@ public class WebSecurityConfig {
         return web -> web.ignoring().requestMatchers(PathRequest.toStaticResources().atCommonLocations());
     }
 
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
@@ -56,6 +61,8 @@ public class WebSecurityConfig {
                 .formLogin(AbstractHttpConfigurer::disable)
                 // http 기본인증 (JWT를 사용할것이므로) 비활성화
                 .httpBasic(AbstractHttpConfigurer::disable)
+
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
 
                 // 사용자가 입력한 아이디 패스워드를 전달받아 로그인을 직접적으로 수행하는 필터
                 // 인증시(successHandler를 통해) 토큰을 생성해서 header로 전달하고
@@ -73,12 +80,12 @@ public class WebSecurityConfig {
                                 "/v3/api-docs/**",
                                 "/swagger-resources/**"
                         ).permitAll() // Swagger 관련 리소스와 회원가입 경로 허용
-                        .anyRequest()
-                        .authenticated() // 나머지 요청은 인증 필요
+                        .anyRequest().authenticated() // 나머지 요청은 인증 필요
                 );
 
         return http.build();
     }
+
 
     /**
      * 3. Authentization의 인증 메서드를 제공하는 매니저로 Provider의 인터페이스를 의미한다.
@@ -121,7 +128,7 @@ public class WebSecurityConfig {
         CustomAuthenticationFilter customAuthenticationFilter = new CustomAuthenticationFilter(authenticationManager());
 
         // /login 으로 post 요청이 들어오면 필터가 동작한다.
-        customAuthenticationFilter.setFilterProcessesUrl("/login");
+        customAuthenticationFilter.setFilterProcessesUrl("/member/login");
 
         // 인증 성공시 동작할 핸들러 설정
         customAuthenticationFilter.setAuthenticationSuccessHandler(customAuthLoginSuccessHandler());
@@ -171,6 +178,21 @@ public class WebSecurityConfig {
     @Bean
     public JwtPostAuthorizationFilter jwtPostAuthorizationFilter() {
         return new JwtPostAuthorizationFilter(authenticationManager());
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+
+        CorsConfiguration configuration = new CorsConfiguration();
+
+        configuration.setAllowedOrigins(Collections.singletonList("http://localhost:3000"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(Arrays.asList("*"));
+        configuration.setAllowCredentials(true);
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+
     }
 
 }
