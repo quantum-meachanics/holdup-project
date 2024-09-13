@@ -27,6 +27,10 @@ public class Review {
     @JoinColumn(name = "MEMBER_ID")
     private Member member; // 리뷰글 작성자
 
+    @ManyToOne
+    @JoinColumn(name = "RESERVATION_ID")
+    private Reservation reservation; // 예약내용
+
 //    @OneToMany
 //    @JoinColumn(name = "COMMENT_ID")
 //    private List<Comment> comments; // 리뷰에 달린 댓글
@@ -37,10 +41,13 @@ public class Review {
     }
 
     @Builder(toBuilder = true)
-    public Review(String title, String content, boolean isHide, int rating) {
+    public Review(long id, String title, String content, boolean isHide, int rating, Member member, Reservation reservation) {
+        this.id = id;
         this.title = title;
         this.content = content;
         this.isHide = isHide;
         this.rating = rating;
+        this.member = member;
+        this.reservation = reservation;
     }
 }
