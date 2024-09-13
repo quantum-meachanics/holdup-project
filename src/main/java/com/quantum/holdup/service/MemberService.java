@@ -2,11 +2,11 @@ package com.quantum.holdup.service;
 
 import com.quantum.holdup.domain.dto.CreateMemberDTO;
 import com.quantum.holdup.domain.dto.MemberDTO;
+import com.quantum.holdup.domain.dto.SearchMemberEmailDTO;
 import com.quantum.holdup.domain.entity.Member;
 import com.quantum.holdup.domain.entity.Role;
 import com.quantum.holdup.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -74,6 +74,20 @@ public class MemberService {
                 newMember.getBirthday()
         );
     }
+
+    public String findEmailByNameAndPhone(SearchMemberEmailDTO searchMemberEmailDTO) {
+        
+        // 이름과 전화번호를 기준으로 사용자 조회
+        Member member = repo.findByNameAndPhone(searchMemberEmailDTO.getName(),searchMemberEmailDTO.getPhone());
+
+        // 사용자가 존재하면 이메일 반환, 없으면 "User not found" 반환
+        if (member != null) {
+            return member.getEmail();
+        } else {
+            return "User not found";
+        }
+    }
 }
+
 
 
