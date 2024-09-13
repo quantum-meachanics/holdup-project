@@ -16,10 +16,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MemberService {
 
-    @Autowired
     private final MemberRepository repo;
-
-    @Autowired
     private PasswordEncoder passwordEncoder;
 
     // 전체 멤버 조회 메소드
