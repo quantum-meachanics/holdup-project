@@ -1,0 +1,38 @@
+package com.quantum.holdup.controller;
+
+import com.quantum.holdup.service.EmailService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequiredArgsConstructor
+public class EmailController {
+
+    private final EmailService emailService;
+
+    @GetMapping("/send-email")
+    public String sendVerificationEmail(@RequestParam String email) {
+        try {
+            emailService.sendVerificationEmail(email);
+            return "Verification email sent successfully.";
+        } catch (Exception e) {
+            // 로그에 에러를 기록하고, 적절한 오류 메시지를 반환합니다.
+            e.printStackTrace();
+            return "Failed to send verification email.";
+        }
+    }
+
+    @PostMapping("/verify-code")
+    public String verifyCode(@RequestParam String email, @RequestParam String code) {
+        boolean isValid = emailService.verifyCode(email, code);
+        if (isValid) {
+            return "Verification successful.";
+        } else {
+            return "Invalid verification code.";
+        }
+    }
+
+}
