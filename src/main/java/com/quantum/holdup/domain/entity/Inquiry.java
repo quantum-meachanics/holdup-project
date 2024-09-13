@@ -32,10 +32,12 @@ public class Inquiry {
     }
 
     @Builder(toBuilder = true)
-    public Inquiry(String title, String content) {
+    public Inquiry(long id, String title, String content, Member member) {
+        this.id = id;
         this.title = title;
         this.content = content;
         this.isHide = false;
+        this.member = member;
     }
 
 }

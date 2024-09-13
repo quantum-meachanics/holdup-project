@@ -9,10 +9,10 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-public class CreateReportDTO {
+public class CreateInquiryDTO {
 
-    private String title; // 신고글 제목
-    private String content; // 신고글 본문
-    private String nickname; // 신고글 작성자
+    private String title; // 문의글 제목
+    private String content; // 문의글 본문
+    private String nickname;
 
 }

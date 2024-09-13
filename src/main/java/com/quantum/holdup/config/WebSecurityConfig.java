@@ -78,7 +78,8 @@ public class WebSecurityConfig {
                                 "/member/**",
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
-                                "/swagger-resources/**"
+                                "/swagger-resources/**",
+                                "/send-email"
                         ).permitAll() // Swagger 관련 리소스와 회원가입 경로 허용
                         .anyRequest().authenticated() // 나머지 요청은 인증 필요
                 );

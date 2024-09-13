@@ -1,10 +1,11 @@
 package com.quantum.holdup.controller;
 
-import com.quantum.holdup.domain.dto.CreateReportDTO;
-import com.quantum.holdup.domain.dto.ReportDTO;
-import com.quantum.holdup.domain.dto.UpdateReportDTO;
+import com.quantum.holdup.domain.dto.CreateInquiryDTO;
+import com.quantum.holdup.domain.dto.InquiryDTO;
+import com.quantum.holdup.domain.dto.UpdateInquiryDTO;
 import com.quantum.holdup.message.ResponseMessage;
-import com.quantum.holdup.service.ReportService;
+import com.quantum.holdup.service.InquiryService;
+import com.quantum.holdup.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,63 +16,50 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.Map;
 
-
 @RestController
-@RequestMapping("/reports")
+@RequestMapping("/inquires")
 @RequiredArgsConstructor
-public class ReportController {
+public class InquiryController {
 
-    private final ReportService service;
+    private final InquiryService service;
 
-    // 신고글 전체조회
-    @GetMapping("/report")
-    public ResponseEntity<ResponseMessage> findAllReport(@PageableDefault Pageable pageable,
+    // 문의글 전체조회
+    @GetMapping("/inquiry")
+    public ResponseEntity<ResponseMessage> findAllInquiry(@PageableDefault Pageable pageable,
                                                          @RequestParam(value = "nickname", required = false) String nickname,
-                                                         @RequestParam(value = "searchType", required = false) String searchType) {
+                                                         @RequestParam(value = "searchType", required = false) String searchType){
 
-        Page<ReportDTO> reports;
+        Page<InquiryDTO> inquiries;
 
         if (nickname != null && !nickname.isEmpty() && "nickname".equals(searchType)) {
-            reports = service.searchByNickname(nickname, pageable);
+            inquiries = service.searchByNickname(nickname, pageable);
         } else {
-            reports = service.findAllReport(pageable);
+            inquiries = service.findAllInquiry(pageable);
         }
 
         return ResponseEntity.ok()
                 .body(new ResponseMessage(
-                        "신고 전체조회를 성공했습니다.",
-                        reports
+                        "문의 전체조회를 성공했습니다.",
+                        inquiries
                 ));
     }
 
-    // 신고글 추가
-    @PostMapping("/report")
-    public ResponseEntity<?> createReport(@RequestBody CreateReportDTO reportInfo) {
+    // 문의글 추가
+    @PostMapping("/inquiry")
+    public ResponseEntity<?> createInquiry(@RequestBody CreateInquiryDTO inquiryInfo) {
+
         return ResponseEntity.ok()
                 .body(new ResponseMessage(
                         "게시판 등록에 성공하였습니다.",
-                        service.createReport(reportInfo)
+                        service.createInquiry(inquiryInfo)
                 ));
     }
 
-    // 신고글 단건 조회
-    @GetMapping("/{id}")
-    public ResponseEntity<ResponseMessage> findReportById(@PathVariable long id) {
-
-        ReportDTO reports = service.findReportById(id);
-
-        return ResponseEntity.ok()
-                .body(new ResponseMessage(
-                        "아이디로 게시글 조회 성공"
-                        , reports)
-                );
-    }
-
-    // 신고글 수정
+    // 문의글 수정
     @PutMapping("/{id}")
-    public ResponseEntity<?> modifyPost(@PathVariable Long id, @RequestBody UpdateReportDTO modifyInfo) {
+    public ResponseEntity<?> modifyPost(@PathVariable Long id, @RequestBody UpdateInquiryDTO modifyInfo) {
 
-        UpdateReportDTO updatedPost = service.updateReport(id, modifyInfo);
+        UpdateInquiryDTO updatedPost = service.updateInquiry(id, modifyInfo);
 
         return ResponseEntity.ok()
                 .body(new ResponseMessage(
@@ -80,13 +68,13 @@ public class ReportController {
                 );
     }
 
-    // 신고글 삭제
+    // 문의글 삭제
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deletePost(@PathVariable long id) {
 
         Map<String, Object> responseMap = new HashMap<>();
 
-        boolean isDeleted = service.deleteReport(id);
+        boolean isDeleted = service.deleteInquiry(id);
 
         String msg;
 
