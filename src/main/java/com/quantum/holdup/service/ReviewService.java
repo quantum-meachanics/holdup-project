@@ -77,7 +77,7 @@ public class ReviewService {
 //            // 각 Review 엔티티로부터 새로운 ReviewDTO 생성
 //            ReviewDTO reviewDTO = new ReviewDTO(
 //                    reviewEntity.getId(),
-//                    reviewEntity.getTitle(),
+//                    reviewEntity.getName(),
 //                    reviewEntity.getContent(),
 //                    reviewEntity.getRating()
 //            );
