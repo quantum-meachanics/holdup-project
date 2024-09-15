@@ -1,9 +1,10 @@
 package com.quantum.holdup.controller;
 
+import com.quantum.holdup.domain.dto.CommentDTO;
 import com.quantum.holdup.domain.dto.CreateReviewDTO;
-import com.quantum.holdup.domain.dto.UpdateInquiryDTO;
 import com.quantum.holdup.domain.dto.UpdateReviewDTO;
 import com.quantum.holdup.message.ResponseMessage;
+import com.quantum.holdup.service.CommentService;
 import com.quantum.holdup.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -20,6 +21,7 @@ import java.util.Map;
 public class ReviewController {
 
     private final ReviewService service;
+    private final CommentService commentService;
 
     @GetMapping("/review")
     public ResponseEntity<ResponseMessage> findAllReview(@PageableDefault Pageable pageable){
@@ -77,5 +79,15 @@ public class ReviewController {
                         "게시글 삭제 성공",
                         responseMap)
                 );
+    }
+
+    // 댓글 추가
+    @PostMapping("/comment")
+    public ResponseEntity<?> createComment(@RequestBody CommentDTO commentInfo) {
+        return ResponseEntity.ok()
+                .body(new ResponseMessage(
+                        "댓글 등록에 성공하였습니다.",
+                        commentService.createReviewComment(commentInfo)
+                ));
     }
 }

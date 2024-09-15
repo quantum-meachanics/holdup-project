@@ -1,9 +1,11 @@
 package com.quantum.holdup.controller;
 
+import com.quantum.holdup.domain.dto.CommentDTO;
 import com.quantum.holdup.domain.dto.CreateReportDTO;
 import com.quantum.holdup.domain.dto.ReportDTO;
 import com.quantum.holdup.domain.dto.UpdateReportDTO;
 import com.quantum.holdup.message.ResponseMessage;
+import com.quantum.holdup.service.CommentService;
 import com.quantum.holdup.service.ReportService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -22,6 +24,7 @@ import java.util.Map;
 public class ReportController {
 
     private final ReportService service;
+    private final CommentService commentService;
 
     // 신고글 전체조회
     @GetMapping("/report")
@@ -103,5 +106,15 @@ public class ReportController {
                         "게시글 삭제 성공",
                         responseMap)
                 );
+    }
+
+    // 댓글 추가
+    @PostMapping("/comment")
+    public ResponseEntity<?> createComment(@RequestBody CommentDTO commentInfo) {
+        return ResponseEntity.ok()
+                .body(new ResponseMessage(
+                        "댓글 등록에 성공하였습니다.",
+                        commentService.createReportComment(commentInfo)
+                ));
     }
 }

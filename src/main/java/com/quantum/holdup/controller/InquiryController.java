@@ -5,7 +5,6 @@ import com.quantum.holdup.domain.dto.InquiryDTO;
 import com.quantum.holdup.domain.dto.UpdateInquiryDTO;
 import com.quantum.holdup.message.ResponseMessage;
 import com.quantum.holdup.service.InquiryService;
-import com.quantum.holdup.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

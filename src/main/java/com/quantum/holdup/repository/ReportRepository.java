@@ -1,5 +1,6 @@
 package com.quantum.holdup.repository;
 
+import com.quantum.holdup.domain.dto.CommentDTO;
 import com.quantum.holdup.domain.entity.Report;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

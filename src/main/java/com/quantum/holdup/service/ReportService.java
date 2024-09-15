@@ -26,7 +26,7 @@ import java.util.NoSuchElementException;
 public class ReportService {
 
     private final ReportRepository repo;
-    private final MemberRepository mRepo;
+    private final MemberRepository memberRepo;
 
     public Page<ReportDTO> findAllReport(Pageable pageable) {
 
@@ -96,7 +96,7 @@ public class ReportService {
     public CreateReportDTO createReport(CreateReportDTO reportInfo) {
 
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        Member member = (Member) mRepo.findByEmail(email)
+        Member member = (Member) memberRepo.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         Report newReport = Report.builder()
