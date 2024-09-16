@@ -26,7 +26,7 @@ public class EmailController {
     }
 
     @PostMapping("/verify-code")
-    public String verifyCode(@RequestParam String email, @RequestParam String code) {
+    public String verifyCode(@RequestParam String email, @RequestParam int code) {
         boolean isValid = emailService.verifyCode(email, code);
         if (isValid) {
             return "Verification successful.";

@@ -40,7 +40,7 @@ public class EmailService {
         }
     }
 
-    public boolean verifyCode(String email, String code) {
+    public boolean verifyCode(String email, int code) {
         String storedCode = emailVerificationCodes.get(email);
         return storedCode != null && storedCode.equals(code);
     }

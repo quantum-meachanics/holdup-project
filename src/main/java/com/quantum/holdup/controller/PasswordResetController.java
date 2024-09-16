@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/password")
+@RequestMapping("/holdup")
 public class PasswordResetController {
 
     @Autowired
@@ -34,7 +34,7 @@ public class PasswordResetController {
     public String resetPassword(@RequestBody PasswordResetRequestDTO request) {
         String nickname = request.getNickname();
         String email = request.getEmail();
-        String code = request.getCode();
+        int code = request.getCode();
         String newPassword = request.getNewPassword();
 
         boolean isVerified = emailService.verifyCode(email, code);
