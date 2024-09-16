@@ -10,13 +10,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/member")
+@RequestMapping("/holdup")
 @RequiredArgsConstructor
 public class MemberController {
 
     private final MemberService service;
 
-    @GetMapping("/list")
+    @GetMapping("/members")
     public ResponseEntity<ResponseMessage> findAllMembers() {
         return ResponseEntity.ok()
                 .body(new ResponseMessage(
@@ -25,7 +25,7 @@ public class MemberController {
                 ));
     }
 
-    @PostMapping("/signup")
+    @PostMapping("/members")
     public ResponseEntity<?> createMember(@RequestBody CreateMemberDTO memberInfo) {
         return ResponseEntity.ok()
                 .body(new ResponseMessage(

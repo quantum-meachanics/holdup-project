@@ -15,14 +15,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/spaces")
+@RequestMapping("/holdup")
 public class SpaceController {
 
     private static final Logger log = LoggerFactory.getLogger(SpaceController.class);
     private final SpaceService service;
 
     @Operation(summary = "공간 등록")
-    @PostMapping("/createSpace")
+    @PostMapping("/spaces")
     public ResponseEntity<?> createSpace(@RequestBody CreateSpaceDTO spaceInfo) {
         return ResponseEntity.ok()
                 .body(new ResponseMessage(
