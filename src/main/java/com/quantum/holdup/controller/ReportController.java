@@ -19,7 +19,7 @@ import java.util.Map;
 
 
 @RestController
-@RequestMapping("/reports")
+@RequestMapping("/holdup")
 @RequiredArgsConstructor
 public class ReportController {
 
@@ -27,7 +27,7 @@ public class ReportController {
     private final CommentService commentService;
 
     // 신고글 전체조회
-    @GetMapping("/report")
+    @GetMapping("/reports")
     public ResponseEntity<ResponseMessage> findAllReport(@PageableDefault Pageable pageable,
                                                          @RequestParam(value = "nickname", required = false) String nickname,
                                                          @RequestParam(value = "searchType", required = false) String searchType) {
@@ -48,7 +48,7 @@ public class ReportController {
     }
 
     // 신고글 추가
-    @PostMapping("/report")
+    @PostMapping("/reports")
     public ResponseEntity<?> createReport(@RequestBody CreateReportDTO reportInfo) {
         return ResponseEntity.ok()
                 .body(new ResponseMessage(
@@ -58,7 +58,7 @@ public class ReportController {
     }
 
     // 신고글 단건 조회
-    @GetMapping("/{id}")
+    @GetMapping("/reports/{id}")
     public ResponseEntity<ResponseMessage> findReportById(@PathVariable long id) {
 
         ReportDTO reports = service.findReportById(id);
@@ -71,7 +71,7 @@ public class ReportController {
     }
 
     // 신고글 수정
-    @PutMapping("/{id}")
+    @PutMapping("/reports/{id}")
     public ResponseEntity<?> modifyPost(@PathVariable Long id, @RequestBody UpdateReportDTO modifyInfo) {
 
         UpdateReportDTO updatedPost = service.updateReport(id, modifyInfo);
@@ -84,7 +84,7 @@ public class ReportController {
     }
 
     // 신고글 삭제
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/reports/{id}")
     public ResponseEntity<?> deletePost(@PathVariable long id) {
 
         Map<String, Object> responseMap = new HashMap<>();
@@ -109,7 +109,7 @@ public class ReportController {
     }
 
     // 댓글 추가
-    @PostMapping("/comment")
+    @PostMapping("/reports/{id}/comment")
     public ResponseEntity<?> createComment(@RequestBody CommentDTO commentInfo) {
         return ResponseEntity.ok()
                 .body(new ResponseMessage(

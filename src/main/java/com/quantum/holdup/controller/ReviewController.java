@@ -16,14 +16,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/reviews")
+@RequestMapping("/holdup")
 @RequiredArgsConstructor
 public class ReviewController {
 
     private final ReviewService service;
     private final CommentService commentService;
 
-    @GetMapping("/review")
+    @GetMapping("/reviews")
     public ResponseEntity<ResponseMessage> findAllReview(@PageableDefault Pageable pageable){
 
         return ResponseEntity.ok()
@@ -34,7 +34,7 @@ public class ReviewController {
     }
 
     // 리뷰글 추가
-    @PostMapping("/review")
+    @PostMapping("/reviews")
     public ResponseEntity<?> createReview(@RequestBody CreateReviewDTO createReviewDTO) {
 
         return ResponseEntity.ok()
@@ -45,7 +45,7 @@ public class ReviewController {
     }
 
     // 리뷰글 수정
-    @PutMapping("/{id}")
+    @PutMapping("/reviews/{id}")
     public ResponseEntity<?> modifyReview(@PathVariable Long id, @RequestBody UpdateReviewDTO modifyInfo) {
 
         UpdateReviewDTO updatedPost = service.updateReview(id, modifyInfo);
@@ -57,7 +57,7 @@ public class ReviewController {
                 ));
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/reviews/{id}")
     public ResponseEntity<?> deleteReview(@PathVariable long id) {
 
         Map<String, Object> responseMap = new HashMap<>();
@@ -82,7 +82,7 @@ public class ReviewController {
     }
 
     // 댓글 추가
-    @PostMapping("/comment")
+    @PostMapping("/reviews/{id}/comment")
     public ResponseEntity<?> createComment(@RequestBody CommentDTO commentInfo) {
         return ResponseEntity.ok()
                 .body(new ResponseMessage(
