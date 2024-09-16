@@ -10,6 +10,7 @@ import com.quantum.holdup.repository.MemberRepository;
 import com.quantum.holdup.repository.ReportRepository;
 import com.quantum.holdup.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +18,7 @@ import java.util.NoSuchElementException;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class CommentService {
 
     private final CommentRepository commentRepo;
@@ -24,14 +26,14 @@ public class CommentService {
     private final ReportRepository reportRepo;
     private final ReviewRepository reviewRepo;
 
-    public CommentDTO createReportComment(CommentDTO commentInfo) {
+    public CommentDTO createReportComment(long id, CommentDTO commentInfo) {
 
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         Member member = (Member) memberRepo.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-            Report report = reportRepo.findById(commentInfo.getPostId())
-                    .orElseThrow(() -> new NoSuchElementException("Post not found with postId " + commentInfo.getPostId()));
+        Report report = reportRepo.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Post not found with reportId " + id));
 
         Comment newComment = Comment.builder()
                 .content(commentInfo.getContent())
@@ -45,14 +47,14 @@ public class CommentService {
         return new CommentDTO(newComment.getContent());
     }
 
-    public CommentDTO createReviewComment(CommentDTO commentInfo) {
+    public CommentDTO createReviewComment(long id, CommentDTO commentInfo) {
 
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         Member member = (Member) memberRepo.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        Review review = reviewRepo.findById(commentInfo.getPostId())
-                .orElseThrow(() -> new NoSuchElementException("Post not found with postId " + commentInfo.getPostId()));
+        Review review = reviewRepo.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Post not found with reviewId " + id));
 
         Comment newComment = Comment.builder()
                 .content(commentInfo.getContent())

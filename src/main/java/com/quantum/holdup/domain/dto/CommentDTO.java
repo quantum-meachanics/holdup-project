@@ -19,7 +19,7 @@ public class CommentDTO {
 
     private CommentType commentType;
 
-    private long postId;
+    private long postId; // 게시글 아이디
 
     public enum CommentType {
         REVIEW,

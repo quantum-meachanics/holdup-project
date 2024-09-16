@@ -72,7 +72,7 @@ public class ReportController {
 
     // 신고글 수정
     @PutMapping("/reports/{id}")
-    public ResponseEntity<?> modifyPost(@PathVariable Long id, @RequestBody UpdateReportDTO modifyInfo) {
+    public ResponseEntity<?> modifyPost(@PathVariable long id, @RequestBody UpdateReportDTO modifyInfo) {
 
         UpdateReportDTO updatedPost = service.updateReport(id, modifyInfo);
 
@@ -110,11 +110,11 @@ public class ReportController {
 
     // 댓글 추가
     @PostMapping("/reports/{id}/comments")
-    public ResponseEntity<?> createComment(@RequestBody CommentDTO commentInfo) {
+    public ResponseEntity<?> createComment(@PathVariable long id ,@RequestBody CommentDTO commentInfo) {
         return ResponseEntity.ok()
                 .body(new ResponseMessage(
                         "댓글 등록에 성공하였습니다.",
-                        commentService.createReportComment(commentInfo)
+                        commentService.createReportComment(id,commentInfo)
                 ));
     }
 }

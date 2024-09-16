@@ -7,6 +7,7 @@ import com.quantum.holdup.domain.dto.ReviewDTO;
 import com.quantum.holdup.domain.dto.UpdateInquiryDTO;
 import com.quantum.holdup.domain.dto.UpdateReviewDTO;
 import com.quantum.holdup.domain.entity.Inquiry;
+import com.quantum.holdup.domain.entity.Member;
 import com.quantum.holdup.domain.entity.Reservation;
 import com.quantum.holdup.domain.entity.Review;
 import com.quantum.holdup.repository.MemberRepository;
@@ -18,6 +19,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.NoSuchElementException;
@@ -29,6 +31,7 @@ public class ReviewService {
 
     private final ReviewRepository repo;
     private final ReservationRepository reservationRepo;
+    private final MemberRepository memberRepo;
 
     public Page<ReviewDTO> findAllReview(Pageable pageable) {
 
@@ -88,9 +91,11 @@ public class ReviewService {
 //        });
 //    }
 
-    public Review createReview(CreateReviewDTO createReviewDTO) {
+    public CreateReviewDTO createReview(CreateReviewDTO createReviewDTO) {
 
-        log.info("🎃 review  생성 DTO : {}", createReviewDTO);
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        Member member = (Member) memberRepo.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
         Reservation reservation = reservationRepo.findById(createReviewDTO.getReservationId())
                 .orElseThrow(() -> new RuntimeException("예약을 찾을 수 없습니다: " + createReviewDTO.getReservationId()));
@@ -98,13 +103,16 @@ public class ReviewService {
         System.out.println(createReviewDTO);
 
         Review review = Review.builder()
+                .member(member)
                 .reservation(reservation)
                 .rating(createReviewDTO.getRating())
                 .title(createReviewDTO.getTitle())
                 .content(createReviewDTO.getContent())
                 .build();
 
-        return repo.save(review);
+        repo.save(review);
+
+        return new CreateReviewDTO(review.getTitle(),review.getContent(),review.getRating());
     }
 
     public UpdateReviewDTO updateReview(Long id, UpdateReviewDTO modifyInfo) {
