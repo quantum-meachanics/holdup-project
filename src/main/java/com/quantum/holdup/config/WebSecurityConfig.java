@@ -2,7 +2,6 @@ package com.quantum.holdup.config;
 
 import com.quantum.holdup.filter.CustomAuthenticationFilter;
 import com.quantum.holdup.filter.JwtAuthorizationFilter;
-import com.quantum.holdup.filter.JwtPostAuthorizationFilter;
 import com.quantum.holdup.handler.CustomAuthFailUserHandler;
 import com.quantum.holdup.handler.CustomAuthSuccessHandler;
 import com.quantum.holdup.handler.CustomAuthenticationProvider;
@@ -71,11 +70,12 @@ public class WebSecurityConfig {
 
                 // header 에 token이 담겨져 왔을 경우 인가처리를 해주는 필터
                 .addFilterBefore(jwtAuthorizationFilter(), BasicAuthenticationFilter.class)
-                .addFilterBefore(jwtPostAuthorizationFilter(), BasicAuthenticationFilter.class)
 
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                "/member/**",
+                                "/holdup/signup",
+                                "/holdup/login",
+                                "/holdup/find-email",
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
                                 "/swagger-resources/**",
@@ -130,7 +130,7 @@ public class WebSecurityConfig {
         CustomAuthenticationFilter customAuthenticationFilter = new CustomAuthenticationFilter(authenticationManager());
 
         // /login 으로 post 요청이 들어오면 필터가 동작한다.
-        customAuthenticationFilter.setFilterProcessesUrl("/member/login");
+        customAuthenticationFilter.setFilterProcessesUrl("/holdup/login");
 
         // 인증 성공시 동작할 핸들러 설정
         customAuthenticationFilter.setAuthenticationSuccessHandler(customAuthLoginSuccessHandler());
@@ -175,11 +175,6 @@ public class WebSecurityConfig {
     @Bean
     public JwtAuthorizationFilter jwtAuthorizationFilter() {
         return new JwtAuthorizationFilter(authenticationManager());
-    }
-
-    @Bean
-    public JwtPostAuthorizationFilter jwtPostAuthorizationFilter() {
-        return new JwtPostAuthorizationFilter(authenticationManager());
     }
 
     @Bean

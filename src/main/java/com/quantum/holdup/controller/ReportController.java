@@ -109,7 +109,7 @@ public class ReportController {
     }
 
     // 댓글 추가
-    @PostMapping("/reports/{id}/comment")
+    @PostMapping("/reports/{id}/comments")
     public ResponseEntity<?> createComment(@RequestBody CommentDTO commentInfo) {
         return ResponseEntity.ok()
                 .body(new ResponseMessage(

@@ -25,7 +25,7 @@ public class MemberController {
                 ));
     }
 
-    @PostMapping("/members")
+    @PostMapping("/signup")
     public ResponseEntity<?> createMember(@RequestBody CreateMemberDTO memberInfo) {
         return ResponseEntity.ok()
                 .body(new ResponseMessage(

@@ -82,7 +82,7 @@ public class ReviewController {
     }
 
     // 댓글 추가
-    @PostMapping("/reviews/{id}/comment")
+    @PostMapping("/reviews/{id}/comments")
     public ResponseEntity<?> createComment(@RequestBody CommentDTO commentInfo) {
         return ResponseEntity.ok()
                 .body(new ResponseMessage(
