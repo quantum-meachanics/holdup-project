@@ -56,7 +56,7 @@ public class InquiryController {
 
     // 문의글 수정
     @PutMapping("/inquiries/{id}")
-    public ResponseEntity<?> modifyPost(@PathVariable Long id, @RequestBody UpdateInquiryDTO modifyInfo) {
+    public ResponseEntity<?> modifyPost(@PathVariable long id, @RequestBody UpdateInquiryDTO modifyInfo) {
 
         UpdateInquiryDTO updatedPost = service.updateInquiry(id, modifyInfo);
 

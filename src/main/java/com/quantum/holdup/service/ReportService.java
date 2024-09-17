@@ -109,8 +109,7 @@ public class ReportService {
 
         return new CreateReportDTO(
                 newReport.getTitle(),
-                newReport.getContent(),
-                member.getNickname()
+                newReport.getContent()
         );
     }
 

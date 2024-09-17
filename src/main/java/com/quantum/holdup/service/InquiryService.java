@@ -94,12 +94,11 @@ public class InquiryService {
 
         return new CreateInquiryDTO(
                 newInquiry.getTitle(),
-                newInquiry.getContent(),
-                member.getNickname()
+                newInquiry.getContent()
         );
     }
 
-    public UpdateInquiryDTO updateInquiry(Long id, UpdateInquiryDTO modifyInfo) {
+    public UpdateInquiryDTO updateInquiry(long id, UpdateInquiryDTO modifyInfo) {
 
         Inquiry inquiryEntity = repo.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Post not found with postId " + id));
