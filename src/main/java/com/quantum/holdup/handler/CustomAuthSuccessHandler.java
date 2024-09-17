@@ -1,5 +1,6 @@
 package com.quantum.holdup.handler;
 
+import com.quantum.holdup.common.AuthConstants;
 import com.quantum.holdup.domain.entity.Member;
 import com.quantum.holdup.service.CustomUserDetails;
 import com.quantum.holdup.util.ConvertUtil;
@@ -40,6 +41,9 @@ public class CustomAuthSuccessHandler extends SavedRequestAwareAuthenticationSuc
 
         // 토큰 생성
         String token = TokenUtils.generateJwtToken(member);
+
+        // 해더에 토큰담기
+        response.addHeader(AuthConstants.AUTH_HEADER,AuthConstants.TOKEN_TYPE + " " + token);
 
         // 응답하기 위해 담아주는 역할
         responseMap.put("token", token);
