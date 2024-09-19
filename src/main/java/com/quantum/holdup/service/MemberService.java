@@ -6,7 +6,6 @@ import com.quantum.holdup.domain.entity.Member;
 import com.quantum.holdup.domain.entity.Role;
 import com.quantum.holdup.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +16,7 @@ import java.util.List;
 public class MemberService {
 
     private final MemberRepository repo;
-    private PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
     // 전체 멤버 조회 메소드
     public List<MemberDTO> findAllMember() {
@@ -47,9 +46,6 @@ public class MemberService {
 
     // 멤버 등록 메소드
     public CreateMemberDTO createMember(CreateMemberDTO memberInfo) {
-
-        // 비밀번호 암호화
-        String encryptedPassword = passwordEncoder.encode(memberInfo.getPassword());
 
         Member newMember = Member.builder()
                 .email(memberInfo.getEmail())
