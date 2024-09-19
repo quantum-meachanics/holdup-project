@@ -52,7 +52,6 @@ public class Space {
         this.count = count;
         this.price = price;
         this.owner = owner;
-
         this.isHide = false;
     }
 }

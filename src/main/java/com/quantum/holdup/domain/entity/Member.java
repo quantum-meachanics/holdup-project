@@ -28,6 +28,8 @@ public class Member {
     private boolean isLeave; // 회원 탈퇴 여부
     private boolean isBan; // 회원 정지 여부
     private LocalDateTime entDate; // 회원가입일시
+    private String verificationCode; // 인증코드
+    private LocalDateTime verificationCodeSentAt; // 인증코드 발송 시간
 
     @Enumerated(value = EnumType.STRING)
     private Role role; // 회원 등급
@@ -62,7 +64,7 @@ public class Member {
     }
 
     @Builder(toBuilder = true)
-    public Member(String email, String password, String nickname, String phone, String name, LocalDate birthday, Role role , String address) {
+    public Member(String email, String password, String nickname, String phone, String name, LocalDate birthday, Role role , String address ,String verificationCode , LocalDateTime verificationCodeSentAt) {
         this.email = email;
         this.password = password;
         this.nickname = nickname;
@@ -75,6 +77,7 @@ public class Member {
         this.isLeave = false;
         this.isBan = false;
         this.role = role;
+        this.verificationCode = verificationCode;
+        this.verificationCodeSentAt = verificationCodeSentAt;
     }
-
 }

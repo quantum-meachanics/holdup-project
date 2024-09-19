@@ -48,9 +48,6 @@ public class MemberService {
     // 멤버 등록 메소드
     public CreateMemberDTO createMember(CreateMemberDTO memberInfo) {
 
-        // 비밀번호 암호화
-        String encryptedPassword = passwordEncoder.encode(memberInfo.getPassword());
-
         Member newMember = Member.builder()
                 .email(memberInfo.getEmail())
                 .password(passwordEncoder.encode(memberInfo.getPassword()))
