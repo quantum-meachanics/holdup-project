@@ -9,6 +9,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
+
 public class ReportDTO {
 
     private long id; // 신고글 아이디

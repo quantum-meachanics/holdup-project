@@ -39,24 +39,25 @@ public class CustomAuthSuccessHandler extends SavedRequestAwareAuthenticationSuc
         // 응답 하기위한 Map
         HashMap<String, Object> responseMap = new HashMap<>();
 
-        // 응답하기 위해 담아주는 역할
-        responseMap.put("userInfo", jsonValue);
-        responseMap.put("message", "로그인 성공");
-
         // 토큰 생성
         String token = TokenUtils.generateJwtToken(member);
 
-        // 헤더에 토큰 담기
-        response.addHeader(AuthConstants.AUTH_HEADER, AuthConstants.TOKEN_TYPE + " " + token);
+        // 해더에 토큰담기
+        response.addHeader(AuthConstants.AUTH_HEADER,AuthConstants.TOKEN_TYPE + " " + token);
 
-        // responseMap을 JsonObject로 변환
-        JSONObject jsonObject = new JSONObject(responseMap);
+        // 응답하기 위해 담아주는 역할
+        responseMap.put("token", token);
+        responseMap.put("userInfo", jsonValue);
+        responseMap.put("message", "로그인 성공");
 
         // 응답 인코딩 설정
         response.setCharacterEncoding("UTF-8");
 
         // 응답 MIME 설정
         response.setContentType("application/json");
+
+        // JSON 응답 생성
+        JSONObject jsonObject = new JSONObject(responseMap);
 
         // 만든 response를 내보내기
         PrintWriter printWriter = response.getWriter();

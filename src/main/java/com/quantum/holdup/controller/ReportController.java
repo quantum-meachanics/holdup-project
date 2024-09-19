@@ -1,9 +1,11 @@
 package com.quantum.holdup.controller;
 
+import com.quantum.holdup.domain.dto.CommentDTO;
 import com.quantum.holdup.domain.dto.CreateReportDTO;
 import com.quantum.holdup.domain.dto.ReportDTO;
 import com.quantum.holdup.domain.dto.UpdateReportDTO;
 import com.quantum.holdup.message.ResponseMessage;
+import com.quantum.holdup.service.CommentService;
 import com.quantum.holdup.service.ReportService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -17,14 +19,15 @@ import java.util.Map;
 
 
 @RestController
-@RequestMapping("/reports")
+@RequestMapping("/holdup")
 @RequiredArgsConstructor
 public class ReportController {
 
     private final ReportService service;
+    private final CommentService commentService;
 
     // 신고글 전체조회
-    @GetMapping("/report")
+    @GetMapping("/reports")
     public ResponseEntity<ResponseMessage> findAllReport(@PageableDefault Pageable pageable,
                                                          @RequestParam(value = "nickname", required = false) String nickname,
                                                          @RequestParam(value = "searchType", required = false) String searchType) {
@@ -45,7 +48,7 @@ public class ReportController {
     }
 
     // 신고글 추가
-    @PostMapping("/report")
+    @PostMapping("/reports")
     public ResponseEntity<?> createReport(@RequestBody CreateReportDTO reportInfo) {
         return ResponseEntity.ok()
                 .body(new ResponseMessage(
@@ -55,7 +58,7 @@ public class ReportController {
     }
 
     // 신고글 단건 조회
-    @GetMapping("/{id}")
+    @GetMapping("/reports/{id}")
     public ResponseEntity<ResponseMessage> findReportById(@PathVariable long id) {
 
         ReportDTO reports = service.findReportById(id);
@@ -68,8 +71,8 @@ public class ReportController {
     }
 
     // 신고글 수정
-    @PutMapping("/{id}")
-    public ResponseEntity<?> modifyPost(@PathVariable Long id, @RequestBody UpdateReportDTO modifyInfo) {
+    @PutMapping("/reports/{id}")
+    public ResponseEntity<?> modifyPost(@PathVariable long id, @RequestBody UpdateReportDTO modifyInfo) {
 
         UpdateReportDTO updatedPost = service.updateReport(id, modifyInfo);
 
@@ -81,7 +84,7 @@ public class ReportController {
     }
 
     // 신고글 삭제
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/reports/{id}")
     public ResponseEntity<?> deletePost(@PathVariable long id) {
 
         Map<String, Object> responseMap = new HashMap<>();
@@ -103,5 +106,15 @@ public class ReportController {
                         "게시글 삭제 성공",
                         responseMap)
                 );
+    }
+
+    // 댓글 추가
+    @PostMapping("/reports/{id}/comments")
+    public ResponseEntity<?> createComment(@PathVariable long id ,@RequestBody CommentDTO commentInfo) {
+        return ResponseEntity.ok()
+                .body(new ResponseMessage(
+                        "댓글 등록에 성공하였습니다.",
+                        commentService.createReportComment(id,commentInfo)
+                ));
     }
 }

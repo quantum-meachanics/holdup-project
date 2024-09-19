@@ -24,7 +24,7 @@ import java.util.NoSuchElementException;
 public class InquiryService {
 
     private final InquiryRepository repo;
-    private final MemberRepository mRepo;
+    private final MemberRepository memberRepo;
 
     public Page<InquiryDTO> findAllInquiry(Pageable pageable) {
 
@@ -81,7 +81,7 @@ public class InquiryService {
     public CreateInquiryDTO createInquiry(CreateInquiryDTO reportInfo) {
 
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        Member member = (Member) mRepo.findByEmail(email)
+        Member member = (Member) memberRepo.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         Inquiry newInquiry = Inquiry.builder()
@@ -94,12 +94,11 @@ public class InquiryService {
 
         return new CreateInquiryDTO(
                 newInquiry.getTitle(),
-                newInquiry.getContent(),
-                member.getNickname()
+                newInquiry.getContent()
         );
     }
 
-    public UpdateInquiryDTO updateInquiry(Long id, UpdateInquiryDTO modifyInfo) {
+    public UpdateInquiryDTO updateInquiry(long id, UpdateInquiryDTO modifyInfo) {
 
         Inquiry inquiryEntity = repo.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Post not found with postId " + id));

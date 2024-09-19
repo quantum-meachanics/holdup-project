@@ -1,6 +1,8 @@
 package com.quantum.holdup.controller;
 
 import com.quantum.holdup.domain.dto.CreateMemberDTO;
+import com.quantum.holdup.domain.dto.LoginMemberDTO;
+import com.quantum.holdup.domain.dto.SearchMemberEmailDTO;
 import com.quantum.holdup.message.ResponseMessage;
 import com.quantum.holdup.service.MemberService;
 import lombok.RequiredArgsConstructor;
@@ -8,13 +10,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/member")
+@RequestMapping("/holdup")
 @RequiredArgsConstructor
 public class MemberController {
 
     private final MemberService service;
 
-    @GetMapping("/list")
+    @GetMapping("/members")
     public ResponseEntity<ResponseMessage> findAllMembers() {
         return ResponseEntity.ok()
                 .body(new ResponseMessage(
@@ -32,6 +34,20 @@ public class MemberController {
                 ));
     }
 
+    @PostMapping("/login")
+    @CrossOrigin(origins = "http://localhost:3000")
+    public void login(@RequestBody LoginMemberDTO loginInfo) {
+    }
+
+
+    @GetMapping("/find-email")
+    public ResponseEntity<ResponseMessage> findEmail(@RequestBody SearchMemberEmailDTO searchMemberEmailDTO) {
+        return ResponseEntity.ok()
+                .body(new ResponseMessage(
+                        "유저 이메일을 성공적을 찾았습니다.",
+                        service.findEmailByNameAndPhone(searchMemberEmailDTO)
+                ));
+    }
 }
 
 

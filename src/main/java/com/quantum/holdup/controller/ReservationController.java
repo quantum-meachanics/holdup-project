@@ -9,12 +9,12 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/reservations")
+@RequestMapping("/holdup")
 public class ReservationController {
 
     private final ReservationService service;
 
-    @PostMapping("/{spaceId}")
+    @PostMapping("/reservations/{spaceId}")
     public ResponseEntity<?> createReservation(@PathVariable long spaceId, @RequestBody CreateReservationDTO reservationInfo) {
         return ResponseEntity.ok()
                 .body(new ResponseMessage(

@@ -39,9 +39,13 @@ public class Comment {
     }
 
     @Builder(toBuilder = true)
-    public Comment(String content) {
+    public Comment(String content, Member member, Review review, Report report, LocalDateTime createDate) {
         this.content = content;
+        this.member = member;
+        this.review = review;
+        this.report = report;
         this.isHide = false;
+        this.createDate = createDate;
     }
 
 }

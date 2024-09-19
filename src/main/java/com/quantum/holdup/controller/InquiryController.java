@@ -5,7 +5,6 @@ import com.quantum.holdup.domain.dto.InquiryDTO;
 import com.quantum.holdup.domain.dto.UpdateInquiryDTO;
 import com.quantum.holdup.message.ResponseMessage;
 import com.quantum.holdup.service.InquiryService;
-import com.quantum.holdup.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,14 +16,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/inquires")
+@RequestMapping("/holdup")
 @RequiredArgsConstructor
 public class InquiryController {
 
     private final InquiryService service;
 
     // 문의글 전체조회
-    @GetMapping("/inquiry")
+    @GetMapping("/inquiries")
     public ResponseEntity<ResponseMessage> findAllInquiry(@PageableDefault Pageable pageable,
                                                          @RequestParam(value = "nickname", required = false) String nickname,
                                                          @RequestParam(value = "searchType", required = false) String searchType){
@@ -45,7 +44,7 @@ public class InquiryController {
     }
 
     // 문의글 추가
-    @PostMapping("/inquiry")
+    @PostMapping("/inquiries")
     public ResponseEntity<?> createInquiry(@RequestBody CreateInquiryDTO inquiryInfo) {
 
         return ResponseEntity.ok()
@@ -56,8 +55,8 @@ public class InquiryController {
     }
 
     // 문의글 수정
-    @PutMapping("/{id}")
-    public ResponseEntity<?> modifyPost(@PathVariable Long id, @RequestBody UpdateInquiryDTO modifyInfo) {
+    @PutMapping("/inquiries/{id}")
+    public ResponseEntity<?> modifyPost(@PathVariable long id, @RequestBody UpdateInquiryDTO modifyInfo) {
 
         UpdateInquiryDTO updatedPost = service.updateInquiry(id, modifyInfo);
 
@@ -69,7 +68,7 @@ public class InquiryController {
     }
 
     // 문의글 삭제
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/inquiries/{id}")
     public ResponseEntity<?> deletePost(@PathVariable long id) {
 
         Map<String, Object> responseMap = new HashMap<>();

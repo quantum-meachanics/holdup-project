@@ -1,5 +1,6 @@
 package com.quantum.holdup.domain.dto;
 
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,9 +10,10 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-public class CreateInquiryDTO {
+public class SearchMemberEmailDTO {
 
-    private String title; // 문의글 제목
-    private String content; // 문의글 본문
+    private String name; // 회원 본명
+    private String phone; // 회원 휴대전화번호
+
 
 }

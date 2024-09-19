@@ -28,13 +28,13 @@ public class SpaceService {
 
         // 새로운 공간 엔티티 생성
         Space newSpace = Space.builder()
-                .title(spaceInfo.getTitle())
+                .name(spaceInfo.getName())
                 .address(spaceInfo.getAddress())
                 .description(spaceInfo.getDescription())
                 .width(spaceInfo.getWidth())
                 .height(spaceInfo.getHeight())
                 .depth(spaceInfo.getDepth())
-                .number(spaceInfo.getNumber())
+                .count(spaceInfo.getCount())
                 .price(spaceInfo.getPrice())
                 .owner(owner)
                 .build();
@@ -44,13 +44,13 @@ public class SpaceService {
 
         // DTO 형식으로 반환
         return new CreateSpaceDTO(
-                newSpace.getTitle(),
+                newSpace.getName(),
                 newSpace.getAddress(),
                 newSpace.getDescription(),
                 newSpace.getWidth(),
                 newSpace.getHeight(),
                 newSpace.getDepth(),
-                newSpace.getNumber(),
+                newSpace.getCount(),
                 newSpace.getPrice()
         );
     }

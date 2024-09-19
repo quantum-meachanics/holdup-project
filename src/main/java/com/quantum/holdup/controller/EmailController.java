@@ -1,14 +1,11 @@
 package com.quantum.holdup.controller;
 
-import com.quantum.holdup.domain.dto.EmailRequestDTO;
-import com.quantum.holdup.domain.dto.VerificationRequestDTO;
 import com.quantum.holdup.service.EmailService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.MessagingException;
-import org.springframework.web.bind.annotation.*;
-
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("holdup")
@@ -41,4 +38,5 @@ public class EmailController {
                 ? ResponseEntity.ok("Verification successful.")
                 : ResponseEntity.status(400).body("Invalid or expired verification code.");
     }
+
 }
