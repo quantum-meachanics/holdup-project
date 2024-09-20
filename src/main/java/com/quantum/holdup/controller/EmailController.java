@@ -37,8 +37,8 @@ public class EmailController {
     public ResponseEntity<String> verifyCode(@RequestBody VerificationRequestDTO verificationRequest) {
         boolean isVerified = emailService.verifyCode(verificationRequest);
         return isVerified
-                ? ResponseEntity.ok("Verification successful.")
-                : ResponseEntity.status(400).body("Invalid or expired verification code.");
+                ? ResponseEntity.ok("비밀번호가 성공적으로 변경되었습니다.")
+                : ResponseEntity.status(400).body("유효하지 않거나 만료된 인증 코드입니다.");
     }
 
 }

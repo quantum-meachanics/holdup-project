@@ -58,6 +58,8 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                 "/holdup/find-email",        // 이메일 찾기
                 "/holdup/check-nickname",    // 닉네임 중복
                 "/holdup/check-email",       // 이메일 중복
+                "/holdup/send-verification-code",
+                "/holdup/verify-code",
                 "/swagger-ui/(.*)",          //swagger 설정
                 "/swagger-ui/index.html",    //swagger 설정
                 "/v3/api-docs",              //swagger 설정

@@ -41,21 +41,17 @@ public class EmailService {
     public boolean verifyCode(VerificationRequestDTO verificationRequestDTO) {
         Member member = memberEmailRepository.findByEmail(verificationRequestDTO.getEmail());
 
-        // 사용자가 존재하는지 확인
         if (member != null) {
-            // 인증 코드가 유효한지 및 만료되지 않았는지 확인
             boolean isCodeValid = member.getVerificationCode().equals(verificationRequestDTO.getVerificationCode());
             boolean isCodeExpired = member.getVerificationCodeSentAt().plusMinutes(5).isBefore(LocalDateTime.now());
 
             if (isCodeValid && !isCodeExpired) {
-                // 인증 코드가 유효하면 비밀번호 변경 로직 추가
-                String newPassword = verificationRequestDTO.getNewPassword(); // 새 비밀번호를 DTO에서 가져옵니다.
-                member.setPassword(passwordEncoder.encode(newPassword)); // 비밀번호 설정
-                memberEmailRepository.save(member); // 변경 사항 저장
-                return true; // 비밀번호 변경 성공
+                member.setPassword(passwordEncoder.encode(verificationRequestDTO.getNewPassword()));
+                memberEmailRepository.save(member);
+                return true;
             }
         }
-        return false; // 실패
+        return false;
     }
 
     private String generateVerificationCode() {
