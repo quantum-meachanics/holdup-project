@@ -13,8 +13,8 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class SpaceService {
 
-    private final SpaceRepository spaceRepo;
-    private final MemberRepository memberRepo;
+    private final SpaceRepository spaceRepo; // 공간 레파지토리
+    private final MemberRepository memberRepo; // 멤버 레파지토리
 
     // 공간 등록 메소드
     public Object createSpace(CreateSpaceDTO spaceInfo) {
@@ -30,6 +30,9 @@ public class SpaceService {
         Space newSpace = Space.builder()
                 .name(spaceInfo.getName())
                 .address(spaceInfo.getAddress())
+                .detailAddress(spaceInfo.getDetailAddress())
+                .gu(spaceInfo.getGu())
+                .dong(spaceInfo.getDong())
                 .description(spaceInfo.getDescription())
                 .width(spaceInfo.getWidth())
                 .height(spaceInfo.getHeight())
@@ -46,6 +49,9 @@ public class SpaceService {
         return new CreateSpaceDTO(
                 newSpace.getName(),
                 newSpace.getAddress(),
+                newSpace.getDetailAddress(),
+                newSpace.getGu(),
+                newSpace.getDong(),
                 newSpace.getDescription(),
                 newSpace.getWidth(),
                 newSpace.getHeight(),

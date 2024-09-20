@@ -19,6 +19,9 @@ public class Space {
     private long id; // 공간 아이디
     private String name; // 공간 이름
     private String address; // 공간 주소
+    private String detailAddress; // 공간 상세 주소
+    private String gu; // 공간 행정구
+    private String dong; // 공간 행정동
     private String description; // 공간 설명
     private long width; // 공간 너비
     private long height; // 공간 높이
@@ -36,15 +39,13 @@ public class Space {
 //    @JoinColumn(name = "RESERVATION_ID")
 //    private List<Reservation> reservations; // 공간에 생성된 예약
 
-    @PrePersist
-    protected void creatAt() { // 생성일시를 자동으로 입력해주는 메소드
-        this.createDate = LocalDateTime.now();
-    }
-
     @Builder(toBuilder = true)
-    public Space(String name, String address, String description, long width, long height, long depth, int count, int price, Member owner) {
+    public Space(String name, String address, String detailAddress, String gu, String dong, String description, long width, long height, long depth, int count, int price, Member owner) {
         this.name = name;
         this.address = address;
+        this.detailAddress = detailAddress;
+        this.gu = gu;
+        this.dong = dong;
         this.description = description;
         this.width = width;
         this.height = height;
@@ -52,6 +53,10 @@ public class Space {
         this.count = count;
         this.price = price;
         this.owner = owner;
-        this.isHide = false;
+    }
+
+    @PrePersist
+    protected void creatAt() { // 생성일시를 자동으로 입력해주는 메소드
+        this.createDate = LocalDateTime.now();
     }
 }
