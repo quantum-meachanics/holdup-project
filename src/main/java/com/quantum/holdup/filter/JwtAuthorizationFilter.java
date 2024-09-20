@@ -52,12 +52,14 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
          * 권한이 필요없는 리소스 추출
          * */
         List<String> roleLeessList = Arrays.asList(
-                "/holdup/signup",   // 회원가입
-                "/holdup/login",// 로그인
-                "/holdup/send-email",  // 이메일 전송
-                "/holdup/find-email", // 이메일 찾기
-                "/swagger-ui/(.*)",        //swagger 설정
-                "/swagger-ui/index.html",  //swagger 설정
+                "/holdup/signup",            // 회원가입
+                "/holdup/login",             // 로그인
+                "/holdup/send-email",        // 이메일 전송
+                "/holdup/find-email",        // 이메일 찾기
+                "/holdup/check-nickname",    // 닉네임 중복
+                "/holdup/check-email",       // 이메일 중복
+                "/swagger-ui/(.*)",          //swagger 설정
+                "/swagger-ui/index.html",    //swagger 설정
                 "/v3/api-docs",              //swagger 설정
                 "/v3/api-docs/(.*)",         //swagger 설정
                 "/swagger-resources",        //swagger 설정
