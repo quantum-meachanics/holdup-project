@@ -68,6 +68,8 @@ public class MemberService {
                 newMember.getPhone(),
                 newMember.getName(),
                 newMember.getAddress(),
+                newMember.getAddress(),
+                newMember.getAddress(),
                 newMember.getBirthday()
         );
     }
@@ -84,6 +86,16 @@ public class MemberService {
             return "User not found";
         }
     }
+
+    public boolean isEmailAvailable(String email) {
+        return !repo.existsByEmail(email);
+    }
+
+    public boolean isNicknameAvailable(String nickname) {
+        return !repo.existsByNickname(nickname);
+    }
+
+
 }
 
 

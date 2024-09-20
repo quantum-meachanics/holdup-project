@@ -1,5 +1,6 @@
 package com.quantum.holdup.domain.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,6 +20,11 @@ public class CreateMemberDTO {
     private String phone; // 회원 휴대전화번호
     private String name; // 회원 본명
     private String address; // 회원 주소
+    @JsonIgnore // 이 필드는 JSON 변환 시 무시됩니다.
+    private String addressDetail;
+    @JsonIgnore // 이 필드는 JSON 변환 시 무시됩니다.
+    private String confirmPassword;
     private LocalDate birthday; // 회원 생년월일
+
 
 }

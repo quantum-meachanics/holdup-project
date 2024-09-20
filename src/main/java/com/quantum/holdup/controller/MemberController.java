@@ -9,6 +9,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/holdup")
 @RequiredArgsConstructor
@@ -26,6 +30,7 @@ public class MemberController {
     }
 
     @PostMapping("/signup")
+    @CrossOrigin(origins = "http://localhost:3000")
     public ResponseEntity<?> createMember(@RequestBody CreateMemberDTO memberInfo) {
         return ResponseEntity.ok()
                 .body(new ResponseMessage(
@@ -48,6 +53,24 @@ public class MemberController {
                         service.findEmailByNameAndPhone(searchMemberEmailDTO)
                 ));
     }
+
+
+    @GetMapping("/check-email")
+    public ResponseEntity<Map<String, Boolean>> checkEmail(@RequestParam String email) {
+        boolean available = service.isEmailAvailable(email); // 서비스 호출
+        Map<String, Boolean> response = new HashMap<>();
+        response.put("available", available); // 결과를 맵에 담아 반환
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/check-nickname")
+    public ResponseEntity<Map<String, Boolean>> checkNickname(@RequestParam String nickname) {
+        boolean available = service.isNicknameAvailable(nickname);
+        Map<String, Boolean> response = new HashMap<>();
+        response.put("available", available); // true: 사용 가능, false: 사용 불가
+        return ResponseEntity.ok(response);
+    }
+
 }
 
 
