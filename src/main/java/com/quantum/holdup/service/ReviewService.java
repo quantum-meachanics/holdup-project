@@ -22,6 +22,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.NoSuchElementException;
 
 @Service
@@ -61,7 +62,9 @@ public class ReviewService {
                     reviewEntity.getContent(),
                     reviewEntity.getRating(),
                     // 여기에 reservation 관련 필드 추가
-                    reservation
+                    reservation,
+                    reviewEntity.getCreateDate(),
+                    reviewEntity.getMember().getNickname()
             );
 
             // 각 ReviewDTO에 페이징 정보 설정
