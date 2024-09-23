@@ -46,12 +46,12 @@ public class ReviewController {
 
     // 리뷰글 추가
     @PostMapping("/reviews")
-    public ResponseEntity<?> createReview(@RequestBody CreateReviewDTO createReviewDTO) {
+    public ResponseEntity<?> createReview(@RequestBody CreateReviewDTO reviewInfo) {
 
         return ResponseEntity.ok()
                 .body(new ResponseMessage(
                         "리뷰 등록에 성공하였습니다.",
-                        service.createReview(createReviewDTO)
+                        service.createReview(reviewInfo)
                 ));
     }
 

@@ -80,6 +80,7 @@ public class ReviewService {
                 .createDate(postEntity.getCreateDate())
                 .rating(postEntity.getRating())
                 .nickname(postEntity.getMember().getNickname())
+                .reservation(postEntity.getReservation())
                 .build();
     }
 
@@ -103,23 +104,23 @@ public class ReviewService {
 //        });
 //    }
 
-    public CreateReviewDTO createReview(CreateReviewDTO createReviewDTO) {
+    public CreateReviewDTO createReview(CreateReviewDTO reviewInfo) {
 
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         Member member = (Member) memberRepo.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        Reservation reservation = reservationRepo.findById(createReviewDTO.getReservationId())
-                .orElseThrow(() -> new RuntimeException("예약을 찾을 수 없습니다: " + createReviewDTO.getReservationId()));
+        Reservation reservation = reservationRepo.findById(reviewInfo.getReservationId())
+                .orElseThrow(() -> new RuntimeException("예약을 찾을 수 없습니다: " + reviewInfo.getReservationId()));
 
-        System.out.println(createReviewDTO);
+        System.out.println(reviewInfo);
 
         Review review = Review.builder()
                 .member(member)
                 .reservation(reservation)
-                .rating(createReviewDTO.getRating())
-                .title(createReviewDTO.getTitle())
-                .content(createReviewDTO.getContent())
+                .rating(reviewInfo.getRating())
+                .title(reviewInfo.getTitle())
+                .content(reviewInfo.getContent())
                 .build();
 
         repo.save(review);
