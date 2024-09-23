@@ -1,8 +1,6 @@
 package com.quantum.holdup.controller;
 
-import com.quantum.holdup.domain.dto.CommentDTO;
-import com.quantum.holdup.domain.dto.CreateReviewDTO;
-import com.quantum.holdup.domain.dto.UpdateReviewDTO;
+import com.quantum.holdup.domain.dto.*;
 import com.quantum.holdup.message.ResponseMessage;
 import com.quantum.holdup.service.CommentService;
 import com.quantum.holdup.service.ReviewService;
@@ -31,6 +29,19 @@ public class ReviewController {
                         "리뷰 전체조회를 성공했습니다.",
                         service.findAllReview(pageable)
                 ));
+    }
+
+    // 리뷰글 상세페이지
+    @GetMapping("/reviews/{id}")
+    public ResponseEntity<ResponseMessage> findReviewById(@PathVariable long id) {
+
+        ReviewDTO reports = service.findReviewById(id);
+
+        return ResponseEntity.ok()
+                .body(new ResponseMessage(
+                        "아이디로 게시글 조회 성공"
+                        , reports)
+                );
     }
 
     // 리뷰글 추가
