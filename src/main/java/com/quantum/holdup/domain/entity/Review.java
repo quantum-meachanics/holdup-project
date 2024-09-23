@@ -1,17 +1,16 @@
 package com.quantum.holdup.domain.entity;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@Setter
 public class Review {
 
     @Id
@@ -30,6 +29,12 @@ public class Review {
     @ManyToOne
     @JoinColumn(name = "RESERVATION_ID")
     private Reservation reservation; // 예약내용
+
+    @ElementCollection
+    @CollectionTable(name = "review_image_urls", joinColumns = @JoinColumn(name = "review_id"))
+    @Column(name = "image_url")
+    private List<String> imageUrls;
+
 
 //    @OneToMany
 //    @JoinColumn(name = "COMMENT_ID")

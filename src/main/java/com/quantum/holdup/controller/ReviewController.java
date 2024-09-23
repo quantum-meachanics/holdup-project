@@ -9,8 +9,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -46,12 +48,13 @@ public class ReviewController {
 
     // 리뷰글 추가
     @PostMapping("/reviews")
-    public ResponseEntity<?> createReview(@RequestBody CreateReviewDTO reviewInfo) {
+    public ResponseEntity<?> createReview(@RequestBody CreateReviewDTO reviewInfo,
+                                          @RequestPart(value = "images", required = false) List<MultipartFile> images) {
 
         return ResponseEntity.ok()
                 .body(new ResponseMessage(
                         "리뷰 등록에 성공하였습니다.",
-                        service.createReview(reviewInfo)
+                        service.createReview(reviewInfo, images)
                 ));
     }
 
