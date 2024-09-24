@@ -45,13 +45,15 @@ public class MemberController {
     }
 
 
-    @GetMapping("/find-email")
-    public ResponseEntity<ResponseMessage> findEmail(@RequestBody SearchMemberEmailDTO searchMemberEmailDTO) {
-        return ResponseEntity.ok()
-                .body(new ResponseMessage(
-                        "유저 이메일을 성공적을 찾았습니다.",
-                        service.findEmailByNameAndPhone(searchMemberEmailDTO)
-                ));
+    @PostMapping("/find-email")
+    public ResponseEntity<String> findEmail(@RequestBody SearchMemberEmailDTO searchMemberEmailDTO) {
+        String email = service.findEmailByNameAndPhone(searchMemberEmailDTO);
+
+        if (email != null) {
+            return ResponseEntity.ok("유저 이메일을 성공적으로 찾았습니다: " + email);
+        } else {
+            return ResponseEntity.status(404).body("사용자를 찾을 수 없습니다."); // 404 Not Found
+        }
     }
 
 
