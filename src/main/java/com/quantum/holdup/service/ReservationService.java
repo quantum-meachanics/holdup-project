@@ -28,7 +28,7 @@ public class ReservationService {
         String clientEmail = SecurityContextHolder.getContext().getAuthentication().getName();
 
         // 가져온 이메일로 신청자 찾기
-        Member client = (Member) memberRepo.findByEmail("1")
+        Member client = (Member) memberRepo.findByEmail(clientEmail)
                 .orElseThrow(() -> new NoSuchElementException("사용자를 찾을 수 없습니다."));
 
         // PathVariable 로 받아온 공간 아이디로 예약할 공간 찾기

@@ -25,7 +25,7 @@ public class SpaceService {
         System.out.println("SpaceService ================================> ownerEmail : " + ownerEmail);
 
         // 가져온 이메일로 사용자 찾기
-        Member owner = (Member) memberRepo.findByEmail("1")
+        Member owner = (Member) memberRepo.findByEmail(ownerEmail)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
         // 새로운 공간 엔티티 생성
