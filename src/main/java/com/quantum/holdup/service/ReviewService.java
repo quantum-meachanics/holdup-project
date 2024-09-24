@@ -22,7 +22,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
@@ -79,7 +78,7 @@ public class ReviewService {
 
     public ReviewDTO findReviewById(long id) {
 
-       Review postEntity = repo.findById(id)
+        Review postEntity = repo.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Post not found with id " + id));
 
         return ReviewDTO.builder()
@@ -116,7 +115,7 @@ public class ReviewService {
     public CreateReviewDTO createReview(CreateReviewDTO reviewInfo, List<MultipartFile> files) {
 
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        Member member = (Member ) memberRepo.findByEmail("1")
+        Member member = (Member) memberRepo.findByEmail("1")
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         System.out.println("CreateReviewDTO ==============================> ReservationId : " + reviewInfo.getReservationId());
@@ -139,7 +138,7 @@ public class ReviewService {
 
         repo.save(review);
 
-        return new CreateReviewDTO(review.getTitle(),review.getContent(),review.getRating(),review.getImages());
+        return new CreateReviewDTO(review.getTitle(), review.getContent(), review.getRating(), review.getImages());
 
     }
 
@@ -159,7 +158,7 @@ public class ReviewService {
         repo.save(updatedReview);
 
         // ReviewDTO 생성 및 반환
-        return new UpdateReviewDTO(updatedReview.getTitle(),updatedReview.getContent());
+        return new UpdateReviewDTO(updatedReview.getTitle(), updatedReview.getContent());
     }
 
     public boolean deleteReview(long id) {
