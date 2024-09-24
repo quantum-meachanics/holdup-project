@@ -1,5 +1,6 @@
 package com.quantum.holdup.domain.dto;
 
+import com.quantum.holdup.domain.entity.Image;
 import lombok.*;
 
 import java.util.List;
@@ -9,6 +10,7 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
+@Builder
 public class CreateReviewDTO {
 
     private String title; // 리뷰 제목
@@ -16,9 +18,9 @@ public class CreateReviewDTO {
     private int rating; // 리뷰 별점
     private String nickname; // 리뷰 작성자 닉네임
     private long reservationId;
-    private List<String> imageUrls;
+    private List<Image> imageUrls;
 
-    public CreateReviewDTO(String title, String content, int rating, List<String> imageUrls) {
+    public CreateReviewDTO(String title, String content, int rating, List<Image> imageUrls) {
         this.title = title;
         this.content = content;
         this.rating = rating;

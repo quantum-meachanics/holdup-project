@@ -5,6 +5,7 @@ import com.quantum.holdup.Page.PagingButtonInfo;
 import com.quantum.holdup.domain.dto.CreateReviewDTO;
 import com.quantum.holdup.domain.dto.ReviewDTO;
 import com.quantum.holdup.domain.dto.UpdateReviewDTO;
+import com.quantum.holdup.domain.entity.Image;
 import com.quantum.holdup.domain.entity.Member;
 import com.quantum.holdup.domain.entity.Reservation;
 import com.quantum.holdup.domain.entity.Review;
@@ -24,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -111,16 +113,20 @@ public class ReviewService {
 //        });
 //    }
 
-    public CreateReviewDTO createReview(CreateReviewDTO reviewInfo, List<MultipartFile> images) {
+    public CreateReviewDTO createReview(CreateReviewDTO reviewInfo, List<MultipartFile> files) {
 
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        Member member = (Member) memberRepo.findByEmail(email)
+        Member member = (Member ) memberRepo.findByEmail("1")
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
+        System.out.println("CreateReviewDTO ==============================> ReservationId : " + reviewInfo.getReservationId());
         Reservation reservation = reservationRepo.findById(reviewInfo.getReservationId())
                 .orElseThrow(() -> new RuntimeException("예약을 찾을 수 없습니다: " + reviewInfo.getReservationId()));
 
-        System.out.println(reviewInfo);
+        List<String> uploadedFileNames = s3Service.uploadImage(files);
+        List<Image> images = uploadedFileNames.stream()
+                .map(url -> Image.builder().imageUrl(url).build())
+                .collect(Collectors.toList());
 
         Review review = Review.builder()
                 .member(member)
@@ -128,24 +134,13 @@ public class ReviewService {
                 .rating(reviewInfo.getRating())
                 .title(reviewInfo.getTitle())
                 .content(reviewInfo.getContent())
+                .images(images)
                 .build();
-
-//        repo.save(review);
-//
-//        return new CreateReviewDTO(review.getTitle(),review.getContent(),review.getRating());
-
-        if (images != null && !images.isEmpty()) {
-            try {
-                List<String> imageUrls = s3Service.uploadFiles(images);
-                review.setImageUrls(imageUrls);
-            } catch (IOException e) {
-                throw new RuntimeException("이미지 업로드 중 오류가 발생했습니다: " + e.getMessage());
-            }
-        }
 
         repo.save(review);
 
-        return new CreateReviewDTO(review.getTitle(), review.getContent(), review.getRating(), review.getImageUrls());
+        return new CreateReviewDTO(review.getTitle(),review.getContent(),review.getRating(),review.getImages());
+
     }
 
     public UpdateReviewDTO updateReview(Long id, UpdateReviewDTO modifyInfo) {

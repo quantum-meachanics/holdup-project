@@ -73,6 +73,7 @@ public class WebSecurityConfig {
 
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
+                                "holdup/**",
                                 "/holdup/signup",
                                 "/holdup/login",
                                 "/holdup/find-email",

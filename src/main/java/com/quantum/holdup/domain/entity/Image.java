@@ -15,26 +15,12 @@ public class Image {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String fileName;
-    private String filePath;
-    private String fileType;
-    private long size;
-
-    @ManyToOne
-    @JoinColumn(name = "REVIEW_ID")
-    private Review review;
-
-    @ManyToOne
-    @JoinColumn(name = "SPACE_ID")
-    private Space space;
+    @Column(nullable = false)
+    private String imageUrl;
 
     @Builder
-    public Image(Long id, String fileName, String filePath, String fileType, long size, Review review) {
+    public Image(Long id, String imageUrl) {
         this.id = id;
-        this.fileName = fileName;
-        this.filePath = filePath;
-        this.fileType = fileType;
-        this.size = size;
-        this.review = review;
+        this.imageUrl = imageUrl;
     }
 }
