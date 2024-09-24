@@ -1,17 +1,17 @@
 package com.quantum.holdup.message;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @NoArgsConstructor
-@AllArgsConstructor
 @Getter
-@Setter
 public class ResponseMessage {
 
     private String message;
     private Object result;
 
+    @Builder
+    public ResponseMessage(String message, Object result) {
+        this.message = message;
+        this.result = result;
+    }
 }

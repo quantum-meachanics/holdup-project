@@ -63,16 +63,17 @@ public class MemberService {
 
         return new CreateMemberDTO(
                 newMember.getEmail(),
-                newMember.getPassword(),
+                "", // 비밀번호는 클라이언트에 노출되지 않아야 하므로 빈 문자열로 설정
                 newMember.getNickname(),
                 newMember.getPhone(),
                 newMember.getName(),
                 newMember.getAddress(),
-                newMember.getAddress(),
-                newMember.getAddress(),
+                "", // addressDetail 은 사용하지 않으므로 빈 문자열
+                "", // confirmPassword 는 사용하지 않으므로 빈 문자열
                 newMember.getBirthday()
         );
     }
+
 
     public String findEmailByNameAndPhone(SearchMemberEmailDTO searchMemberEmailDTO) {
         

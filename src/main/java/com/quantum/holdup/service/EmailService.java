@@ -49,7 +49,7 @@ public class EmailService {
 
             if (isCodeValid && !isCodeExpired) {
                 // 인증 코드가 유효하면 비밀번호 변경 로직 추가
-                String newPassword = verificationRequestDTO.getNewPassword(); // 새 비밀번호를 DTO에서 가져옵니다.
+                String newPassword = verificationRequestDTO.getNewPassword(); // 새 비밀번호를 DTO 에서 가져옵니다.
                 member.setPassword(passwordEncoder.encode(newPassword)); // 비밀번호 설정
                 memberEmailRepository.save(member); // 변경 사항 저장
                 return true; // 비밀번호 변경 성공
@@ -63,19 +63,23 @@ public class EmailService {
     }
 
     private void sendEmail(String recipientEmail, String verificationCode) {
-        System.out.println("Sending email to: " + recipientEmail + " with code: " + verificationCode);
+        // 이메일 전송 메시지 준비
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom("ggim17861@gmail.com");
         message.setTo(recipientEmail);
         message.setSubject("Verification Code");
-        message.setText("Your verification code is: " + verificationCode);
+        message.setText("안녕하세요!\n\n" +
+                "귀하의 인증 코드는 다음과 같습니다:\n" +
+                "✅ " + verificationCode + "\n\n" +
+                "이 코드를 사용하여 인증을 완료해 주세요.\n" +
+                "감사합니다!");
 
+        // 이메일 전송 시도
         try {
             mailSender.send(message);
-            System.out.println("Email sent successfully to " + recipientEmail);
+            System.out.println("✅ 이메일이 성공적으로 전송되었습니다: " + recipientEmail);
         } catch (MailSendException e) {
-            System.err.println("Failed to send email: " + e.getMessage());
-            // 추가적인 오류 처리 필요
+            System.err.println("❌ 이메일 전송 실패: " + e.getMessage());
         }
     }
 
