@@ -30,7 +30,6 @@ public class MemberController {
     }
 
     @PostMapping("/signup")
-    @CrossOrigin(origins = "http://localhost:3000")
     public ResponseEntity<?> createMember(@RequestBody CreateMemberDTO memberInfo) {
         return ResponseEntity.ok()
                 .body(new ResponseMessage(
