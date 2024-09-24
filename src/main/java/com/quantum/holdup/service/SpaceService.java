@@ -22,8 +22,6 @@ public class SpaceService {
         // 로그인 되어있는 사용자의 이메일 가져옴
         String ownerEmail = SecurityContextHolder.getContext().getAuthentication().getName();
 
-        System.out.println("SpaceService ================================> ownerEmail : " + ownerEmail);
-
         // 가져온 이메일로 사용자 찾기
         Member owner = (Member) memberRepo.findByEmail(ownerEmail)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
