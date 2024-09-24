@@ -18,9 +18,14 @@ public class Image {
     @Column(nullable = false)
     private String imageUrl;
 
+    @ManyToOne
+    @JoinColumn(name = "REVIEW_ID")
+    private Review review;
+
     @Builder
-    public Image(Long id, String imageUrl) {
+    public Image(Long id, String imageUrl, Review review) {
         this.id = id;
         this.imageUrl = imageUrl;
+        this.review = review;
     }
 }

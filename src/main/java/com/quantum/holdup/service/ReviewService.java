@@ -22,6 +22,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
@@ -115,17 +116,15 @@ public class ReviewService {
     public CreateReviewDTO createReview(CreateReviewDTO reviewInfo, List<MultipartFile> files) {
 
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        Member member = (Member) memberRepo.findByEmail("1")
+        Member member = (Member ) memberRepo.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         System.out.println("CreateReviewDTO ==============================> ReservationId : " + reviewInfo.getReservationId());
         Reservation reservation = reservationRepo.findById(reviewInfo.getReservationId())
                 .orElseThrow(() -> new RuntimeException("예약을 찾을 수 없습니다: " + reviewInfo.getReservationId()));
 
-        List<String> uploadedFileNames = s3Service.uploadImage(files);
-        List<Image> images = uploadedFileNames.stream()
-                .map(url -> Image.builder().imageUrl(url).build())
-                .collect(Collectors.toList());
+//        List<String> uploadedFileNames = s3Service.uploadImage(files);
+
 
         Review review = Review.builder()
                 .member(member)
@@ -133,12 +132,11 @@ public class ReviewService {
                 .rating(reviewInfo.getRating())
                 .title(reviewInfo.getTitle())
                 .content(reviewInfo.getContent())
-                .images(images)
                 .build();
 
         repo.save(review);
 
-        return new CreateReviewDTO(review.getTitle(), review.getContent(), review.getRating(), review.getImages());
+        return new CreateReviewDTO(review.getTitle(), review.getContent(), review.getRating());
 
     }
 

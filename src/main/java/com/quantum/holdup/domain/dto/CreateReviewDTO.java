@@ -18,12 +18,11 @@ public class CreateReviewDTO {
     private int rating; // 리뷰 별점
     private String nickname; // 리뷰 작성자 닉네임
     private long reservationId;
-    private List<Image> imageUrls;
 
-    public CreateReviewDTO(String title, String content, int rating, List<Image> imageUrls) {
+
+    public CreateReviewDTO(String title, String content, int rating) {
         this.title = title;
         this.content = content;
         this.rating = rating;
-        this.imageUrls = imageUrls;
     }
 }
