@@ -1,17 +1,17 @@
 package com.quantum.holdup.domain.entity;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@Setter
 public class Review {
 
     @Id
@@ -31,6 +31,7 @@ public class Review {
     @JoinColumn(name = "RESERVATION_ID")
     private Reservation reservation; // 예약내용
 
+
 //    @OneToMany
 //    @JoinColumn(name = "COMMENT_ID")
 //    private List<Comment> comments; // 리뷰에 달린 댓글
@@ -49,5 +50,6 @@ public class Review {
         this.rating = rating;
         this.member = member;
         this.reservation = reservation;
+
     }
 }

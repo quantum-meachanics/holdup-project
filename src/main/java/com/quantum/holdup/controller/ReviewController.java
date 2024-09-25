@@ -4,13 +4,19 @@ import com.quantum.holdup.domain.dto.*;
 import com.quantum.holdup.message.ResponseMessage;
 import com.quantum.holdup.service.CommentService;
 import com.quantum.holdup.service.ReviewService;
+import com.quantum.holdup.service.S3Service;
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -20,6 +26,7 @@ public class ReviewController {
 
     private final ReviewService service;
     private final CommentService commentService;
+    private final S3Service s3Service;
 
     @GetMapping("/reviews")
     public ResponseEntity<ResponseMessage> findAllReview(@PageableDefault Pageable pageable){
@@ -45,13 +52,21 @@ public class ReviewController {
     }
 
     // 리뷰글 추가
-    @PostMapping("/reviews")
-    public ResponseEntity<?> createReview(@RequestBody CreateReviewDTO createReviewDTO) {
+    @PostMapping(value = "/reviews", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> createReview( @RequestPart(value = "reviewInfo") CreateReviewDTO reviewInfo,
+                                           @RequestPart(value = "images", required = false) List<MultipartFile> images) {
 
+        List<String> imageUrls = null;
+        if (images!=null && !images.isEmpty()) {
+            imageUrls = s3Service.uploadImage(images);
+        }
+
+
+        System.out.println("ReviewInfo ======================================> reviews Post 요청들어옴 : " + reviewInfo);
         return ResponseEntity.ok()
                 .body(new ResponseMessage(
                         "리뷰 등록에 성공하였습니다.",
-                        service.createReview(createReviewDTO)
+                        service.createReview(reviewInfo, imageUrls)
                 ));
     }
 

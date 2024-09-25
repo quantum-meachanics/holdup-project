@@ -2,10 +2,16 @@ package com.quantum.holdup.service;
 
 import com.quantum.holdup.Page.Pagination;
 import com.quantum.holdup.Page.PagingButtonInfo;
-import com.quantum.holdup.domain.dto.*;
-import com.quantum.holdup.domain.entity.*;
+import com.quantum.holdup.domain.dto.CreateReviewDTO;
+import com.quantum.holdup.domain.dto.ReviewDTO;
+import com.quantum.holdup.domain.dto.UpdateReviewDTO;
+import com.quantum.holdup.domain.entity.Member;
+import com.quantum.holdup.domain.entity.Reservation;
+import com.quantum.holdup.domain.entity.Review;
+import com.quantum.holdup.domain.entity.ReviewImage;
 import com.quantum.holdup.repository.MemberRepository;
 import com.quantum.holdup.repository.ReservationRepository;
+import com.quantum.holdup.repository.ReviewImageRepository;
 import com.quantum.holdup.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +22,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 @Service
@@ -27,6 +33,8 @@ public class ReviewService {
     private final ReviewRepository repo;
     private final ReservationRepository reservationRepo;
     private final MemberRepository memberRepo;
+    private final S3Service s3Service;
+    private final ReviewImageRepository reviewImageRepo;
 
     public Page<ReviewDTO> findAllReview(Pageable pageable) {
 
@@ -70,7 +78,7 @@ public class ReviewService {
 
     public ReviewDTO findReviewById(long id) {
 
-       Review postEntity = repo.findById(id)
+        Review postEntity = repo.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Post not found with id " + id));
 
         return ReviewDTO.builder()
@@ -80,6 +88,7 @@ public class ReviewService {
                 .createDate(postEntity.getCreateDate())
                 .rating(postEntity.getRating())
                 .nickname(postEntity.getMember().getNickname())
+                .reservation(postEntity.getReservation())
                 .build();
     }
 
@@ -103,28 +112,47 @@ public class ReviewService {
 //        });
 //    }
 
-    public CreateReviewDTO createReview(CreateReviewDTO createReviewDTO) {
+    public CreateReviewDTO createReview(CreateReviewDTO reviewInfo, List<String> imageUrls) {
 
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        Member member = (Member) memberRepo.findByEmail(email)
+        Member member = (Member ) memberRepo.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        Reservation reservation = reservationRepo.findById(createReviewDTO.getReservationId())
-                .orElseThrow(() -> new RuntimeException("예약을 찾을 수 없습니다: " + createReviewDTO.getReservationId()));
+        Reservation reservation = reservationRepo.findById(reviewInfo.getReservationId())
+                .orElseThrow(() -> new RuntimeException("예약을 찾을 수 없습니다: " + reviewInfo.getReservationId()));
 
-        System.out.println(createReviewDTO);
 
         Review review = Review.builder()
                 .member(member)
                 .reservation(reservation)
-                .rating(createReviewDTO.getRating())
-                .title(createReviewDTO.getTitle())
-                .content(createReviewDTO.getContent())
+                .rating(reviewInfo.getRating())
+                .title(reviewInfo.getTitle())
+                .content(reviewInfo.getContent())
                 .build();
 
-        repo.save(review);
+        Review savedReview = repo.save(review);
 
-        return new CreateReviewDTO(review.getTitle(),review.getContent(),review.getRating());
+        if (imageUrls != null && !imageUrls.isEmpty()) {
+
+            List<ReviewImage> reviewImages = imageUrls.stream()
+                    .map(url -> ReviewImage.builder()
+                            .imageUrl(url)
+                            .review(review)
+                            .build())
+                    .toList();
+
+            reviewImageRepo.saveAll(reviewImages);
+        }
+
+
+        // ReviewWithImageDTO 생성 및 반환
+        return CreateReviewDTO.builder()
+                .title(savedReview.getTitle())
+                .content(savedReview.getContent())
+                .rating(savedReview.getRating())
+                .reservationId(reviewInfo.getReservationId())
+                .build();
+
     }
 
     public UpdateReviewDTO updateReview(Long id, UpdateReviewDTO modifyInfo) {
@@ -143,7 +171,7 @@ public class ReviewService {
         repo.save(updatedReview);
 
         // ReviewDTO 생성 및 반환
-        return new UpdateReviewDTO(updatedReview.getTitle(),updatedReview.getContent());
+        return new UpdateReviewDTO(updatedReview.getTitle(), updatedReview.getContent());
     }
 
     public boolean deleteReview(long id) {
