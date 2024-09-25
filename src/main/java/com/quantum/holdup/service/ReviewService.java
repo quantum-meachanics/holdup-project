@@ -4,7 +4,6 @@ import com.quantum.holdup.Page.Pagination;
 import com.quantum.holdup.Page.PagingButtonInfo;
 import com.quantum.holdup.domain.dto.CreateReviewDTO;
 import com.quantum.holdup.domain.dto.ReviewDTO;
-import com.quantum.holdup.domain.dto.ReviewWithImageDTO;
 import com.quantum.holdup.domain.dto.UpdateReviewDTO;
 import com.quantum.holdup.domain.entity.Member;
 import com.quantum.holdup.domain.entity.Reservation;
@@ -22,7 +21,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -114,17 +112,14 @@ public class ReviewService {
 //        });
 //    }
 
-    public ReviewWithImageDTO  createReview(CreateReviewDTO reviewInfo, List<MultipartFile> files) {
+    public CreateReviewDTO createReview(CreateReviewDTO reviewInfo, List<String> imageUrls) {
 
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         Member member = (Member ) memberRepo.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        System.out.println("CreateReviewDTO ==============================> ReservationId : " + reviewInfo.getReservationId());
         Reservation reservation = reservationRepo.findById(reviewInfo.getReservationId())
                 .orElseThrow(() -> new RuntimeException("예약을 찾을 수 없습니다: " + reviewInfo.getReservationId()));
-
-        List<String> uploadedFileNames = s3Service.uploadImage(files);
 
 
         Review review = Review.builder()
@@ -137,25 +132,26 @@ public class ReviewService {
 
         Review savedReview = repo.save(review);
 
-        List<ReviewImage> reviewImages = uploadedFileNames.stream()
-                .map(fileName -> ReviewImage.builder()
-                        .imageUrl(fileName)
-                        .review(savedReview)
-                        .build())
-                .toList();
+        if (imageUrls != null && !imageUrls.isEmpty()) {
 
-        reviewImageRepo.saveAll(reviewImages);
+            List<ReviewImage> reviewImages = imageUrls.stream()
+                    .map(url -> ReviewImage.builder()
+                            .imageUrl(url)
+                            .review(review)
+                            .build())
+                    .toList();
 
-        // 저장된 리뷰 정보로 CreateReviewDTO 업데이트
-        CreateReviewDTO updatedReviewInfo = CreateReviewDTO.builder()
-                .reservationId(reviewInfo.getReservationId())
+            reviewImageRepo.saveAll(reviewImages);
+        }
+
+
+        // ReviewWithImageDTO 생성 및 반환
+        return CreateReviewDTO.builder()
                 .title(savedReview.getTitle())
                 .content(savedReview.getContent())
                 .rating(savedReview.getRating())
+                .reservationId(reviewInfo.getReservationId())
                 .build();
-
-        // ReviewWithImageDTO 생성 및 반환
-        return new ReviewWithImageDTO(updatedReviewInfo, uploadedFileNames);
 
     }
 

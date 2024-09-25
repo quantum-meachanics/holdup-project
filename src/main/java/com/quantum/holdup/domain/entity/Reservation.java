@@ -1,10 +1,7 @@
 package com.quantum.holdup.domain.entity;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
@@ -12,6 +9,7 @@ import java.time.LocalDateTime;
 @Table
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@ToString
 public class Reservation {
 
     @Id
@@ -42,7 +40,6 @@ public class Reservation {
         this.endDate = endDate;
         this.space = space;
         this.client = client;
-
         this.isAccept = false;
         this.isEnd = false;
     }
