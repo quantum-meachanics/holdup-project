@@ -20,13 +20,18 @@ public class SwaggerConfig {
 
     @Bean
     public GroupedOpenApi chatOpenApi() {
-        String[] paths = {"/api/v1/**", "/holdup/**", "/report/**","/member/**"};    // Swagger에서 처리 되었으면 하는 경로 설정
+        String[] paths = {
+                "/api/v1/**",
+                "/holdup/**",
+                "/report/**",
+                "/member/**"};    // Swagger에서 처리 되었으면 하는 경로 설정
 
         return GroupedOpenApi.builder()
                 .group("api-v1")
                 .pathsToMatch(paths)
                 .build();
     }
+
     @Bean
     public OpenAPI api() {
         SecurityScheme apiKey = new SecurityScheme()
