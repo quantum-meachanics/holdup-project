@@ -26,6 +26,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 @Configuration
 @EnableMethodSecurity
@@ -72,8 +73,8 @@ public class WebSecurityConfig {
                 .addFilterBefore(jwtAuthorizationFilter(), BasicAuthenticationFilter.class)
 
                 .authorizeHttpRequests(auth -> auth
+
                         .requestMatchers(
-                                "holdup/**",
                                 "/holdup/signup",
                                 "/holdup/login",
                                 "/holdup/find-email",
@@ -81,14 +82,29 @@ public class WebSecurityConfig {
                                 "/v3/api-docs/**",
                                 "/swagger-resources/**",
                                 "/holdup/check-nickname",
-                                "/holdup/check-email"
+                                "/holdup/signup-send-verification-code",
+                                "/holdup/check-email",
+                                "/holdup/signup-verify-code"
                         ).permitAll() // Swagger 관련 리소스와 회원가입 경로 허용
                         .anyRequest().authenticated() // 나머지 요청은 인증 필요
+
+                                .requestMatchers(
+//                                "/holdup/**",
+                                        "/holdup/signup",
+                                        "/holdup/login",
+                                        "/holdup/find-email",
+                                        "/swagger-ui/**",
+                                        "/v3/api-docs/**",
+                                        "/swagger-resources/**",
+                                        "/holdup/check-nickname",
+                                        "/holdup/check-email"
+                                ).permitAll() // Swagger 관련 리소스와 회원가입 경로 허용
+                                .anyRequest().authenticated() // 나머지 요청은 인증 필요
+
                 );
 
         return http.build();
     }
-
 
     /**
      * 3. Authentization의 인증 메서드를 제공하는 매니저로 Provider의 인터페이스를 의미한다.
@@ -157,7 +173,6 @@ public class WebSecurityConfig {
         return new CustomAuthSuccessHandler();
     }
 
-
     /**
      * 8. Spring security의 사용자 정보가 맞지 않은 경우 행되는 메서드
      *
@@ -185,12 +200,11 @@ public class WebSecurityConfig {
 
         configuration.setAllowedOrigins(Collections.singletonList("http://localhost:3000"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(Arrays.asList("*"));
+        configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
+
         return source;
-
     }
-
 }

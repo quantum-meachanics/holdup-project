@@ -35,12 +35,8 @@ public class Space {
     @JoinColumn(name = "MEMBER_ID")
     private Member owner; // 공간 등록자
 
-//    @OneToMany
-//    @JoinColumn(name = "RESERVATION_ID")
-//    private List<Reservation> reservations; // 공간에 생성된 예약
-
     @Builder(toBuilder = true)
-    public Space(String name, String address, String detailAddress, String gu, String dong, String description, long width, long height, long depth, int count, int price, Member owner) {
+    public Space(String name, String address, String detailAddress, String gu, String dong, String description, long width, long height, long depth, int count, int price, boolean isHide, Member owner) {
         this.name = name;
         this.address = address;
         this.detailAddress = detailAddress;
@@ -52,6 +48,7 @@ public class Space {
         this.depth = depth;
         this.count = count;
         this.price = price;
+        this.isHide = false; // 숨기기 기본값 false
         this.owner = owner;
     }
 
