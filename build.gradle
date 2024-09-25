@@ -24,26 +24,40 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.springframework.boot:spring-boot-starter-websocket'
-    implementation 'org.springframework.boot:spring-boot-starter-security'
-    testImplementation 'org.springframework.security:spring-security-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test' // Spring Boot Test
+    developmentOnly 'org.springframework.boot:spring-boot-devtools' // devtools
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa' // JPA
+    implementation 'org.springframework.boot:spring-boot-starter-security' // Security
+    testImplementation 'org.springframework.security:spring-security-test' // Security Test
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0' // swagger
+    implementation 'org.springframework.boot:spring-boot-starter-web' // RESTful API
+    implementation 'org.springframework.boot:spring-boot-starter-websocket' // 웹소켓
+
+    // lombok
     compileOnly 'org.projectlombok:lombok'
-    developmentOnly 'org.springframework.boot:spring-boot-devtools'
-    runtimeOnly 'com.mysql:mysql-connector-j'
     annotationProcessor 'org.projectlombok:lombok'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    // mysql
+    runtimeOnly 'com.mysql:mysql-connector-j'
+
+    // JWT
     implementation "io.jsonwebtoken:jjwt:0.9.1"
-    implementation group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1.1'
-    implementation group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.1'
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0'
+
+    // JSON 처리
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.15.2'
+    implementation group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1.1'
+
+    // email 인증 관련
     implementation 'org.springframework.boot:spring-boot-starter-mail'
     implementation 'jakarta.mail:jakarta.mail-api:2.0.1'
     implementation 'com.sun.mail:jakarta.mail:2.0.1'
+
+    // AWS S3
     implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
+
+    // 불필요 추정 의존성(필요시 주석 해제)
+//    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+//    implementation group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.1'
 
 }
 
