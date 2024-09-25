@@ -1,7 +1,7 @@
 package com.quantum.holdup.controller;
 
-import com.ohgiraffers.chat.dto.ChatRoomDTO;
-import com.ohgiraffers.chat.service.ChatRoomService;
+import com.quantum.holdup.domain.dto.ChatRoomDTO;
+import com.quantum.holdup.service.ChatRoomService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

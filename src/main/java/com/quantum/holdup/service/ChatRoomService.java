@@ -1,8 +1,9 @@
 package com.quantum.holdup.service;
 
-import com.ohgiraffers.chat.dto.ChatRoomDTO;
-import com.ohgiraffers.chat.entity.ChatRoom;
-import com.ohgiraffers.chat.repository.ChatRoomRepository;
+
+import com.quantum.holdup.domain.dto.ChatRoomDTO;
+import com.quantum.holdup.domain.entity.ChatRoom;
+import com.quantum.holdup.repository.ChatRoomRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

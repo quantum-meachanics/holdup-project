@@ -1,8 +1,8 @@
 package com.quantum.holdup.service;
 
-import com.ohgiraffers.chat.dto.ChatMessageDTO;
-import com.ohgiraffers.chat.entity.ChatMessage;
-import com.ohgiraffers.chat.repository.ChatMessageRepository;
+import com.quantum.holdup.domain.dto.ChatMessageDTO;
+import com.quantum.holdup.domain.entity.ChatMessage;
+import com.quantum.holdup.repository.ChatMessageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
