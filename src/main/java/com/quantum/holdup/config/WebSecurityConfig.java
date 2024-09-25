@@ -75,32 +75,18 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(auth -> auth
 
                         .requestMatchers(
-                                "/holdup/signup",
-                                "/holdup/login",
-                                "/holdup/find-email",
-                                "/swagger-ui/**",
+                                "/holdup/signup", // 회원가입
+                                "/holdup/login", // 로그인
+                                "/holdup/find-email", // 이메일 찾기
+                                "/holdup/check-nickname", // 닉네임 중복검사
+                                "/holdup/check-email", // 이메일 중복검사
+                                "/holdup/signup-send-verification-code", // 회원가입시 이메일 인증코드 전송
+                                "/holdup/signup-verify-code", // 회원가입시 이메일 인증코드 확인
                                 "/v3/api-docs/**",
-                                "/swagger-resources/**",
-                                "/holdup/check-nickname",
-                                "/holdup/signup-send-verification-code",
-                                "/holdup/check-email",
-                                "/holdup/signup-verify-code"
-                        ).permitAll() // Swagger 관련 리소스와 회원가입 경로 허용
+                                "/swagger-ui/**", // 스웨거 설정
+                                "/swagger-resources/**" // 스웨거 설정
+                        ).permitAll()
                         .anyRequest().authenticated() // 나머지 요청은 인증 필요
-
-                                .requestMatchers(
-//                                "/holdup/**",
-                                        "/holdup/signup",
-                                        "/holdup/login",
-                                        "/holdup/find-email",
-                                        "/swagger-ui/**",
-                                        "/v3/api-docs/**",
-                                        "/swagger-resources/**",
-                                        "/holdup/check-nickname",
-                                        "/holdup/check-email"
-                                ).permitAll() // Swagger 관련 리소스와 회원가입 경로 허용
-                                .anyRequest().authenticated() // 나머지 요청은 인증 필요
-
                 );
 
         return http.build();
