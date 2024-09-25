@@ -1,9 +1,12 @@
 package com.quantum.holdup.domain.dto;
 
+import com.quantum.holdup.domain.entity.SpaceImage;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -22,5 +25,5 @@ public class CreateSpaceDTO {
     private long depth; // 공간 깊이
     private int count; // 공간 갯수
     private int price; // 공간 가격
-
+    private List<SpaceImage> images; // 첨부된 사진들
 }
