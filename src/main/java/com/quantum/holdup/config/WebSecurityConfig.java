@@ -73,6 +73,21 @@ public class WebSecurityConfig {
                 .addFilterBefore(jwtAuthorizationFilter(), BasicAuthenticationFilter.class)
 
                 .authorizeHttpRequests(auth -> auth
+
+                        .requestMatchers(
+                                "/holdup/signup",
+                                "/holdup/login",
+                                "/holdup/find-email",
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**",
+                                "/swagger-resources/**",
+                                "/holdup/check-nickname",
+                                "/holdup/signup-send-verification-code",
+                                "/holdup/check-email",
+                                "/holdup/signup-verify-code"
+                        ).permitAll() // Swagger 관련 리소스와 회원가입 경로 허용
+                        .anyRequest().authenticated() // 나머지 요청은 인증 필요
+
                                 .requestMatchers(
 //                                "/holdup/**",
                                         "/holdup/signup",
@@ -85,6 +100,7 @@ public class WebSecurityConfig {
                                         "/holdup/check-email"
                                 ).permitAll() // Swagger 관련 리소스와 회원가입 경로 허용
                                 .anyRequest().authenticated() // 나머지 요청은 인증 필요
+
                 );
 
         return http.build();

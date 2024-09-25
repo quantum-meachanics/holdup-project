@@ -2,6 +2,8 @@ package com.quantum.holdup.service;
 
 import com.quantum.holdup.domain.dto.EmailRequestDTO;
 import com.quantum.holdup.domain.entity.Member;
+import com.quantum.holdup.domain.entity.VerificationCode;
+import com.quantum.holdup.repository.VerificationCodeRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import com.quantum.holdup.repository.MemberEmailRepository;
 import com.quantum.holdup.domain.dto.VerificationRequestDTO;
@@ -12,7 +14,7 @@ import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.Random;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -21,9 +23,12 @@ public class EmailService {
     private final MemberEmailRepository memberEmailRepository;
     private final PasswordEncoder passwordEncoder;
     private final JavaMailSender mailSender;
+    private final VerificationCodeRepository verificationCodeRepository;
+
+    // 인증 코드를 임시로 저장하기 위한 맵
+    private Map<String, String> verificationCodes = new HashMap<>();
 
     public void sendVerificationCode(EmailRequestDTO emailRequestDTO) throws Exception {
-
         String verificationCode = generateVerificationCode();
         sendEmail(emailRequestDTO.getEmail(), verificationCode);
 
@@ -32,38 +37,45 @@ public class EmailService {
             throw new RuntimeException("Member with email " + emailRequestDTO.getEmail() + " does not exist.");
         }
 
-        // 기존 사용자가 있으면 인증 코드와 발송 시간 업데이트
         member.setVerificationCode(verificationCode);
         member.setVerificationCodeSentAt(LocalDateTime.now());
         memberEmailRepository.save(member);
     }
 
+    public void sendSignupVerificationCode(EmailRequestDTO emailRequestDTO) throws Exception {
+        String verificationCode = generateVerificationCode();
+        sendEmail(emailRequestDTO.getEmail(), verificationCode);
+
+        VerificationCode codeEntity = VerificationCode.builder()
+                .email(emailRequestDTO.getEmail())
+                .code(verificationCode)
+                .sentAt(LocalDateTime.now())
+                .build();
+        verificationCodeRepository.save(codeEntity);
+    }
+
     public boolean verifyCode(VerificationRequestDTO verificationRequestDTO) {
         Member member = memberEmailRepository.findByEmail(verificationRequestDTO.getEmail());
 
-        // 사용자가 존재하는지 확인
         if (member != null) {
-            // 인증 코드가 유효한지 및 만료되지 않았는지 확인
             boolean isCodeValid = member.getVerificationCode().equals(verificationRequestDTO.getVerificationCode());
             boolean isCodeExpired = member.getVerificationCodeSentAt().plusMinutes(5).isBefore(LocalDateTime.now());
 
             if (isCodeValid && !isCodeExpired) {
-                // 인증 코드가 유효하면 비밀번호 변경 로직 추가
-                String newPassword = verificationRequestDTO.getNewPassword(); // 새 비밀번호를 DTO 에서 가져옵니다.
-                member.setPassword(passwordEncoder.encode(newPassword)); // 비밀번호 설정
-                memberEmailRepository.save(member); // 변경 사항 저장
-                return true; // 비밀번호 변경 성공
+                String newPassword = verificationRequestDTO.getNewPassword();
+                member.setPassword(passwordEncoder.encode(newPassword));
+                memberEmailRepository.save(member);
+                return true;
             }
         }
-        return false; // 실패
+        return false;
     }
 
     private String generateVerificationCode() {
-        return String.valueOf(new Random().nextInt(900000) + 100000); // 100000에서 999999 사이의 숫자
+        return String.valueOf(new Random().nextInt(900000) + 100000);
     }
 
     private void sendEmail(String recipientEmail, String verificationCode) {
-        // 이메일 전송 메시지 준비
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom("ggim17861@gmail.com");
         message.setTo(recipientEmail);
@@ -74,13 +86,49 @@ public class EmailService {
                 "이 코드를 사용하여 인증을 완료해 주세요.\n" +
                 "감사합니다!");
 
-        // 이메일 전송 시도
         try {
             mailSender.send(message);
             System.out.println("✅ 이메일이 성공적으로 전송되었습니다: " + recipientEmail);
         } catch (MailSendException e) {
             System.err.println("❌ 이메일 전송 실패: " + e.getMessage());
         }
+    }
+
+    public boolean signupVerifyCode(String email, String verificationCode) {
+        List<VerificationCode> codes = verificationCodeRepository.findByEmail(email);
+
+        // 유효한 코드 찾기
+        for (VerificationCode verificationCodeEntity : codes) {
+            boolean isCodeValid = verificationCodeEntity.getCode().equals(verificationCode);
+            boolean isCodeExpired = verificationCodeEntity.getSentAt().plusMinutes(5).isBefore(LocalDateTime.now());
+
+            System.out.println("검증 코드: " + verificationCode);
+            System.out.println("발송된 코드: " + verificationCodeEntity.getCode());
+            System.out.println("만료 여부: " + isCodeExpired);
+
+            if (isCodeValid) {
+                if (!isCodeExpired) {
+                    // 인증 성공 후 일정 시간 후에 삭제 처리
+                    scheduleCodeDeletion(verificationCodeEntity);
+                    return true;  // 인증 성공
+                } else {
+                    throw new IllegalArgumentException("인증 코드가 만료되었습니다.");
+                }
+            }
+        }
+
+        // 유효한 코드가 없는 경우
+        throw new IllegalArgumentException("이 이메일로 전송된 인증 코드가 없습니다.");
+    }
+
+    private void scheduleCodeDeletion(VerificationCode verificationCodeEntity) {
+
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                verificationCodeRepository.delete(verificationCodeEntity);
+            }
+        }, 180000);
     }
 
 }
