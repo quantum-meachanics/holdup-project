@@ -3,11 +3,15 @@ package com.quantum.holdup.service;
 import com.quantum.holdup.domain.dto.CreateSpaceDTO;
 import com.quantum.holdup.domain.entity.Member;
 import com.quantum.holdup.domain.entity.Space;
+import com.quantum.holdup.domain.entity.SpaceImage;
 import com.quantum.holdup.repository.MemberRepository;
+import com.quantum.holdup.repository.SpaceImageRepository;
 import com.quantum.holdup.repository.SpaceRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -15,9 +19,10 @@ public class SpaceService {
 
     private final SpaceRepository spaceRepo; // 공간 레파지토리
     private final MemberRepository memberRepo; // 멤버 레파지토리
+    private final SpaceImageRepository imageRepo; // 공간 이미지 레파지토리
 
     // 공간 등록 메소드
-    public Object createSpace(CreateSpaceDTO spaceInfo) {
+    public Object createSpace(CreateSpaceDTO spaceInfo, List<String> imageUrls) {
 
         // 로그인 되어있는 사용자의 이메일 가져옴
         String ownerEmail = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -44,6 +49,15 @@ public class SpaceService {
 
         // 생성한 공간 엔티티 저장
         spaceRepo.save(newSpace);
+
+        if (imageUrls != null && !imageUrls.isEmpty()) {
+            List<SpaceImage> images = imageUrls.stream().map(url -> SpaceImage.builder()
+                    .imageUrl(url)
+                    .space(newSpace)
+                    .build()).toList();
+
+            imageRepo.saveAll(images);
+        }
 
         // DTO 형식으로 반환
         return new CreateSpaceDTO(
