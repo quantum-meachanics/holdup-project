@@ -95,26 +95,40 @@ public class EmailService {
     }
 
     public boolean signupVerifyCode(String email, String verificationCode) {
-        List<VerificationCode> codes = verificationCodeRepository.findLatestByEmail(email);
+        List<VerificationCode> codes = verificationCodeRepository.findByEmail(email);
 
-        if (!codes.isEmpty()) {
-            VerificationCode verificationCodeEntity = codes.get(0); // 최신 코드 가져오기
+        // 유효한 코드 찾기
+        for (VerificationCode verificationCodeEntity : codes) {
             boolean isCodeValid = verificationCodeEntity.getCode().equals(verificationCode);
             boolean isCodeExpired = verificationCodeEntity.getSentAt().plusMinutes(5).isBefore(LocalDateTime.now());
+
             System.out.println("검증 코드: " + verificationCode);
-            System.out.println("최신 코드: " + verificationCodeEntity.getCode());
+            System.out.println("발송된 코드: " + verificationCodeEntity.getCode());
             System.out.println("만료 여부: " + isCodeExpired);
-            if (isCodeValid && !isCodeExpired) {
-                // 인증이 성공하면 코드 삭제
-                verificationCodeRepository.delete(verificationCodeEntity);
-                return true;  // 인증 성공
-            } else if (isCodeExpired) {
-                throw new IllegalArgumentException("인증 코드가 만료되었습니다.");
-            } else {
-                throw new IllegalArgumentException("인증 코드가 일치하지 않습니다.");
+
+            if (isCodeValid) {
+                if (!isCodeExpired) {
+                    // 인증 성공 후 일정 시간 후에 삭제 처리
+                    scheduleCodeDeletion(verificationCodeEntity);
+                    return true;  // 인증 성공
+                } else {
+                    throw new IllegalArgumentException("인증 코드가 만료되었습니다.");
+                }
             }
-        } else {
-            throw new IllegalArgumentException("이 이메일로 전송된 인증 코드가 없습니다.");
         }
+
+        // 유효한 코드가 없는 경우
+        throw new IllegalArgumentException("이 이메일로 전송된 인증 코드가 없습니다.");
     }
+
+    private void scheduleCodeDeletion(VerificationCode verificationCodeEntity) {
+
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                verificationCodeRepository.delete(verificationCodeEntity);
+            }
+        }, 180000);
+    }
+
 }

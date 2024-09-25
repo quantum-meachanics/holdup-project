@@ -21,12 +21,14 @@ public class VerificationCode {
     private String email;
     private String code;
     private LocalDateTime sentAt;
+    private boolean isVerified = false;
 
     @Builder
-    public VerificationCode(Long id, String email, String code, LocalDateTime sentAt) {
+    public VerificationCode(Long id, String email, String code, LocalDateTime sentAt , boolean isVerified) {
         this.id = id;
         this.email = email;
         this.code = code;
         this.sentAt = sentAt;
+        this.isVerified = isVerified;
     }
 }

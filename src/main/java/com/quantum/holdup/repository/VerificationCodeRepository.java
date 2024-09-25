@@ -7,7 +7,5 @@ import java.util.List;
 import java.util.Optional;
 
 public interface VerificationCodeRepository extends JpaRepository<VerificationCode, Long> {
-    Optional<VerificationCode> findByEmail(String email);
-
-    List<VerificationCode> findLatestByEmail(String email);
+    List<VerificationCode> findByEmail(String email);
 }

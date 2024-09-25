@@ -11,6 +11,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.MessagingException;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @RestController
 @RequestMapping("holdup")
 @RequiredArgsConstructor
@@ -74,13 +77,13 @@ public class EmailController {
 
 
     @PostMapping("/signup-verify-code")
-    public ResponseEntity<?> verifySignupCode(@RequestBody VerificationDTO verificationRequest) {
-        // Call the service to verify the code
-        try {
-            emailService.signupVerifyCode(verificationRequest.getEmail(), verificationRequest.getVerificationCode());
-            return ResponseEntity.ok("Verification successful!");
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<Map<String, Object>> verifySignupCode(@RequestBody VerificationRequestDTO request) {
+        boolean isVerified = emailService.signupVerifyCode(request.getEmail(), request.getVerificationCode());
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("success", isVerified);
+        response.put("message", isVerified ? "인증이 완료되었습니다." : "인증에 실패했습니다.");
+
+        return ResponseEntity.ok(response);
     }
 }
