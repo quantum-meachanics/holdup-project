@@ -4,13 +4,15 @@ import com.quantum.holdup.Page.Pagination;
 import com.quantum.holdup.Page.PagingButtonInfo;
 import com.quantum.holdup.domain.dto.CreateReviewDTO;
 import com.quantum.holdup.domain.dto.ReviewDTO;
+import com.quantum.holdup.domain.dto.ReviewWithImageDTO;
 import com.quantum.holdup.domain.dto.UpdateReviewDTO;
-import com.quantum.holdup.domain.entity.Image;
 import com.quantum.holdup.domain.entity.Member;
 import com.quantum.holdup.domain.entity.Reservation;
 import com.quantum.holdup.domain.entity.Review;
+import com.quantum.holdup.domain.entity.ReviewImage;
 import com.quantum.holdup.repository.MemberRepository;
 import com.quantum.holdup.repository.ReservationRepository;
+import com.quantum.holdup.repository.ReviewImageRepository;
 import com.quantum.holdup.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,10 +24,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -36,6 +36,7 @@ public class ReviewService {
     private final ReservationRepository reservationRepo;
     private final MemberRepository memberRepo;
     private final S3Service s3Service;
+    private final ReviewImageRepository reviewImageRepo;
 
     public Page<ReviewDTO> findAllReview(Pageable pageable) {
 
@@ -113,7 +114,7 @@ public class ReviewService {
 //        });
 //    }
 
-    public CreateReviewDTO createReview(CreateReviewDTO reviewInfo, List<MultipartFile> files) {
+    public ReviewWithImageDTO  createReview(CreateReviewDTO reviewInfo, List<MultipartFile> files) {
 
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         Member member = (Member ) memberRepo.findByEmail(email)
@@ -123,7 +124,7 @@ public class ReviewService {
         Reservation reservation = reservationRepo.findById(reviewInfo.getReservationId())
                 .orElseThrow(() -> new RuntimeException("예약을 찾을 수 없습니다: " + reviewInfo.getReservationId()));
 
-//        List<String> uploadedFileNames = s3Service.uploadImage(files);
+        List<String> uploadedFileNames = s3Service.uploadImage(files);
 
 
         Review review = Review.builder()
@@ -134,9 +135,27 @@ public class ReviewService {
                 .content(reviewInfo.getContent())
                 .build();
 
-        repo.save(review);
+        Review savedReview = repo.save(review);
 
-        return new CreateReviewDTO(review.getTitle(), review.getContent(), review.getRating());
+        List<ReviewImage> reviewImages = uploadedFileNames.stream()
+                .map(fileName -> ReviewImage.builder()
+                        .imageUrl(fileName)
+                        .review(savedReview)
+                        .build())
+                .toList();
+
+        reviewImageRepo.saveAll(reviewImages);
+
+        // 저장된 리뷰 정보로 CreateReviewDTO 업데이트
+        CreateReviewDTO updatedReviewInfo = CreateReviewDTO.builder()
+                .reservationId(reviewInfo.getReservationId())
+                .title(savedReview.getTitle())
+                .content(savedReview.getContent())
+                .rating(savedReview.getRating())
+                .build();
+
+        // ReviewWithImageDTO 생성 및 반환
+        return new ReviewWithImageDTO(updatedReviewInfo, uploadedFileNames);
 
     }
 

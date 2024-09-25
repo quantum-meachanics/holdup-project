@@ -1,9 +1,6 @@
 package com.quantum.holdup.domain.dto;
 
-import com.quantum.holdup.domain.entity.Image;
 import lombok.*;
-
-import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -20,9 +17,11 @@ public class CreateReviewDTO {
     private long reservationId;
 
 
-    public CreateReviewDTO(String title, String content, int rating) {
+    public CreateReviewDTO(String title, String content, int rating, long reservationId) {
         this.title = title;
         this.content = content;
         this.rating = rating;
+        this.reservationId = reservationId;
     }
+
 }

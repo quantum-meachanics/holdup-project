@@ -9,11 +9,11 @@ import lombok.NoArgsConstructor;
 @Table
 @NoArgsConstructor
 @Getter
-public class Image {
+public class ReviewImage {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private long id;
 
     @Column(nullable = false)
     private String imageUrl;
@@ -23,7 +23,7 @@ public class Image {
     private Review review;
 
     @Builder
-    public Image(Long id, String imageUrl, Review review) {
+    public ReviewImage(Long id, String imageUrl, Review review) {
         this.id = id;
         this.imageUrl = imageUrl;
         this.review = review;

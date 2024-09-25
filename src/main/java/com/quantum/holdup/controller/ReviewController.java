@@ -51,12 +51,9 @@ public class ReviewController {
 
     // 리뷰글 추가
     @PostMapping(value = "/reviews", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> createReview( @RequestBody CreateReviewDTO reviewInfo,
+    public ResponseEntity<?> createReview( @ModelAttribute CreateReviewDTO reviewInfo,
                                            @Parameter @RequestPart(value = "images", required = false) List<MultipartFile> images) {
 
-//        CreateReviewDTO reviewDTOTest = CreateReviewDTO.builder()
-//                .reservationId(1)
-//                .build();
 
         System.out.println("ReviewInfo ======================================> reviews Post 요청들어옴 : " + reviewInfo);
         return ResponseEntity.ok()
