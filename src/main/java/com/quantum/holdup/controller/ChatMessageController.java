@@ -3,7 +3,6 @@ package com.quantum.holdup.controller;
 import com.quantum.holdup.domain.dto.ChatMessageDTO;
 import com.quantum.holdup.service.ChatMessageService;
 import com.quantum.holdup.service.ChatRoomService;
-import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.*;
@@ -26,7 +25,7 @@ public class ChatMessageController {
     // WebSocket으로 메시지 전송 시 호출되는 메서드
     @MessageMapping("/sendMessage/{roomId}")
     @SendTo("/topic/{roomId}")
-    public ChatMessageDTO sendMessage(@DestinationVariable Long roomId, @RequestBody ChatMessageDTO messageDTO) {
+    public ChatMessageDTO sendMessage(@RequestBody ChatMessageDTO messageDTO) {
         // ChatMessageService의 saveMessage 메서드를 호출하여 메시지를 저장
         return chatMessageService.saveMessage(messageDTO);
     }
