@@ -25,7 +25,7 @@ public class ChatMessageService {
 
 
     // 특정 채팅방의 메시지를 조회하는 메서드
-    public List<ChatMessageDTO> getMessagesByRoomId(Long roomId) {
+    public List<ChatMessageDTO> getMessagesByRoomId(long roomId) {
         return chatMessageRepository.findByChatRoomId(roomId).stream()
                 .map(msg -> {
                     ChatMessageDTO dto = new ChatMessageDTO();

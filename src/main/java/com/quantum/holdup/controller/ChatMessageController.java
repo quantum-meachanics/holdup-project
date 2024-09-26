@@ -16,11 +16,9 @@ public class ChatMessageController {
 
     private final ChatMessageService chatMessageService;
 
-    private final ChatRoomService chatRoomService;
 
-    public ChatMessageController(ChatMessageService chatMessageService, ChatRoomService chatRoomService) {
+    public ChatMessageController(ChatMessageService chatMessageService) {
         this.chatMessageService = chatMessageService;
-        this.chatRoomService = chatRoomService;
     }
 
     // WebSocket으로 메시지 전송 시 호출되는 메서드
@@ -35,6 +33,6 @@ public class ChatMessageController {
     @GetMapping("/messages/{roomId}")
     public List<ChatMessageDTO> getMessages(@PathVariable Long roomId) {
         // ChatRoomService에서 getMessagesByRoomId를 호출하여 메시지 목록을 가져옴
-        return chatRoomService.getMessagesByRoomId(roomId);
+        return chatMessageService.getMessagesByRoomId(roomId);
     }
 }

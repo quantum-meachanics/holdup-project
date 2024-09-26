@@ -55,21 +55,6 @@ public class ChatRoomService {
         chatRoomRepository.deleteById(roomId);
     }
 
-    // 채팅방 메시지 조회
-    public List<ChatMessageDTO> getMessagesByRoomId(Long roomId) {
-        return chatMessageRepository.findByChatRoomId(roomId).stream()
-                .map(msg -> {
-                    ChatMessageDTO dto = new ChatMessageDTO();
-                    dto.setId(msg.getId());
-                    dto.setSender(msg.getSender());
-                    dto.setContent(msg.getContent());
-                    dto.setRoomId(roomId);
-                    dto.setTimestamp(msg.getTimestamp().toString());
-                    return dto;
-                })
-                .collect(Collectors.toList());
-    }
-
     // 메시지 저장
     public ChatMessageDTO saveMessage(ChatMessageDTO messageDTO) {
         ChatRoom chatRoom = chatRoomRepository.findById(messageDTO.getRoomId())
