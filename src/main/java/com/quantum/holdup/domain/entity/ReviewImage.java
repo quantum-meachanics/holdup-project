@@ -17,7 +17,7 @@ public class ReviewImage {
     private long id;
 
     @Column(nullable = false)
-    private String fileName;
+    private String imageName;
 
     @Column(nullable = false)
     private String imageUrl;
@@ -27,8 +27,8 @@ public class ReviewImage {
     private Review review;
 
     @Builder
-    public ReviewImage(String fileName, String imageUrl, Review review) {
-        this.fileName = fileName;
+    public ReviewImage(String imageUrl, Review review, String imageName) {
+        this.imageName = imageName;
         this.imageUrl = imageUrl;
         this.review = review;
     }

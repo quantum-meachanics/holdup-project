@@ -54,10 +54,7 @@ public class ReviewController {
     public ResponseEntity<?> createReview( @RequestPart(value = "reviewInfo") CreateReviewDTO reviewInfo,
                                            @RequestPart(value = "images", required = false) List<MultipartFile> images) {
 
-        List<String> imageUrls = null;
-        if (images!=null && !images.isEmpty()) {
-//            imageUrls = s3Service.uploadImage(images);
-        }
+        List<String> imageUrls = s3Service.uploadImage(images);
 
 
         System.out.println("ReviewInfo ======================================> reviews Post 요청들어옴 : " + reviewInfo);

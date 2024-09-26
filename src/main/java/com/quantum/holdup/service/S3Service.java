@@ -29,7 +29,7 @@ public class S3Service {
     // 이미지 업로드 메소드
     public List<String> uploadImage(List<MultipartFile> multipartFile) {
 
-        List<String> fileNameList = new ArrayList<>(); // 파일 이름 저장할 빈 리스트 생성
+        List<String> fileUrlList = new ArrayList<>(); // 파일 이름 저장할 빈 리스트 생성
 
         multipartFile.forEach(file -> {
             String fileName = createFileName(file.getOriginalFilename()); // 파일 이름 생성
@@ -40,17 +40,17 @@ public class S3Service {
             try (InputStream inputStream = file.getInputStream()) { // InputStream으로 파일 읽음
                 amazonS3.putObject(new PutObjectRequest(bucket, fileName, inputStream, objectMetadata) // 위에서 설정한 값들 전달
                         .withCannedAcl(CannedAccessControlList.PublicRead)); // 파일 접근권한 공개로 설정
+
+                String fileUrl = amazonS3.getUrl(bucket, fileName).toString();
+                fileUrlList.add(fileUrl);
+
             } catch (IOException e) { // Exception 처리
                 throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "이미지 업로드에 실패했습니다.");
             }
 
-            fileNameList.add(fileName); // 성공하면 리스트에 저장
-
-            // imgurl 가지고 오고 -> reveiew-image 저장
-            String imageUrl = amazonS3.getUrl(bucket, fileName).toString();
         });
 
-        return fileNameList;
+        return fileUrlList;
     }
 
     // 파일 삭제 메소드
