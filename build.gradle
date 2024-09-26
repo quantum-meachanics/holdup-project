@@ -57,7 +57,6 @@ dependencies {
 
     // 불필요 추정 의존성(필요시 주석 해제)
 //    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-//    implementation group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.1'
 
 }
 

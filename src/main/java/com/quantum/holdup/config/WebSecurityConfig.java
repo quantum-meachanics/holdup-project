@@ -82,6 +82,8 @@ public class WebSecurityConfig {
                                 "/holdup/check-email", // 이메일 중복검사
                                 "/holdup/signup-send-verification-code", // 회원가입시 이메일 인증코드 전송
                                 "/holdup/signup-verify-code", // 회원가입시 이메일 인증코드 확인
+                                "/holdup/send-verification-code", // 비밀번호 이메일 인증코드 전송
+                                "/holdup/verify-code", // 비밀번호 이메일 인증코드 확인
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**", // 스웨거 설정
                                 "/swagger-resources/**" // 스웨거 설정

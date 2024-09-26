@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -50,8 +51,11 @@ public class SpaceService {
         // 생성한 공간 엔티티 저장
         spaceRepo.save(newSpace);
 
+        // 이미지 담아줄 빈 리스트 생성
+        List<SpaceImage> images = new ArrayList<>();
+
         if (imageUrls != null && !imageUrls.isEmpty()) {
-            List<SpaceImage> images = imageUrls.stream().map(url -> SpaceImage.builder()
+            images = imageUrls.stream().map(url -> SpaceImage.builder()
                     .imageUrl(url)
                     .space(newSpace)
                     .build()).toList();
@@ -71,7 +75,8 @@ public class SpaceService {
                 newSpace.getHeight(),
                 newSpace.getDepth(),
                 newSpace.getCount(),
-                newSpace.getPrice()
+                newSpace.getPrice(),
+                images
         );
     }
 }

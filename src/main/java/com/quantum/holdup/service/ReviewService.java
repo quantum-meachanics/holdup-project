@@ -33,7 +33,6 @@ public class ReviewService {
     private final ReviewRepository repo;
     private final ReservationRepository reservationRepo;
     private final MemberRepository memberRepo;
-    private final S3Service s3Service;
     private final ReviewImageRepository reviewImageRepo;
 
     public Page<ReviewDTO> findAllReview(Pageable pageable) {
