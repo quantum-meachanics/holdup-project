@@ -5,16 +5,15 @@ import com.quantum.holdup.domain.entity.ChatMessage;
 import com.quantum.holdup.domain.entity.ChatRoom;
 import com.quantum.holdup.repository.ChatMessageRepository;
 import com.quantum.holdup.repository.ChatRoomRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 public class ChatMessageService {
+
     private final ChatMessageRepository chatMessageRepository;
 
     private final ChatRoomRepository chatRoomRepository;
@@ -24,7 +23,9 @@ public class ChatMessageService {
         this.chatRoomRepository = chatRoomRepository;
     }
 
-    public List<ChatMessageDTO> getMessagesBy(Long roomId) {
+
+    // 특정 채팅방의 메시지를 조회하는 메서드
+    public List<ChatMessageDTO> getMessagesByRoomId(Long roomId) {
         return chatMessageRepository.findByChatRoomId(roomId).stream()
                 .map(msg -> {
                     ChatMessageDTO dto = new ChatMessageDTO();
@@ -32,7 +33,7 @@ public class ChatMessageService {
                     dto.setSender(msg.getSender());
                     dto.setContent(msg.getContent());
                     dto.setRoomId(roomId);
-                    dto.setTimestamp(msg.getTimestamp().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+                    dto.setTimestamp(msg.getTimestamp().toString());
                     return dto;
                 })
                 .collect(Collectors.toList());
