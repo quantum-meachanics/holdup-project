@@ -11,6 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -95,6 +96,10 @@ public class MemberService {
     }
 
 
+    public Member getMemberInfo(Long memberId) {
+        Optional<Member> member = repo.findById(memberId);
+        return member.orElseThrow(() -> new RuntimeException("회원 정보를 찾을 수 없습니다."));
+    }
 }
 
 

@@ -3,10 +3,12 @@ package com.quantum.holdup.controller;
 import com.quantum.holdup.domain.dto.CreateMemberDTO;
 import com.quantum.holdup.domain.dto.LoginMemberDTO;
 import com.quantum.holdup.domain.dto.SearchMemberEmailDTO;
+import com.quantum.holdup.domain.entity.Member;
 import com.quantum.holdup.message.ResponseMessage;
 import com.quantum.holdup.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
@@ -70,6 +72,12 @@ public class MemberController {
         Map<String, Boolean> response = new HashMap<>();
         response.put("available", available); // true: 사용 가능, false: 사용 불가
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping
+    public ResponseEntity<Member> getMemberInfo(@AuthenticationPrincipal Member member) {
+        Member memberInfo = service.getMemberInfo(member.getId());
+        return ResponseEntity.ok(memberInfo);
     }
 
 }
