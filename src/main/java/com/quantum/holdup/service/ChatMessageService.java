@@ -17,7 +17,7 @@ public class ChatMessageService {
         this.chatMessageRepository = chatMessageRepository;
     }
 
-    public List<ChatMessageDTO> getMessages(Long roomId) {
+    public List<ChatMessageDTO> getMessagesBy(Long roomId) {
         return chatMessageRepository.findByChatRoomId(roomId).stream()
                 .map(msg -> {
                     ChatMessageDTO dto = new ChatMessageDTO();

@@ -2,10 +2,8 @@ package com.quantum.holdup.controller;
 
 import com.quantum.holdup.domain.dto.ChatMessageDTO;
 import com.quantum.holdup.domain.entity.ChatMessage;
-import com.quantum.holdup.domain.entity.ChatRoom;
 import com.quantum.holdup.service.ChatMessageService;
 import com.quantum.holdup.service.ChatRoomService;
-import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.*;
@@ -25,22 +23,18 @@ public class ChatMessageController {
         this.chatRoomService = chatRoomService;
     }
 
+    // WebSocket을 통한 메시지 전송
     @MessageMapping("/sendMessage/{roomId}")
     @SendTo("/topic/{roomId}")
-    public ChatMessageDTO sendMessage(@DestinationVariable Long roomId, @RequestBody ChatMessageDTO messageDTO) {
-        // ChatRoomService의 findById 호출하여 채팅방을 가져옴
-        ChatRoom chatRoom = chatRoomService.findById(roomId);
-
-        ChatMessage message = new ChatMessage();
-        message.setSender(messageDTO.getSender());
-        message.setContent(messageDTO.getContent());
-        message.setChatRoom(chatRoom);
-
-        return chatMessageService.saveMessage(message);
+    public ChatMessageDTO sendMessage(@RequestBody ChatMessage messageDTO) {
+        // 메시지를 저장하는 로직 추가
+        return chatMessageService.saveMessage(messageDTO); // saveMessage 메서드 사용
     }
 
+    // 특정 채팅방의 메시지 조회
     @GetMapping("/messages/{roomId}")
     public List<ChatMessageDTO> getMessages(@PathVariable Long roomId) {
-        return chatMessageService.getMessages(roomId);
+        // ChatRoomService에서 getMessagesByRoomId를 호출하여 메시지 목록을 가져옴
+        return chatRoomService.getMessagesByRoomId(roomId);
     }
 }
