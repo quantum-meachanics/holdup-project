@@ -6,6 +6,7 @@ import com.quantum.holdup.service.S3Service;
 import com.quantum.holdup.service.SpaceService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,16 +25,12 @@ public class SpaceController {
     private final S3Service s3Service;
 
     @Operation(summary = "공간 등록")
-    @PostMapping(value = "/spaces", consumes = {"multipart/form-data"})
+    @PostMapping(value = "/spaces", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<?> createSpace(
             @RequestPart(value = "spaceInfo") CreateSpaceDTO spaceInfo,
             @RequestPart(value = "images", required = false) List<MultipartFile> images) {
 
-        List<String> imageUrls = null;
-
-        if (images != null && !images.isEmpty()) {
-            imageUrls = s3Service.uploadImage(images);
-        }
+        List<String> imageUrls = s3Service.uploadImage(images);
 
         return ResponseEntity.ok()
                 .body(new ResponseMessage(
