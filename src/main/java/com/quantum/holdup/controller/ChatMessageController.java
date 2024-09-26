@@ -2,7 +2,6 @@ package com.quantum.holdup.controller;
 
 import com.quantum.holdup.domain.dto.ChatMessageDTO;
 import com.quantum.holdup.service.ChatMessageService;
-import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.*;
