@@ -1,15 +1,12 @@
 package com.quantum.holdup.service;
 
 
-import com.quantum.holdup.domain.dto.ChatMessageDTO;
 import com.quantum.holdup.domain.dto.ChatRoomDTO;
-import com.quantum.holdup.domain.entity.ChatMessage;
 import com.quantum.holdup.domain.entity.ChatRoom;
 import com.quantum.holdup.repository.ChatMessageRepository;
 import com.quantum.holdup.repository.ChatRoomRepository;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,11 +16,8 @@ public class ChatRoomService {
 
     private final ChatRoomRepository chatRoomRepository;
 
-    private final ChatMessageRepository chatMessageRepository;
-
-    public ChatRoomService(ChatRoomRepository chatRoomRepository, ChatMessageRepository chatMessageRepository) {
+    public ChatRoomService(ChatRoomRepository chatRoomRepository) {
         this.chatRoomRepository = chatRoomRepository;
-        this.chatMessageRepository = chatMessageRepository;
     }
 
     // 채팅방 목록 조회
