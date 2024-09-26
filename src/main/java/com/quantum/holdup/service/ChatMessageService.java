@@ -2,9 +2,13 @@ package com.quantum.holdup.service;
 
 import com.quantum.holdup.domain.dto.ChatMessageDTO;
 import com.quantum.holdup.domain.entity.ChatMessage;
+import com.quantum.holdup.domain.entity.ChatRoom;
 import com.quantum.holdup.repository.ChatMessageRepository;
+import com.quantum.holdup.repository.ChatRoomRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -13,8 +17,11 @@ import java.util.stream.Collectors;
 public class ChatMessageService {
     private final ChatMessageRepository chatMessageRepository;
 
-    public ChatMessageService(ChatMessageRepository chatMessageRepository) {
+    private final ChatRoomRepository chatRoomRepository;
+
+    public ChatMessageService(ChatMessageRepository chatMessageRepository, ChatRoomRepository chatRoomRepository) {
         this.chatMessageRepository = chatMessageRepository;
+        this.chatRoomRepository = chatRoomRepository;
     }
 
     public List<ChatMessageDTO> getMessagesBy(Long roomId) {
@@ -31,14 +38,22 @@ public class ChatMessageService {
                 .collect(Collectors.toList());
     }
 
-    public ChatMessageDTO saveMessage(ChatMessage chatMessage) {
+    public ChatMessageDTO saveMessage(ChatMessageDTO messageDTO) {
+        // ChatRoom을 DB에서 조회
+        ChatRoom chatRoom = chatRoomRepository.findById(messageDTO.getRoomId())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid room ID: " + messageDTO.getRoomId()));
+
+        // 새로운 ChatMessage 객체 생성 및 저장
+        ChatMessage chatMessage = new ChatMessage();
+        chatMessage.setSender(messageDTO.getSender());
+        chatMessage.setContent(messageDTO.getContent());
+        chatMessage.setChatRoom(chatRoom);
+        chatMessage.setTimestamp(LocalDateTime.now());
+
+        // 메시지를 저장하고 DTO로 반환
         chatMessage = chatMessageRepository.save(chatMessage);
-        ChatMessageDTO dto = new ChatMessageDTO();
-        dto.setId(chatMessage.getId());
-        dto.setSender(chatMessage.getSender());
-        dto.setContent(chatMessage.getContent());
-        dto.setRoomId(chatMessage.getChatRoom().getId());
-        dto.setTimestamp(chatMessage.getTimestamp().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
-        return dto;
+        messageDTO.setId(chatMessage.getId());
+        messageDTO.setTimestamp(chatMessage.getTimestamp().toString());
+        return messageDTO;
     }
 }
