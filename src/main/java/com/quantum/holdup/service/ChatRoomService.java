@@ -55,23 +55,6 @@ public class ChatRoomService {
         chatRoomRepository.deleteById(roomId);
     }
 
-    // 메시지 저장
-    public ChatMessageDTO saveMessage(ChatMessageDTO messageDTO) {
-        ChatRoom chatRoom = chatRoomRepository.findById(messageDTO.getRoomId())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid room ID"));
-
-        ChatMessage chatMessage = new ChatMessage();
-        chatMessage.setSender(messageDTO.getSender());
-        chatMessage.setContent(messageDTO.getContent());
-        chatMessage.setChatRoom(chatRoom);
-        chatMessage.setTimestamp(LocalDateTime.now());
-
-        chatMessage = chatMessageRepository.save(chatMessage);
-        messageDTO.setId(chatMessage.getId());
-        messageDTO.setTimestamp(chatMessage.getTimestamp().toString());
-        return messageDTO;
-    }
-
     public ChatRoom findById(Long roomId) {
         // Optional로 반환된 결과를 처리합니다.
         return chatRoomRepository.findById(roomId)
