@@ -3,7 +3,6 @@ package com.quantum.holdup.service;
 
 import com.quantum.holdup.domain.dto.ChatRoomDTO;
 import com.quantum.holdup.domain.entity.ChatRoom;
-import com.quantum.holdup.repository.ChatMessageRepository;
 import com.quantum.holdup.repository.ChatRoomRepository;
 import org.springframework.stereotype.Service;
 
