@@ -9,7 +9,7 @@ import java.util.List;
 
 
 @RestController
-@RequestMapping("/api/chat")
+@RequestMapping("holdup")
 public class ChatRoomController {
 
     private final ChatRoomService chatRoomService;
