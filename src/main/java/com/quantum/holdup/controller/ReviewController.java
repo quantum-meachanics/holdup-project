@@ -53,14 +53,11 @@ public class ReviewController {
     }
 
     // 리뷰글 추가
-    @PostMapping(value = "/reviews", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/reviews", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> createReview( @RequestPart(value = "reviewInfo") CreateReviewDTO reviewInfo,
                                            @RequestPart(value = "images", required = false) List<MultipartFile> images) {
 
-        List<String> imageUrls = null;
-        if (images!=null && !images.isEmpty()) {
-            imageUrls = s3Service.uploadImage(images);
-        }
+        List<String> imageUrls = s3Service.uploadImage(images);
 
 
         System.out.println("ReviewInfo ======================================> reviews Post 요청들어옴 : " + reviewInfo);

@@ -17,6 +17,9 @@ public class ReviewImage {
     private long id;
 
     @Column(nullable = false)
+    private String imageName;
+
+    @Column(nullable = false)
     private String imageUrl;
 
     @ManyToOne
@@ -24,7 +27,8 @@ public class ReviewImage {
     private Review review;
 
     @Builder
-    public ReviewImage(String imageUrl, Review review) {
+    public ReviewImage(String imageUrl, Review review, String imageName) {
+        this.imageName = imageName;
         this.imageUrl = imageUrl;
         this.review = review;
     }
