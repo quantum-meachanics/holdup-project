@@ -2,16 +2,14 @@ package com.quantum.holdup.controller;
 
 import com.quantum.holdup.domain.dto.ChatMessageDTO;
 import com.quantum.holdup.domain.entity.ChatMessage;
+import com.quantum.holdup.domain.entity.ChatRoom;
 import com.quantum.holdup.service.ChatMessageService;
+import com.quantum.holdup.service.ChatRoomService;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -20,20 +18,25 @@ public class ChatMessageController {
 
     private final ChatMessageService chatMessageService;
 
-    public ChatMessageController(ChatMessageService chatMessageService) {
+    private final ChatRoomService chatRoomService;
+
+    public ChatMessageController(ChatMessageService chatMessageService, ChatRoomService chatRoomService) {
         this.chatMessageService = chatMessageService;
+        this.chatRoomService = chatRoomService;
     }
 
-    @MessageMapping("/sendMessage")
+    @MessageMapping("/sendMessage/{roomId}")
     @SendTo("/topic/{roomId}")
-    public ChatMessageDTO sendMessage(@DestinationVariable Long roomId, ChatMessageDTO chatMessageDTO) {
-        ChatMessage chatMessage = new ChatMessage();
-        chatMessage.setSender(chatMessageDTO.getSender());
-        chatMessage.setContent(chatMessageDTO.getContent());
-        chatMessage.setTimestamp(LocalDateTime.now());
-        // 방 정보를 설정해야 하므로 ChatRoomRepository를 통해 방 객체를 가져온 후 설정
-        // chatMessage.setChatRoom(chatRoomRepository.findById(roomId).get());
-        return chatMessageService.saveMessage(chatMessage);
+    public ChatMessageDTO sendMessage(@DestinationVariable Long roomId, @RequestBody ChatMessageDTO messageDTO) {
+        // ChatRoomService의 findById 호출하여 채팅방을 가져옴
+        ChatRoom chatRoom = chatRoomService.findById(roomId);
+
+        ChatMessage message = new ChatMessage();
+        message.setSender(messageDTO.getSender());
+        message.setContent(messageDTO.getContent());
+        message.setChatRoom(chatRoom);
+
+        return chatMessageService.saveMessage(message);
     }
 
     @GetMapping("/messages/{roomId}")

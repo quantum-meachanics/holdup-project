@@ -1,11 +1,15 @@
 package com.quantum.holdup.service;
 
 
+import com.quantum.holdup.domain.dto.ChatMessageDTO;
 import com.quantum.holdup.domain.dto.ChatRoomDTO;
+import com.quantum.holdup.domain.entity.ChatMessage;
 import com.quantum.holdup.domain.entity.ChatRoom;
+import com.quantum.holdup.repository.ChatMessageRepository;
 import com.quantum.holdup.repository.ChatRoomRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -15,20 +19,77 @@ public class ChatRoomService {
 
     private final ChatRoomRepository chatRoomRepository;
 
-    public ChatRoomService(ChatRoomRepository chatRoomRepository) {
+    private final ChatMessageRepository chatMessageRepository;
+
+    public ChatRoomService(ChatRoomRepository chatRoomRepository, ChatMessageRepository chatMessageRepository) {
         this.chatRoomRepository = chatRoomRepository;
+        this.chatMessageRepository = chatMessageRepository;
     }
 
-    public List<ChatRoomDTO> findAll() {
+    // 채팅방 목록 조회
+    public List<ChatRoomDTO> findAllRooms() {
         return chatRoomRepository.findAll().stream()
-                .map(room -> new ChatRoomDTO(room.getId(), room.getName()))
+                .map(room -> {
+                    ChatRoomDTO dto = new ChatRoomDTO();
+                    dto.setId(room.getId());
+                    dto.setName(room.getName());
+                    return dto;
+                })
                 .collect(Collectors.toList());
     }
 
+    // 채팅방 생성
     public ChatRoomDTO createRoom(String name) {
         ChatRoom chatRoom = new ChatRoom();
         chatRoom.setName(name);
         chatRoom = chatRoomRepository.save(chatRoom);
-        return new ChatRoomDTO(chatRoom.getId(), chatRoom.getName());
+
+        ChatRoomDTO dto = new ChatRoomDTO();
+        dto.setId(chatRoom.getId());
+        dto.setName(chatRoom.getName());
+        return dto;
+    }
+
+    // 채팅방 삭제
+    public void deleteRoom(Long roomId) {
+        chatRoomRepository.deleteById(roomId);
+    }
+
+    // 채팅방 메시지 조회
+    public List<ChatMessageDTO> getMessagesByRoomId(Long roomId) {
+        return chatMessageRepository.findByChatRoomId(roomId).stream()
+                .map(msg -> {
+                    ChatMessageDTO dto = new ChatMessageDTO();
+                    dto.setId(msg.getId());
+                    dto.setSender(msg.getSender());
+                    dto.setContent(msg.getContent());
+                    dto.setRoomId(roomId);
+                    dto.setTimestamp(msg.getTimestamp().toString());
+                    return dto;
+                })
+                .collect(Collectors.toList());
+    }
+
+    // 메시지 저장
+    public ChatMessageDTO saveMessage(ChatMessageDTO messageDTO) {
+        ChatRoom chatRoom = chatRoomRepository.findById(messageDTO.getRoomId())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid room ID"));
+
+        ChatMessage chatMessage = new ChatMessage();
+        chatMessage.setSender(messageDTO.getSender());
+        chatMessage.setContent(messageDTO.getContent());
+        chatMessage.setChatRoom(chatRoom);
+        chatMessage.setTimestamp(LocalDateTime.now());
+
+        chatMessage = chatMessageRepository.save(chatMessage);
+        messageDTO.setId(chatMessage.getId());
+        messageDTO.setTimestamp(chatMessage.getTimestamp().toString());
+        return messageDTO;
+    }
+
+    public ChatRoom findById(Long roomId) {
+        // Optional로 반환된 결과를 처리합니다.
+        return chatRoomRepository.findById(roomId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid room ID: " + roomId));
     }
 }
