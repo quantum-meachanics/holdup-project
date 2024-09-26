@@ -31,10 +31,6 @@ public class Review {
     @JoinColumn(name = "RESERVATION_ID")
     private Reservation reservation; // 예약내용
 
-    @OneToMany
-    @JoinColumn(name = "IMAGE_ID")
-    private List<Image> images = new ArrayList<>();
-
 
 //    @OneToMany
 //    @JoinColumn(name = "COMMENT_ID")
@@ -46,7 +42,7 @@ public class Review {
     }
 
     @Builder(toBuilder = true)
-    public Review(long id, String title, String content, boolean isHide, int rating, Member member, Reservation reservation, List<Image> images) {
+    public Review(long id, String title, String content, boolean isHide, int rating, Member member, Reservation reservation) {
         this.id = id;
         this.title = title;
         this.content = content;
@@ -54,7 +50,6 @@ public class Review {
         this.rating = rating;
         this.member = member;
         this.reservation = reservation;
-        this.images = images;
 
     }
 }

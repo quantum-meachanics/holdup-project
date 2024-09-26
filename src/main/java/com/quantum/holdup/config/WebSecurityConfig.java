@@ -26,6 +26,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 @Configuration
 @EnableMethodSecurity
@@ -72,23 +73,26 @@ public class WebSecurityConfig {
                 .addFilterBefore(jwtAuthorizationFilter(), BasicAuthenticationFilter.class)
 
                 .authorizeHttpRequests(auth -> auth
+
                         .requestMatchers(
-                                "holdup/**",
-                                "/holdup/signup",
-                                "/holdup/login",
-                                "/holdup/find-email",
-                                "/swagger-ui/**",
+                                "/holdup/signup", // 회원가입
+                                "/holdup/login", // 로그인
+                                "/holdup/find-email", // 이메일 찾기
+                                "/holdup/check-nickname", // 닉네임 중복검사
+                                "/holdup/check-email", // 이메일 중복검사
+                                "/holdup/signup-send-verification-code", // 회원가입시 이메일 인증코드 전송
+                                "/holdup/signup-verify-code", // 회원가입시 이메일 인증코드 확인
+                                "/holdup/send-verification-code", // 비밀번호 이메일 인증코드 전송
+                                "/holdup/verify-code", // 비밀번호 이메일 인증코드 확인
                                 "/v3/api-docs/**",
-                                "/swagger-resources/**",
-                                "/holdup/check-nickname",
-                                "/holdup/check-email"
-                        ).permitAll() // Swagger 관련 리소스와 회원가입 경로 허용
+                                "/swagger-ui/**", // 스웨거 설정
+                                "/swagger-resources/**" // 스웨거 설정
+                        ).permitAll()
                         .anyRequest().authenticated() // 나머지 요청은 인증 필요
                 );
 
         return http.build();
     }
-
 
     /**
      * 3. Authentization의 인증 메서드를 제공하는 매니저로 Provider의 인터페이스를 의미한다.
@@ -157,7 +161,6 @@ public class WebSecurityConfig {
         return new CustomAuthSuccessHandler();
     }
 
-
     /**
      * 8. Spring security의 사용자 정보가 맞지 않은 경우 행되는 메서드
      *
@@ -185,12 +188,11 @@ public class WebSecurityConfig {
 
         configuration.setAllowedOrigins(Collections.singletonList("http://localhost:3000"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(Arrays.asList("*"));
+        configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
+
         return source;
-
     }
-
 }

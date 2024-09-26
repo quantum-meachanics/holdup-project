@@ -68,8 +68,6 @@ public class MemberService {
                 newMember.getPhone(),
                 newMember.getName(),
                 newMember.getAddress(),
-                "", // addressDetail 은 사용하지 않으므로 빈 문자열
-                "", // confirmPassword 는 사용하지 않으므로 빈 문자열
                 newMember.getBirthday()
         );
     }

@@ -10,11 +10,9 @@ import lombok.NoArgsConstructor;
 public class EmailRequestDTO {
 
     private String email; // 회원 이메일
-    private String nickname; // 회원 닉네임
 
     @Builder
-    public EmailRequestDTO(String email, String nickname) {
+    public EmailRequestDTO(String email) {
         this.email = email;
-        this.nickname = nickname;
     }
 }
