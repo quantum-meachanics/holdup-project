@@ -1,9 +1,6 @@
 package com.quantum.holdup.controller;
 
-import com.quantum.holdup.domain.dto.CommentDTO;
-import com.quantum.holdup.domain.dto.CreateReviewDTO;
-import com.quantum.holdup.domain.dto.ReviewDTO;
-import com.quantum.holdup.domain.dto.UpdateReviewDTO;
+import com.quantum.holdup.domain.dto.*;
 import com.quantum.holdup.message.ResponseMessage;
 import com.quantum.holdup.service.CommentService;
 import com.quantum.holdup.service.ReviewService;
@@ -43,12 +40,12 @@ public class ReviewController {
     @GetMapping("/reviews/{id}")
     public ResponseEntity<ResponseMessage> findReviewById(@PathVariable long id) {
 
-        ReviewDTO reports = service.findReviewById(id);
+        ReviewDetailDTO reviews = service.findReviewById(id);
 
         return ResponseEntity.ok()
                 .body(new ResponseMessage(
                         "아이디로 게시글 조회 성공"
-                        , reports)
+                        , reviews)
                 );
     }
 
@@ -59,7 +56,7 @@ public class ReviewController {
 
         List<String> imageUrls = null;
         if (images!=null && !images.isEmpty()) {
-            imageUrls = s3Service.uploadImage(images);
+//            imageUrls = s3Service.uploadImage(images);
         }
 
 

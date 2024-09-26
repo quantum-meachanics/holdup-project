@@ -45,6 +45,9 @@ public class S3Service {
             }
 
             fileNameList.add(fileName); // 성공하면 리스트에 저장
+
+            // imgurl 가지고 오고 -> reveiew-image 저장
+            String imageUrl = amazonS3.getUrl(bucket, fileName).toString();
         });
 
         return fileNameList;
