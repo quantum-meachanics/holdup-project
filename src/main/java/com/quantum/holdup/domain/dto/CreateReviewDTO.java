@@ -1,7 +1,6 @@
 package com.quantum.holdup.domain.dto;
 
 import com.quantum.holdup.domain.entity.ReviewImage;
-import com.quantum.holdup.domain.entity.SpaceImage;
 import lombok.*;
 
 import java.util.List;

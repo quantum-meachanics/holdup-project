@@ -1,11 +1,13 @@
 package com.quantum.holdup.controller;
 
-import com.quantum.holdup.domain.dto.*;
+import com.quantum.holdup.domain.dto.CommentDTO;
+import com.quantum.holdup.domain.dto.CreateReviewDTO;
+import com.quantum.holdup.domain.dto.ReviewDTO;
+import com.quantum.holdup.domain.dto.UpdateReviewDTO;
 import com.quantum.holdup.message.ResponseMessage;
 import com.quantum.holdup.service.CommentService;
 import com.quantum.holdup.service.ReviewService;
 import com.quantum.holdup.service.S3Service;
-import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -14,7 +16,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
