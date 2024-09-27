@@ -18,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -31,6 +32,7 @@ public class ReviewService {
     private final ReservationRepository reservationRepo;
     private final MemberRepository memberRepo;
     private final ReviewImageRepository reviewImageRepo;
+    private final S3Service s3Service;
 
     public Page<ReviewDTO> findAllReview(Pageable pageable) {
 
@@ -159,23 +161,65 @@ public class ReviewService {
     }
 
     // 리뷰 게시글 수정
-    public UpdateReviewDTO updateReview(Long id, UpdateReviewDTO modifyInfo) {
+    public UpdateReviewDTO updateReview(long id, UpdateReviewDTO modifyInfo,
+                                        List<String> newImages,
+                                        List<Long> deletedImageIds) {
+
+        // 로그인 되어있는 사용자의 이메일 가져옴
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        // 가져온 이메일로 사용자 찾기
+        Member member = (Member ) memberRepo.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
         Review reviewEntity = repo.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Post not found with postId " + id));
 
-        // toBuilder()를 사용하여 기존 객체를 기반으로 새 객체 생성
-        Review updatedReview = reviewEntity.toBuilder()
-                .id(id)
+        // 현재 사용자가 리뷰 작성자인지 확인합니다.
+        // 작성자가 아니면 수정 권한이 없으므로 RuntimeException을 발생시킵니다.
+        if (!reviewEntity.getMember().equals(member)) {
+            throw new RuntimeException("You don't have permission to modify this review");
+        }
+
+        Review updatedReview = Review.builder()
+                .id(reviewEntity.getId())
+                .member(member)
+                .reservation(reviewEntity.getReservation())
                 .title(modifyInfo.getTitle())
                 .content(modifyInfo.getContent())
+                .rating(modifyInfo.getRating())
                 .build();
 
-        // 새로운 엔티티 저장
-        repo.save(updatedReview);
+        Review savedReview = repo.save(updatedReview);
+
+        // 기존 이미지를 삭제할 경우
+        if (deletedImageIds != null && !deletedImageIds.isEmpty()) {
+            for (Long imageId : deletedImageIds) {
+                ReviewImage image = reviewImageRepo.findById(imageId)
+                        .orElseThrow(() -> new NoSuchElementException("Image not found with id " + imageId));
+                if (image.getReview().getId() == reviewEntity.getId()) {
+                    String fileName = extractFileNameFromUrl(image.getImageUrl());
+                    s3Service.deleteImage(fileName);
+                    reviewImageRepo.delete(image);
+                }
+            }
+        }
+
+        // 새 이미지 추가
+        if (newImages != null && !newImages.isEmpty()) {
+            List<ReviewImage> images = newImages.stream().map(url -> ReviewImage.builder()
+                    .imageUrl((url))
+                    .imageName(extractFileNameFromUrl((url)))
+                    .review(savedReview)
+                    .build()).toList();
+
+            reviewImageRepo.saveAll(images);
+        }
+
+
 
         // ReviewDTO 생성 및 반환
-        return new UpdateReviewDTO(updatedReview.getTitle(), updatedReview.getContent());
+        return new UpdateReviewDTO(updatedReview.getTitle(), updatedReview.getContent(),updatedReview.getRating(),updatedReview.getReservation().getId());
     }
 
     public boolean deleteReview(long id) {

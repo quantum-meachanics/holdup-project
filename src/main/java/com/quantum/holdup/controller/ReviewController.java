@@ -70,16 +70,21 @@ public class ReviewController {
 
     // 리뷰글 수정
     @PutMapping("/reviews/{id}")
-    public ResponseEntity<?> modifyReview(@PathVariable Long id, @RequestBody UpdateReviewDTO modifyInfo) {
+    public ResponseEntity<?> modifyReview(
+            @PathVariable long id,
+            @RequestPart(value = "modifyInfo") UpdateReviewDTO modifyInfo,
+            @RequestPart(value = "newImages", required = false) List<MultipartFile> newImages,
+            @RequestPart(value = "deletedImages", required = false) List<Long> deletedImageIds) {
 
-        UpdateReviewDTO updatedPost = service.updateReview(id, modifyInfo);
+        List<String> imageUrls = s3Service.uploadImage(newImages);
 
         return ResponseEntity.ok()
                 .body(new ResponseMessage(
                         "게시글 수정 완료",
-                        updatedPost
+                        service.updateReview(id, modifyInfo, imageUrls, deletedImageIds)
                 ));
     }
+
 
     @DeleteMapping("/reviews/{id}")
     public ResponseEntity<?> deleteReview(@PathVariable long id) {
