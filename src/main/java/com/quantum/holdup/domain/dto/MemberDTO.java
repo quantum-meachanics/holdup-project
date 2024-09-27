@@ -26,7 +26,6 @@ public class MemberDTO {
     private Role role; // 회원 등급
 
     @Builder
-
     public MemberDTO(long id, String email, String password, String nickname, String phone, String name, String address, LocalDate birthday, int credit, int point, boolean isLeave, boolean isBan, LocalDateTime entDate, Role role) {
         this.id = id;
         this.email = email;

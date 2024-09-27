@@ -3,9 +3,11 @@ package com.quantum.holdup.service;
 import com.quantum.holdup.domain.dto.CreateMemberDTO;
 import com.quantum.holdup.domain.dto.MemberDTO;
 import com.quantum.holdup.domain.dto.SearchMemberEmailDTO;
+import com.quantum.holdup.domain.dto.UpdateMemberDTO;
 import com.quantum.holdup.domain.entity.Member;
 import com.quantum.holdup.domain.entity.Role;
 import com.quantum.holdup.repository.MemberRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -94,8 +96,26 @@ public class MemberService {
         return !repo.existsByNickname(nickname);
     }
 
+    public void updateUserInfoByEmail(String email, UpdateMemberDTO memberDTO) {
+        // 이메일로 사용자 찾기
+        Member member = (Member) repo.findByEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다. 이메일: " + email));
 
+        // 닉네임 업데이트 (null이 아닐 경우)
+        if (memberDTO.getNickname() != null) {
+            member.setNickname(memberDTO.getNickname());
+        }
+
+        // 비밀번호 업데이트 (null이 아닐 경우)
+        if (memberDTO.getPassword() != null) {
+            member.setPassword(passwordEncoder.encode(memberDTO.getPassword()));
+        }
+
+        // 변경 사항 저장
+        repo.save(member);
+    }
 }
+
 
 
 
