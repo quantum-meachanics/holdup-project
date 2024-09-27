@@ -20,10 +20,6 @@ public class CustomUserDetails implements UserDetails {
 
     private Member member;
 
-    public String getUserEmail() {
-        return member.getEmail();
-    }
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         // 회원의 권한을 GrantedAuthority 로 변환

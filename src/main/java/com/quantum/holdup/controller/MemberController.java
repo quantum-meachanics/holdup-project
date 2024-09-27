@@ -1,12 +1,14 @@
 package com.quantum.holdup.controller;
 
-import com.quantum.holdup.domain.dto.CreateMemberDTO;
-import com.quantum.holdup.domain.dto.LoginMemberDTO;
-import com.quantum.holdup.domain.dto.SearchMemberEmailDTO;
+import com.quantum.holdup.domain.dto.*;
+import com.quantum.holdup.domain.entity.Member;
 import com.quantum.holdup.message.ResponseMessage;
+import com.quantum.holdup.service.CustomUserDetails;
 import com.quantum.holdup.service.MemberService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
@@ -72,6 +74,22 @@ public class MemberController {
         return ResponseEntity.ok(response);
     }
 
+    @PutMapping("/update")
+    public ResponseEntity<?> updateUserInfo(@RequestBody UpdateMemberDTO memberDTO, @AuthenticationPrincipal CustomUserDetails userDetails) {
+        try {
+            if (userDetails == null) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("사용자를 찾을 수 없습니다.");
+            }
+
+            String email = userDetails.getMember().getEmail(); // 현재 로그인한 사용자의 이메일 가져오기
+
+            // 서비스 메서드를 호출하여 사용자 정보 업데이트
+            service.updateUserInfoByEmail(email, memberDTO);
+            return ResponseEntity.ok("회원 정보가 성공적으로 수정되었습니다.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("회원 정보 수정 실패: " + e.getMessage());
+        }
+    }
 }
 
 
