@@ -4,6 +4,7 @@ import com.quantum.holdup.Page.Pagination;
 import com.quantum.holdup.Page.PagingButtonInfo;
 import com.quantum.holdup.domain.dto.CreateReviewDTO;
 import com.quantum.holdup.domain.dto.ReviewDTO;
+import com.quantum.holdup.domain.dto.ReviewDetailDTO;
 import com.quantum.holdup.domain.dto.UpdateReviewDTO;
 import com.quantum.holdup.domain.entity.*;
 import com.quantum.holdup.repository.MemberRepository;
@@ -74,19 +75,25 @@ public class ReviewService {
 
     }
 
-    public ReviewDTO findReviewById(long id) {
+    public ReviewDetailDTO findReviewById(long id) {
 
-        Review postEntity = repo.findById(id)
+        Review reviewEntity = repo.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Post not found with id " + id));
 
-        return ReviewDTO.builder()
-                .id(postEntity.getId())
-                .title(postEntity.getTitle())
-                .content(postEntity.getContent())
-                .createDate(postEntity.getCreateDate())
-                .rating(postEntity.getRating())
-                .nickname(postEntity.getMember().getNickname())
-                .reservation(postEntity.getReservation())
+        List<String> imageUrls = reviewImageRepo.findByReviewId(id)
+                .stream()
+                .map(ReviewImage::getImageUrl)
+                .toList();
+
+        return ReviewDetailDTO.builder()
+                .id(reviewEntity.getId())
+                .title(reviewEntity.getTitle())
+                .content(reviewEntity.getContent())
+                .createDate(reviewEntity.getCreateDate())
+                .rating(reviewEntity.getRating())
+                .nickname(reviewEntity.getMember().getNickname())
+                .reservation(reviewEntity.getReservation())
+                .imageUrl(imageUrls)
                 .build();
     }
 
