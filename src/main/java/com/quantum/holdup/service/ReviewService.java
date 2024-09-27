@@ -188,16 +188,17 @@ public class ReviewService {
             throw new RuntimeException("You don't have permission to modify this review");
         }
 
-        Review updatedReview = Review.builder()
-                .id(reviewEntity.getId())
-                .member(member)
-                .reservation(reviewEntity.getReservation())
-                .title(modifyInfo.getTitle())
-                .content(modifyInfo.getContent())
-                .rating(modifyInfo.getRating())
-                .build();
+        if (modifyInfo.getTitle() != null) {
+            reviewEntity.setTitle(modifyInfo.getTitle());
+        }
+        if (modifyInfo.getContent() != null) {
+            reviewEntity.setContent(modifyInfo.getContent());
+        }
+        if (modifyInfo.getRating() != 0) {
+            reviewEntity.setRating(modifyInfo.getRating());
+        }
 
-        Review savedReview = repo.save(updatedReview);
+        Review savedReview = repo.save(reviewEntity);
 
         // 기존 이미지를 삭제할 경우
         if (deletedImageIds != null && !deletedImageIds.isEmpty()) {
@@ -226,7 +227,7 @@ public class ReviewService {
 
 
         // ReviewDTO 생성 및 반환
-        return new UpdateReviewDTO(updatedReview.getTitle(), updatedReview.getContent(),updatedReview.getRating(),updatedReview.getReservation().getId());
+        return new UpdateReviewDTO(savedReview.getTitle(), savedReview.getContent(),savedReview.getRating(),savedReview.getReservation().getId());
     }
 
     public boolean deleteReview(long id) {
