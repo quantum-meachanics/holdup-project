@@ -5,6 +5,7 @@ import com.quantum.holdup.domain.entity.Member;
 import com.quantum.holdup.message.ResponseMessage;
 import com.quantum.holdup.service.CustomUserDetails;
 import com.quantum.holdup.service.MemberService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -74,20 +75,38 @@ public class MemberController {
         return ResponseEntity.ok(response);
     }
 
-    @PutMapping("/update")
-    public ResponseEntity<?> updateUserInfo(@RequestBody UpdateMemberDTO memberDTO, @AuthenticationPrincipal CustomUserDetails userDetails) {
+    @PutMapping("/update/{email}")
+    public ResponseEntity<ResponseMessage> updateMember(
+            @PathVariable String email,
+            @RequestBody UpdateMemberDTO memberDTO) {
         try {
-            if (userDetails == null) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("사용자를 찾을 수 없습니다.");
-            }
-
-            String email = userDetails.getMember().getEmail(); // 현재 로그인한 사용자의 이메일 가져오기
-
-            // 서비스 메서드를 호출하여 사용자 정보 업데이트
-            service.updateUserInfoByEmail(email, memberDTO);
-            return ResponseEntity.ok("회원 정보가 성공적으로 수정되었습니다.");
+            service.updateUser(email, memberDTO);
+            return ResponseEntity.ok(new ResponseMessage("회원 정보가 수정되었습니다.", null));
+        } catch (IllegalArgumentException e) {
+            // 예외 처리: 잘못된 인자
+            return ResponseEntity.badRequest().body(new ResponseMessage("회원 정보 수정 요청이 잘못되었습니다.", e.getMessage()));
+        } catch (EntityNotFoundException e) {
+            // 예외 처리: 회원을 찾을 수 없음
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ResponseMessage("해당 회원을 찾을 수 없습니다.", e.getMessage()));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("회원 정보 수정 실패: " + e.getMessage());
+            // 기타 예외 처리
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseMessage("회원 정보 수정에 실패하였습니다.", e.getMessage()));
+        }
+    }
+
+    @PostMapping("/check-password")
+    public ResponseEntity<?> checkPassword(@RequestBody PasswordCheckRequestDTO request) {
+        try {
+            boolean isPasswordValid = service.checkPassword(request.getEmail(), request.getCurrentPassword());
+            if (isPasswordValid) {
+                return ResponseEntity.ok(new ResponseMessage("비밀번호가 확인되었습니다.", null));
+            } else {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ResponseMessage("비밀번호가 일치하지 않습니다.", null));
+            }
+        } catch (Exception e) {
+            // 예외 처리: 기타 예외
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseMessage("비밀번호 확인 중 오류가 발생했습니다.", e.getMessage()));
         }
     }
 }

@@ -52,47 +52,44 @@ public class WebSecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http
-                // csrf (Cross-Site-Request-Forgery)
-                // RESTAPI 혹은 JWT 기반 인증에서는 세션을 사용하지 않아서 보호를 하지 않아도 됨.
+                // CSRF 보호 비활성화 (REST API 혹은 JWT 사용 시)
                 .csrf(AbstractHttpConfigurer::disable)
-                // 어플리케이션의 session 상태를 비저장 모드로 동작하게함
+                // 세션 상태를 비저장 모드로 설정
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                // 기존 formlogin을 사용하지 않으므로 비활성화
+                // 기본 로그인 비활성화
                 .formLogin(AbstractHttpConfigurer::disable)
-                // http 기본인증 (JWT를 사용할것이므로) 비활성화
+                // HTTP 기본 인증 비활성화
                 .httpBasic(AbstractHttpConfigurer::disable)
 
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
 
-                // 사용자가 입력한 아이디 패스워드를 전달받아 로그인을 직접적으로 수행하는 필터
-                // 인증시(successHandler를 통해) 토큰을 생성해서 header로 전달하고
-                // 실패시(failureHandler를 통해) 실패 이유를 담아서 응답한다.
+                // 사용자 인증 필터 추가
                 .addFilterBefore(customAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
-
-                // header 에 token이 담겨져 왔을 경우 인가처리를 해주는 필터
+                // JWT 인증 필터 추가
                 .addFilterBefore(jwtAuthorizationFilter(), BasicAuthenticationFilter.class)
 
                 .authorizeHttpRequests(auth -> auth
-
                         .requestMatchers(
                                 "/holdup/signup", // 회원가입
                                 "/holdup/login", // 로그인
                                 "/holdup/find-email", // 이메일 찾기
                                 "/holdup/check-nickname", // 닉네임 중복검사
                                 "/holdup/check-email", // 이메일 중복검사
-                                "/holdup/signup-send-verification-code", // 회원가입시 이메일 인증코드 전송
-                                "/holdup/signup-verify-code", // 회원가입시 이메일 인증코드 확인
+                                "/holdup/signup-send-verification-code", // 이메일 인증코드 전송
+                                "/holdup/signup-verify-code", // 이메일 인증코드 확인
                                 "/holdup/send-verification-code", // 비밀번호 이메일 인증코드 전송
                                 "/holdup/verify-code", // 비밀번호 이메일 인증코드 확인
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**", // 스웨거 설정
                                 "/swagger-resources/**" // 스웨거 설정
                         ).permitAll()
+                        .requestMatchers("/holdup/update").authenticated() // /update 경로 인증 필요
                         .anyRequest().authenticated() // 나머지 요청은 인증 필요
                 );
 
         return http.build();
     }
+
 
     /**
      * 3. Authentization의 인증 메서드를 제공하는 매니저로 Provider의 인터페이스를 의미한다.
