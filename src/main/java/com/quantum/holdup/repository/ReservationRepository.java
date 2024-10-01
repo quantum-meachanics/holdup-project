@@ -13,11 +13,11 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     @Query("SELECT COUNT(rv) " +
             "FROM Reservation r LEFT JOIN r.review rv " +
             "WHERE r.space.id = :spaceId")
-    int countReviewsBySpaceId(@Param("spaceId") Long spaceId);
+    Integer countReviewsBySpaceId(@Param("spaceId") Long spaceId);
 
     // 별점 평균 조회
     @Query("SELECT AVG(rv.rating) " +
             "FROM Reservation r LEFT JOIN r.review rv " +
             "WHERE r.space.id = :spaceId")
-    long findAverageRatingBySpaceId(@Param("spaceId") Long spaceId);
+    Long findAverageRatingBySpaceId(@Param("spaceId") Long spaceId);
 }

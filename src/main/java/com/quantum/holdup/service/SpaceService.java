@@ -136,6 +136,7 @@ public class SpaceService {
         });
     }
 
+    // 공간 상세 조회 메소드
     public SpaceDetailDTO findSpaceById(long id) {
 
         // 아이디에 해당하는 공간 엔티티 찾아오기
@@ -147,10 +148,12 @@ public class SpaceService {
                 .orElseThrow(() -> new NoSuchElementException("공간 등록자 정보를 찾을 수 없습니다."));
 
         // 공간에 등록된 리뷰의 총 갯수 찾아오기
-        int reviewCount = reservationRepo.countReviewsBySpaceId(id);
+        int reviewCount = reservationRepo.countReviewsBySpaceId(id) != null ?
+                reservationRepo.countReviewsBySpaceId(id) : 0;
 
         // 공간 리뷰의 별점 평균 찾아오기
-        long ratingAverage = reservationRepo.findAverageRatingBySpaceId(id);
+        Long ratingAveraging = reservationRepo.findAverageRatingBySpaceId(id);
+        long ratingAverage = (ratingAveraging != null) ? ratingAveraging : 0;
 
         // 공간에 등록된 이미지 찾아오기
         List<String> imageUrls = imageRepo.findBySpaceId(id)
