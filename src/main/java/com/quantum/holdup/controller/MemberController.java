@@ -11,7 +11,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
+import java.security.Principal;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -109,7 +111,33 @@ public class MemberController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseMessage("비밀번호 확인 중 오류가 발생했습니다.", e.getMessage()));
         }
     }
+
+    @PutMapping("/{email}/recharge-credits")
+    public ResponseEntity<String> rechargeCredits(@PathVariable String email, @RequestBody RechargeCreditsDTO rechargeCreditsDTO) {
+        // DTO에서 금액을 가져오기
+        String extractedEmail = rechargeCreditsDTO.getEmail(); // DTO에서 이메일 추출
+        int amount = rechargeCreditsDTO.getAmount();
+
+        // 이메일이 문자열 형태로 넘어오므로, 로그 출력
+        System.out.println("크레딧 충전 요청: 이메일 = " + email + ", 금액 = " + amount + ", email" + extractedEmail);
+
+        // 크레딧 충전 서비스 호출
+        try {
+            service.rechargeCredits(email, amount);
+            return ResponseEntity.ok("크레딧이 성공적으로 충전되었습니다.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (ResponseStatusException e) {
+            return ResponseEntity.status(e.getStatusCode()).body(e.getReason());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("크레딧 충전 중 오류가 발생했습니다.");
+        }
+    }
+
 }
+
 
 
 
