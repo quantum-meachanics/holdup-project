@@ -1,4 +1,4 @@
--- 회원 더미 데이터
+# 회원 더미 데이터
 INSERT INTO member (email, password, birthday, credit, nickname, role, phone, name, is_ban, is_leave, ent_date, point,
                     address)
 VALUES ('test1', '$2a$10$Wvs.Wp11i7hRIgjhRUb1.uRWPBywcIrOgY5diaW/Uird2eyWUThRy', '1990-01-15',
@@ -48,7 +48,7 @@ VALUES ('test1', '$2a$10$Wvs.Wp11i7hRIgjhRUb1.uRWPBywcIrOgY5diaW/Uird2eyWUThRy',
         '서울시 구로구 디지털로 디지털단지 1212호');
 
 
--- 공간 더미 데이터
+# 공간 더미 데이터
 INSERT INTO space (name, address, detail_address, description, width, height, depth, count, price, is_hide, gu, dong,
                    member_id, create_date)
 VALUES ('test1', '서울시 강남구 역삼동', '역삼로 101', '강남구의 모던한 공간입니다.', 10, 3, 5, 25, FLOOR(RAND() * 900) + 100, FALSE, '강남구',
@@ -83,7 +83,7 @@ VALUES ('test1', '서울시 강남구 역삼동', '역삼로 101', '강남구의
         '잠실동', 1, '2024-09-15 00:00:00');
 
 
--- 예약 더미 데이터
+# 예약 더미 데이터
 INSERT INTO reservation (member_id, space_id, create_date, start_date, end_date, is_accept, is_end)
 VALUES (1, 1, '2024-09-01 10:00:00', '2024-09-02 10:00:00', '2024-09-02 11:00:00', FALSE, FALSE),
        (1, 2, '2024-09-01 10:00:00', '2024-09-03 10:00:00', '2024-09-03 11:00:00', FALSE, FALSE),
@@ -102,7 +102,7 @@ VALUES (1, 1, '2024-09-01 10:00:00', '2024-09-02 10:00:00', '2024-09-02 11:00:00
        (3, 15, '2024-09-08 17:00:00', '2024-09-16 10:00:00', '2024-09-16 11:00:00', FALSE, FALSE);
 
 
--- 리뷰 더미 데이터
+# 리뷰 더미 데이터
 INSERT INTO review (is_hide, member_id, reservation_id, rating, create_date, content, title)
 VALUES (FALSE, 1, 1, 5, '2024-09-02 12:00:00', '아주 좋은 공간이었습니다. 다음에 또 이용하고 싶어요!', '최고의 경험'),
        (FALSE, 2, 2, 4, '2024-09-03 13:00:00', '편안한 분위기와 친절한 서비스가 좋았습니다.', '편안한 시간'),
