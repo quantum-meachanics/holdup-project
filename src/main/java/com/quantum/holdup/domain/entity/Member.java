@@ -64,6 +64,7 @@ public class Member {
     @PrePersist
     protected void onCreate() { // 가입일시를 자동으로 입력해주는 메소드
         this.entDate = LocalDateTime.now();
+        this.credit = 0;
     }
 
     @Builder(toBuilder = true)
@@ -78,8 +79,8 @@ public class Member {
         this.address = address;
         this.addressDetail = addressDetail;
         this.birthday = birthday;
-        this.credit = 0;
-        this.point = 0;
+        this.credit = credit;
+        this.point = point;
         this.isLeave = isLeave;
         this.isBan = isBan;
         this.entDate = LocalDateTime.now();

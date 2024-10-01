@@ -26,7 +26,7 @@ public class UpdateMemberDTO {
         this.email = email;
         this.password = password;
         this.nickname = nickname;
-        this.address = address; // 주소와 상세 주소 합치기
+        this.address = address;
         this.addressDetail = addressDetail;
         this.phone = phone;
         this.newPassword = newPassword;
