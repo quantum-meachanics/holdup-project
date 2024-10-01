@@ -6,7 +6,10 @@ import com.quantum.holdup.domain.dto.CreateReviewDTO;
 import com.quantum.holdup.domain.dto.ReviewDTO;
 import com.quantum.holdup.domain.dto.ReviewDetailDTO;
 import com.quantum.holdup.domain.dto.UpdateReviewDTO;
-import com.quantum.holdup.domain.entity.*;
+import com.quantum.holdup.domain.entity.Member;
+import com.quantum.holdup.domain.entity.Reservation;
+import com.quantum.holdup.domain.entity.Review;
+import com.quantum.holdup.domain.entity.ReviewImage;
 import com.quantum.holdup.repository.MemberRepository;
 import com.quantum.holdup.repository.ReservationRepository;
 import com.quantum.holdup.repository.ReviewImageRepository;
@@ -19,7 +22,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -168,9 +170,9 @@ public class ReviewService {
     }
 
     // 리뷰 게시글 수정
-    public UpdateReviewDTO updateReview(long id, UpdateReviewDTO modifyInfo,
-                                        List<String> newImages,
-                                        List<Long> deletedImageIds) {
+    public Object updateReview(long id, UpdateReviewDTO modifyInfo,
+                                       List<String> newImageUrls,
+                                        List<Long> deleteImageId) {
 
         // 로그인 되어있는 사용자의 이메일 가져옴
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -182,40 +184,39 @@ public class ReviewService {
         Review reviewEntity = repo.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Post not found with postId " + id));
 
-        // 현재 사용자가 리뷰 작성자인지 확인합니다.
-        // 작성자가 아니면 수정 권한이 없으므로 RuntimeException을 발생시킵니다.
-        if (!reviewEntity.getMember().equals(member)) {
-            throw new RuntimeException("You don't have permission to modify this review");
-        }
 
-        if (modifyInfo.getTitle() != null) {
-            reviewEntity.setTitle(modifyInfo.getTitle());
-        }
-        if (modifyInfo.getContent() != null) {
-            reviewEntity.setContent(modifyInfo.getContent());
-        }
-        if (modifyInfo.getRating() != 0) {
-            reviewEntity.setRating(modifyInfo.getRating());
-        }
+        Review updatedReview = Review.builder()
+                .id(reviewEntity.getId())
+                .member(member)
+                .reservation(reviewEntity.getReservation())
+                .title(modifyInfo.getTitle())
+                .content(modifyInfo.getContent())
+                .rating(modifyInfo.getRating())
+                .build();
 
-        Review savedReview = repo.save(reviewEntity);
+        System.out.println("==============저장전");
+        Review savedReview = repo.save(updatedReview);
+        System.out.println("============= 저장후");
 
         // 기존 이미지를 삭제할 경우
-        if (deletedImageIds != null && !deletedImageIds.isEmpty()) {
-            for (Long imageId : deletedImageIds) {
-                ReviewImage image = reviewImageRepo.findById(imageId)
-                        .orElseThrow(() -> new NoSuchElementException("Image not found with id " + imageId));
-                if (image.getReview().getId() == reviewEntity.getId()) {
-                    String fileName = extractFileNameFromUrl(image.getImageUrl());
-                    s3Service.deleteImage(fileName);
-                    reviewImageRepo.delete(image);
-                }
-            }
-        }
+//        if (deleteImageId != null && !deleteImageId.isEmpty()) {
+//
+//            System.out.println(deleteImageId);
+//            long imagesToDelete = reviewImageRepo.findById(deleteImageId);
+//
+//            for (ReviewImage image : imagesToDelete) {
+//                if (deleteImage(image.getId())) {
+//                    System.out.println("이미지 삭제 성공: " + image.getId());
+//                } else {
+//                    System.out.println("이미지 삭제 실패: " + image.getId());
+//                }
+//            }
+//        }
+        System.out.println("=============삭제");
 
         // 새 이미지 추가
-        if (newImages != null && !newImages.isEmpty()) {
-            List<ReviewImage> images = newImages.stream().map(url -> ReviewImage.builder()
+        if (newImageUrls != null && !newImageUrls.isEmpty()) {
+            List<ReviewImage> images = newImageUrls.stream().map(url -> ReviewImage.builder()
                     .imageUrl((url))
                     .imageName(extractFileNameFromUrl((url)))
                     .review(savedReview)
@@ -224,10 +225,35 @@ public class ReviewService {
             reviewImageRepo.saveAll(images);
         }
 
-
+        System.out.println("============추가");
 
         // ReviewDTO 생성 및 반환
-        return new UpdateReviewDTO(savedReview.getTitle(), savedReview.getContent(),savedReview.getRating(),savedReview.getReservation().getId());
+        return UpdateReviewDTO.builder()
+                .title(savedReview.getTitle())
+                .content(savedReview.getContent())
+                .rating(savedReview.getRating())
+                .reservationId(savedReview.getReservation().getId())
+                .build();
+
+    }
+
+    public boolean deleteImage(long imageId) {
+        try {
+            // 1. DB에서 이미지 정보 조회
+            ReviewImage image = reviewImageRepo.findById(imageId)
+                    .orElseThrow(() -> new RuntimeException("Image not found with id: " + imageId));
+
+            // 2. S3에서 이미지 파일 삭제
+            String fileName = image.getImageName(); // S3에 저장된 파일 이름
+            s3Service.deleteImage(fileName);
+
+            // 3. DB에서 이미지 정보 삭제
+            reviewImageRepo.delete(image);
+
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     public boolean deleteReview(long id) {

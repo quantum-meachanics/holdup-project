@@ -1,5 +1,6 @@
 package com.quantum.holdup.controller;
 
+import ch.qos.logback.core.boolex.EvaluationException;
 import com.quantum.holdup.domain.dto.*;
 import com.quantum.holdup.message.ResponseMessage;
 import com.quantum.holdup.service.CommentService;
@@ -66,19 +67,20 @@ public class ReviewController {
     }
 
     // 리뷰글 수정
-    @PutMapping("/reviews/{id}")
+    @PutMapping(value = "/reviews/{id}",consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> modifyReview(
             @PathVariable long id,
-            @RequestPart(value = "modifyInfo") UpdateReviewDTO modifyInfo,
+            @RequestPart(value = "modifyInfo", required = false) UpdateReviewDTO modifyInfo,
             @RequestPart(value = "newImages", required = false) List<MultipartFile> newImages,
-            @RequestPart(value = "deletedImages", required = false) List<Long> deletedImageIds) {
+            @RequestPart(value = "deleteImage", required = false) List<Long> deleteImage
+            ) {
 
         List<String> imageUrls = s3Service.uploadImage(newImages);
-
+        System.out.println("=================요청들어옴");
         return ResponseEntity.ok()
                 .body(new ResponseMessage(
                         "게시글 수정 완료",
-                        service.updateReview(id, modifyInfo, imageUrls, deletedImageIds)
+                        service.updateReview(id, modifyInfo, imageUrls, deleteImage)
                 ));
     }
 
