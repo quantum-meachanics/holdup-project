@@ -6,12 +6,11 @@ import com.quantum.holdup.service.S3Service;
 import com.quantum.holdup.service.SpaceService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -36,6 +35,15 @@ public class SpaceController {
                 .body(new ResponseMessage(
                         "공간 등록 성공",
                         spaceService.createSpace(spaceInfo, imageUrls)
+                ));
+    }
+
+    @GetMapping("/spaces")
+    public ResponseEntity<ResponseMessage> findAllSpaces(@PageableDefault Pageable pageable) {
+        return ResponseEntity.ok()
+                .body(new ResponseMessage(
+                        "공간 전체 조회를 성공했습니다.",
+                        spaceService.findAllSpaces(pageable)
                 ));
     }
 }

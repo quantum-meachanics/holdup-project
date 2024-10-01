@@ -1,6 +1,9 @@
 package com.quantum.holdup.service;
 
+import com.quantum.holdup.Page.Pagination;
+import com.quantum.holdup.Page.PagingButtonInfo;
 import com.quantum.holdup.domain.dto.CreateSpaceDTO;
+import com.quantum.holdup.domain.dto.SpacePageDTO;
 import com.quantum.holdup.domain.entity.Member;
 import com.quantum.holdup.domain.entity.Space;
 import com.quantum.holdup.domain.entity.SpaceImage;
@@ -8,10 +11,15 @@ import com.quantum.holdup.repository.MemberRepository;
 import com.quantum.holdup.repository.SpaceImageRepository;
 import com.quantum.holdup.repository.SpaceRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 @RequiredArgsConstructor
@@ -73,5 +81,47 @@ public class SpaceService {
                 newSpace.getCount(),
                 newSpace.getPrice()
         );
+    }
+
+    public Page<SpacePageDTO> findAllSpaces(Pageable pageable) {
+        // 페이지의 번호 조정 및 정렬
+        pageable = PageRequest.of(
+                pageable.getPageNumber() <= 0 ? 0 : pageable.getPageNumber() - 1,
+                pageable.getPageSize(),
+                Sort.by("id").descending()
+        );
+
+        // 전체 공간 엔티티 가져오기
+        Page<Space> spaces = spaceRepo.findAll(pageable);
+
+        // 가져온 엔티티 페이징 버튼 생성
+        PagingButtonInfo paging = Pagination.getPagingButtonInfo(spaces);
+
+        return spaces.map(spaceEntity -> {
+            Member member = memberRepo.findById(spaceEntity.getOwner().getId())
+                    .orElseThrow(() -> new NoSuchElementException("공간 등록자 정보를 찾을 수 없습니다."));
+
+            SpacePageDTO spacePageDTO = new SpacePageDTO(
+                    spaceEntity.getId(),
+                    member.getId(),
+                    spaceEntity.getName(),
+                    spaceEntity.getAddress(),
+                    spaceEntity.getDetailAddress(),
+                    spaceEntity.getGu(),
+                    spaceEntity.getDong(),
+                    spaceEntity.getDescription(),
+                    spaceEntity.getWidth(),
+                    spaceEntity.getHeight(),
+                    spaceEntity.getDepth(),
+                    spaceEntity.getCount(),
+                    spaceEntity.getPrice(),
+                    spaceEntity.isHide(),
+                    spaceEntity.getCreateDate()
+            );
+
+            spacePageDTO.setPagingButtonInfo(paging);
+
+            return spacePageDTO;
+        });
     }
 }
