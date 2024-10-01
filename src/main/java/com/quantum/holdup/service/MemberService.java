@@ -9,8 +9,13 @@ import com.quantum.holdup.domain.entity.Role;
 import com.quantum.holdup.repository.MemberRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -20,6 +25,7 @@ public class MemberService {
 
     private final MemberRepository repo;
     private final PasswordEncoder passwordEncoder;
+    private AuthenticationManager authenticationManager;
 
     // 전체 멤버 조회 메소드
     public List<MemberDTO> findAllMember() {
@@ -57,6 +63,7 @@ public class MemberService {
                 .phone(memberInfo.getPhone())
                 .name(memberInfo.getName())
                 .address(memberInfo.getAddress())
+                .addressDetail(memberInfo.getAddressDetail())
                 .birthday(memberInfo.getBirthday())
                 .role(Role.USER)
                 .build();
@@ -70,6 +77,7 @@ public class MemberService {
                 newMember.getPhone(),
                 newMember.getName(),
                 newMember.getAddress(),
+                newMember.getAddressDetail(),
                 newMember.getBirthday()
         );
     }
@@ -96,24 +104,55 @@ public class MemberService {
         return !repo.existsByNickname(nickname);
     }
 
-    public void updateUserInfoByEmail(String email, UpdateMemberDTO memberDTO) {
-        // 이메일로 사용자 찾기
+    public boolean checkPassword(String email, String currentPassword) {
+        // 이메일로 사용자 검색
         Member member = (Member) repo.findByEmail(email)
                 .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다. 이메일: " + email));
 
-        // 닉네임 업데이트 (null이 아닐 경우)
-        if (memberDTO.getNickname() != null) {
-            member.setNickname(memberDTO.getNickname());
-        }
-
-        // 비밀번호 업데이트 (null이 아닐 경우)
-        if (memberDTO.getPassword() != null) {
-            member.setPassword(passwordEncoder.encode(memberDTO.getPassword()));
-        }
-
-        // 변경 사항 저장
-        repo.save(member);
+        // 비밀번호가 일치하는지 확인
+        return passwordEncoder.matches(currentPassword, member.getPassword());
     }
+
+    public void updateUserInfoByEmail(String email, UpdateMemberDTO memberDTO) {
+        Member member = (Member) repo.findByEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다. 이메일: " + email));
+
+        // 현재 비밀번호 검증
+        if (memberDTO.getCurrentPassword() != null && !passwordEncoder.matches(memberDTO.getCurrentPassword(), member.getPassword())) {
+            throw new IllegalArgumentException("현재 비밀번호가 일치하지 않습니다.");
+        }
+
+        // 빌더 패턴을 사용하여 업데이트할 필드들 설정
+        Member updatedMember = member.toBuilder()
+                .id(member.getId()) // 기존 ID 유지
+                .nickname(memberDTO.getNickname() != null ? memberDTO.getNickname() : member.getNickname()) // 닉네임 업데이트
+                .address(memberDTO.getAddress() != null ? memberDTO.getAddress() : member.getAddress()) // 주소 업데이트
+                .password(memberDTO.getNewPassword() != null ? passwordEncoder.encode(memberDTO.getNewPassword()) : member.getPassword()) // 비밀번호 업데이트
+                .entDate(member.getEntDate()) // 회원 가입일 유지
+                .role(member.getRole()) // 역할 유지
+                .credit(member.getCredit()) // 크레딧 유지
+                .point(member.getPoint()) // 포인트 유지
+                .isLeave(member.isLeave()) // 탈퇴 여부 유지
+                .isBan(member.isBan()) // 정지 여부 유지
+                .verificationCode(member.getVerificationCode()) // 인증 코드 유지
+                .verificationCodeSentAt(member.getVerificationCodeSentAt()) // 인증 코드 발송 시간 유지
+                .build();
+
+        try {
+            repo.save(updatedMember);
+        } catch (DataIntegrityViolationException e) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "데이터베이스 충돌이 발생했습니다. 입력 데이터를 확인하세요.", e);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "회원 정보 저장 중 오류가 발생했습니다.", e);
+        }
+    }
+
+
+
+    public void updateUser(String email, UpdateMemberDTO memberDTO) {
+        updateUserInfoByEmail(email, memberDTO);
+    }
+
 }
 
 
