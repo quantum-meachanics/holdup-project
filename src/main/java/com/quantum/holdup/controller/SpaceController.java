@@ -46,4 +46,14 @@ public class SpaceController {
                         spaceService.findAllSpaces(pageable)
                 ));
     }
+
+    // 아이디로 공간 상세 조회
+    @GetMapping("/spaces/{id}")
+    public ResponseEntity<ResponseMessage> findSpaceById(@PathVariable long id) {
+        return ResponseEntity.ok()
+                .body(new ResponseMessage(
+                        "공간 상세 조회를 성공했습니다.",
+                        spaceService.findSpaceById(id)
+                ));
+    }
 }

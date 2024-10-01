@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 @Table
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+// AllArgsConstructor, Setter 사용하지 않음
 public class Space {
 
     @Id
@@ -35,6 +36,7 @@ public class Space {
     @JoinColumn(name = "MEMBER_ID")
     private Member owner; // 공간 등록자
 
+    // 빌더 생성자
     @Builder(toBuilder = true)
     public Space(String name, String address, String detailAddress, String gu, String dong, String description, long width, long height, long depth, int count, int price, boolean isHide, Member owner) {
         this.name = name;
@@ -52,8 +54,9 @@ public class Space {
         this.owner = owner;
     }
 
+    // 생성일시를 자동으로 입력해주는 메소드
     @PrePersist
-    protected void creatAt() { // 생성일시를 자동으로 입력해주는 메소드
+    protected void creatAt() {
         this.createDate = LocalDateTime.now();
     }
 }

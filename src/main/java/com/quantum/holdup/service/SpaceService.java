@@ -3,11 +3,13 @@ package com.quantum.holdup.service;
 import com.quantum.holdup.Page.Pagination;
 import com.quantum.holdup.Page.PagingButtonInfo;
 import com.quantum.holdup.domain.dto.spaces.CreateSpaceDTO;
+import com.quantum.holdup.domain.dto.spaces.SpaceDetailDTO;
 import com.quantum.holdup.domain.dto.spaces.SpacePageDTO;
 import com.quantum.holdup.domain.entity.Member;
 import com.quantum.holdup.domain.entity.Space;
 import com.quantum.holdup.domain.entity.SpaceImage;
 import com.quantum.holdup.repository.MemberRepository;
+import com.quantum.holdup.repository.ReservationRepository;
 import com.quantum.holdup.repository.SpaceImageRepository;
 import com.quantum.holdup.repository.SpaceRepository;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +29,7 @@ public class SpaceService {
 
     private final SpaceRepository spaceRepo; // 공간 레파지토리
     private final MemberRepository memberRepo; // 멤버 레파지토리
+    private final ReservationRepository reservationRepo; // 예약 레파지토리
     private final SpaceImageRepository imageRepo; // 공간 이미지 레파지토리
 
     // 공간 등록 메소드
@@ -131,5 +134,45 @@ public class SpaceService {
 
             return spacePageDTO;
         });
+    }
+
+    public SpaceDetailDTO findSpaceById(long id) {
+
+        // 아이디에 해당하는 공간 엔티티 찾아오기
+        Space spaceEntity = spaceRepo.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("아이디에 해당하는 공간을 찾을 수 없습니다."));
+
+        //공간 등록자 엔티티 찾아오기
+        Member ownerEntity = memberRepo.findById(spaceEntity.getOwner().getId())
+                .orElseThrow(() -> new NoSuchElementException("공간 등록자 정보를 찾을 수 없습니다."));
+
+        // 공간에 등록된 리뷰의 총 갯수 찾아오기
+        int reviewCount = reservationRepo.countReviewsBySpaceId(id);
+
+        // 공간 리뷰의 별점 평균 찾아오기
+        long ratingAverage = reservationRepo.findAverageRatingBySpaceId(id);
+
+        // 공간에 등록된 이미지 찾아오기
+        List<String> imageUrls = imageRepo.findBySpaceId(id)
+                .stream().map(SpaceImage::getImageUrl).toList();
+
+        // DTO에 담아서 반환
+        return new SpaceDetailDTO(
+                spaceEntity.getId(),
+                spaceEntity.getCreateDate(),
+                spaceEntity.getName(),
+                spaceEntity.getAddress(),
+                spaceEntity.getDetailAddress(),
+                spaceEntity.getDescription(),
+                spaceEntity.getWidth(),
+                spaceEntity.getHeight(),
+                spaceEntity.getDepth(),
+                spaceEntity.getCount(),
+                spaceEntity.getPrice(),
+                ownerEntity.getNickname(),
+                reviewCount,
+                ratingAverage,
+                imageUrls
+        );
     }
 }

@@ -1,7 +1,10 @@
 package com.quantum.holdup.domain.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
@@ -28,10 +31,10 @@ public class Reservation {
     @JoinColumn(name = "MEMBER_ID")
     private Member client; // 예약 신청자
 
-    @PrePersist
-    protected void onCreate() { // 생성일시를 자동으로 입력해주는 메소드
-        this.createDate = LocalDateTime.now();
-    }
+    @OneToOne(mappedBy = "reservation", // 예약 - 리뷰의 관계에서 예약이 주체를 가짐
+            cascade = CascadeType.ALL, // 예약이 삭제되면 리뷰도 같이 삭제됨
+            optional = true) // optional = 예약에 대한 리뷰가 존재하지 않아도 상관없음
+    private Review review; // 예약에 작성된 리뷰
 
     @Builder(toBuilder = true)
     public Reservation(LocalDateTime startDate, LocalDateTime endDate, Space space, Member client) {
@@ -43,4 +46,9 @@ public class Reservation {
         this.isEnd = false;
     }
 
+    // 생성일시를 자동으로 입력해주는 메소드
+    @PrePersist
+    protected void onCreate() {
+        this.createDate = LocalDateTime.now();
+    }
 }
