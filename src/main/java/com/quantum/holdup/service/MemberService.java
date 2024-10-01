@@ -63,6 +63,7 @@ public class MemberService {
                 .phone(memberInfo.getPhone())
                 .name(memberInfo.getName())
                 .address(memberInfo.getAddress())
+                .addressDetail(memberInfo.getAddressDetail())
                 .birthday(memberInfo.getBirthday())
                 .role(Role.USER)
                 .build();
@@ -76,6 +77,7 @@ public class MemberService {
                 newMember.getPhone(),
                 newMember.getName(),
                 newMember.getAddress(),
+                newMember.getAddressDetail(),
                 newMember.getBirthday()
         );
     }
@@ -115,15 +117,25 @@ public class MemberService {
         Member member = (Member) repo.findByEmail(email)
                 .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다. 이메일: " + email));
 
+        // 현재 비밀번호 검증
         if (memberDTO.getCurrentPassword() != null && !passwordEncoder.matches(memberDTO.getCurrentPassword(), member.getPassword())) {
             throw new IllegalArgumentException("현재 비밀번호가 일치하지 않습니다.");
         }
 
+        // 빌더 패턴을 사용하여 업데이트할 필드들 설정
         Member updatedMember = member.toBuilder()
                 .id(member.getId()) // 기존 ID 유지
-                .nickname(memberDTO.getNickname() != null ? memberDTO.getNickname() : member.getNickname())
-                .address(memberDTO.getAddress() != null ? memberDTO.getAddress() : member.getAddress())
-                .password(memberDTO.getNewPassword() != null ? passwordEncoder.encode(memberDTO.getNewPassword()) : member.getPassword())
+                .nickname(memberDTO.getNickname() != null ? memberDTO.getNickname() : member.getNickname()) // 닉네임 업데이트
+                .address(memberDTO.getAddress() != null ? memberDTO.getAddress() : member.getAddress()) // 주소 업데이트
+                .password(memberDTO.getNewPassword() != null ? passwordEncoder.encode(memberDTO.getNewPassword()) : member.getPassword()) // 비밀번호 업데이트
+                .entDate(member.getEntDate()) // 회원 가입일 유지
+                .role(member.getRole()) // 역할 유지
+                .credit(member.getCredit()) // 크레딧 유지
+                .point(member.getPoint()) // 포인트 유지
+                .isLeave(member.isLeave()) // 탈퇴 여부 유지
+                .isBan(member.isBan()) // 정지 여부 유지
+                .verificationCode(member.getVerificationCode()) // 인증 코드 유지
+                .verificationCodeSentAt(member.getVerificationCodeSentAt()) // 인증 코드 발송 시간 유지
                 .build();
 
         try {

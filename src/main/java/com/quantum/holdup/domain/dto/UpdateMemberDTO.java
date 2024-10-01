@@ -14,7 +14,7 @@ public class UpdateMemberDTO {
     private String email;
     private String password; // 회원 비밀번호
     private String nickname; // 회원 닉네임
-    private String address; // 전체 주소 (address + addressDetail)
+    private String address; // 주소
     private String addressDetail; // 상세 주소
     private String phone;
     private String newPassword; // 새 비밀번호
@@ -26,7 +26,7 @@ public class UpdateMemberDTO {
         this.email = email;
         this.password = password;
         this.nickname = nickname;
-        this.address = address + " " + addressDetail; // 주소와 상세 주소 합치기
+        this.address = address; // 주소와 상세 주소 합치기
         this.addressDetail = addressDetail;
         this.phone = phone;
         this.newPassword = newPassword;
