@@ -2,8 +2,8 @@ package com.quantum.holdup.service;
 
 import com.quantum.holdup.Page.Pagination;
 import com.quantum.holdup.Page.PagingButtonInfo;
-import com.quantum.holdup.domain.dto.CreateSpaceDTO;
-import com.quantum.holdup.domain.dto.SpacePageDTO;
+import com.quantum.holdup.domain.dto.spaces.CreateSpaceDTO;
+import com.quantum.holdup.domain.dto.spaces.SpacePageDTO;
 import com.quantum.holdup.domain.entity.Member;
 import com.quantum.holdup.domain.entity.Space;
 import com.quantum.holdup.domain.entity.SpaceImage;
@@ -58,9 +58,11 @@ public class SpaceService {
         // 생성한 공간 엔티티 저장
         spaceRepo.save(newSpace);
 
+        // 이미지 저장
         if (imageUrls != null && !imageUrls.isEmpty()) {
             List<SpaceImage> images = imageUrls.stream().map(url -> SpaceImage.builder()
                     .imageUrl(url)
+                    .imageName(extractFileNameFromUrl(url))
                     .space(newSpace)
                     .build()).toList();
 
@@ -83,6 +85,12 @@ public class SpaceService {
         );
     }
 
+    // 이미지 name 추출하는 메소드
+    private String extractFileNameFromUrl(String url) {
+        return url.substring(url.lastIndexOf("/") + 1);
+    }
+
+    // 공간 전체 페이징처리 하여 조회하는 메소드
     public Page<SpacePageDTO> findAllSpaces(Pageable pageable) {
         // 페이지의 번호 조정 및 정렬
         pageable = PageRequest.of(

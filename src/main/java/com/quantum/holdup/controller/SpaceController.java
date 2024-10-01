@@ -1,10 +1,9 @@
 package com.quantum.holdup.controller;
 
-import com.quantum.holdup.domain.dto.CreateSpaceDTO;
+import com.quantum.holdup.domain.dto.spaces.CreateSpaceDTO;
 import com.quantum.holdup.message.ResponseMessage;
 import com.quantum.holdup.service.S3Service;
 import com.quantum.holdup.service.SpaceService;
-import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -23,7 +22,7 @@ public class SpaceController {
     private final SpaceService spaceService;
     private final S3Service s3Service;
 
-    @Operation(summary = "공간 등록")
+    // 공간 등록
     @PostMapping(value = "/spaces", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<?> createSpace(
             @RequestPart(value = "spaceInfo") CreateSpaceDTO spaceInfo,
@@ -38,6 +37,7 @@ public class SpaceController {
                 ));
     }
 
+    // 공간 전체 조회 페이징
     @GetMapping("/spaces")
     public ResponseEntity<ResponseMessage> findAllSpaces(@PageableDefault Pageable pageable) {
         return ResponseEntity.ok()

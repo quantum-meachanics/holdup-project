@@ -1,4 +1,4 @@
-package com.quantum.holdup.domain.dto;
+package com.quantum.holdup.domain.dto.spaces;
 
 import com.quantum.holdup.Page.PagingButtonInfo;
 import lombok.*;
