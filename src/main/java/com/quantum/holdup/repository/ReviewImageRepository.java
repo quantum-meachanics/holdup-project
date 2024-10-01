@@ -12,5 +12,5 @@ public interface ReviewImageRepository extends JpaRepository<ReviewImage, Long> 
 
 //    Optional<ReviewImage> findById(Long id);
 
-    List<ReviewImage> findById(long id);
+//    List<ReviewImage> findById(long id);
 }

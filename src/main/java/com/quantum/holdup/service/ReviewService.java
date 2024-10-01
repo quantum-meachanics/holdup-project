@@ -199,19 +199,18 @@ public class ReviewService {
         System.out.println("============= 저장후");
 
         // 기존 이미지를 삭제할 경우
-//        if (deleteImageId != null && !deleteImageId.isEmpty()) {
-//
-//            System.out.println(deleteImageId);
-//            long imagesToDelete = reviewImageRepo.findById(deleteImageId);
-//
-//            for (ReviewImage image : imagesToDelete) {
-//                if (deleteImage(image.getId())) {
-//                    System.out.println("이미지 삭제 성공: " + image.getId());
-//                } else {
-//                    System.out.println("이미지 삭제 실패: " + image.getId());
-//                }
-//            }
-//        }
+        if (deleteImageId != null && !deleteImageId.isEmpty()) {
+            System.out.println(deleteImageId);
+            List<ReviewImage> imagesToDelete = reviewImageRepo.findAllById(deleteImageId);
+
+            for (ReviewImage image : imagesToDelete) {
+                if (deleteImage(image.getId())) {
+                    System.out.println("이미지 삭제 성공: " + image.getId());
+                } else {
+                    System.out.println("이미지 삭제 실패: " + image.getId());
+                }
+            }
+        }
         System.out.println("=============삭제");
 
         // 새 이미지 추가
@@ -237,7 +236,7 @@ public class ReviewService {
 
     }
 
-    public boolean deleteImage(long imageId) {
+    public boolean deleteImage(Long imageId) {
         try {
             // 1. DB에서 이미지 정보 조회
             ReviewImage image = reviewImageRepo.findById(imageId)
