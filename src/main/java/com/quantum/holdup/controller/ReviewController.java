@@ -1,6 +1,5 @@
 package com.quantum.holdup.controller;
 
-import ch.qos.logback.core.boolex.EvaluationException;
 import com.quantum.holdup.domain.dto.*;
 import com.quantum.holdup.message.ResponseMessage;
 import com.quantum.holdup.service.CommentService;
@@ -39,7 +38,7 @@ public class ReviewController {
 
     // 리뷰글 상세페이지
     @GetMapping("/reviews/{id}")
-    public ResponseEntity<ResponseMessage> findReviewById(@PathVariable long id) {
+    public ResponseEntity<ResponseMessage> detailReview(@PathVariable long id) {
 
         ReviewDetailDTO reviews = service.findReviewById(id);
 
@@ -57,8 +56,6 @@ public class ReviewController {
 
         List<String> imageUrls = s3Service.uploadImage(images);
 
-
-        System.out.println("ReviewInfo ======================================> reviews Post 요청들어옴 : " + reviewInfo);
         return ResponseEntity.ok()
                 .body(new ResponseMessage(
                         "리뷰 등록에 성공하였습니다.",
@@ -76,7 +73,7 @@ public class ReviewController {
             ) {
 
         List<String> imageUrls = s3Service.uploadImage(newImages);
-        System.out.println("=================요청들어옴");
+
         return ResponseEntity.ok()
                 .body(new ResponseMessage(
                         "게시글 수정 완료",

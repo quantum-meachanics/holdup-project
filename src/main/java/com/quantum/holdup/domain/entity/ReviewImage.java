@@ -27,7 +27,8 @@ public class ReviewImage {
     private Review review;
 
     @Builder
-    public ReviewImage(String imageUrl, Review review, String imageName) {
+    public ReviewImage(long id ,String imageUrl, Review review, String imageName) {
+        this.id = id;
         this.imageName = imageName;
         this.imageUrl = imageUrl;
         this.review = review;

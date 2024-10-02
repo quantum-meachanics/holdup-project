@@ -82,10 +82,24 @@ public class ReviewService {
         Review reviewEntity = repo.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Post not found with id " + id));
 
+        // 해당 리뷰의 이미지들 찾기
+        List<ReviewImage> reviewImages = reviewImageRepo.findByReviewId(id);
+
+        if (reviewImages.isEmpty()) {
+            throw new NoSuchElementException("No images found for review with id " + id);
+        }
+
         List<String> imageUrls = reviewImageRepo.findByReviewId(id)
                 .stream()
                 .map(ReviewImage::getImageUrl)
                 .toList();
+        System.out.println("============imageUrls"+ imageUrls);
+
+        List<Long> imageIds = reviewImages
+                .stream()
+                .map(ReviewImage::getId)
+                .toList();
+        System.out.println("==============imageIds"+ imageIds);
 
         return ReviewDetailDTO.builder()
                 .id(reviewEntity.getId())
@@ -96,6 +110,7 @@ public class ReviewService {
                 .nickname(reviewEntity.getMember().getNickname())
                 .reservation(reviewEntity.getReservation())
                 .imageUrl(imageUrls)
+                .imageId(imageIds)
                 .build();
     }
 
@@ -126,7 +141,7 @@ public class ReviewService {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
 
         // 가져온 이메일로 사용자 CKWRL
-        Member member = (Member ) memberRepo.findByEmail(email)
+        Member member = memberRepo.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         Reservation reservation = reservationRepo.findById(reviewInfo.getReservationId())
@@ -178,7 +193,7 @@ public class ReviewService {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
 
         // 가져온 이메일로 사용자 찾기
-        Member member = (Member ) memberRepo.findByEmail(email)
+        Member member = memberRepo.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         Review reviewEntity = repo.findById(id)
@@ -194,13 +209,11 @@ public class ReviewService {
                 .rating(modifyInfo.getRating())
                 .build();
 
-        System.out.println("==============저장전");
         Review savedReview = repo.save(updatedReview);
-        System.out.println("============= 저장후");
 
         // 기존 이미지를 삭제할 경우
         if (deleteImageId != null && !deleteImageId.isEmpty()) {
-            System.out.println(deleteImageId);
+
             List<ReviewImage> imagesToDelete = reviewImageRepo.findAllById(deleteImageId);
 
             for (ReviewImage image : imagesToDelete) {
@@ -211,7 +224,6 @@ public class ReviewService {
                 }
             }
         }
-        System.out.println("=============삭제");
 
         // 새 이미지 추가
         if (newImageUrls != null && !newImageUrls.isEmpty()) {
@@ -224,7 +236,6 @@ public class ReviewService {
             reviewImageRepo.saveAll(images);
         }
 
-        System.out.println("============추가");
 
         // ReviewDTO 생성 및 반환
         return UpdateReviewDTO.builder()

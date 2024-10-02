@@ -20,9 +20,10 @@ public class ReviewDetailDTO {
     private Reservation reservation;
     private String nickname;
     private List<String> imageUrl;
+    private List<Long> imageId;
 
     @Builder
-    public ReviewDetailDTO(long id, String title, String content ,int rating, Reservation reservation, LocalDateTime createDate, String nickname, List<String> imageUrl) {
+    public ReviewDetailDTO(long id, String title, String content ,int rating, Reservation reservation, LocalDateTime createDate, String nickname, List<String> imageUrl, List<Long> imageId) {
         this.id = id;
         this.title = title;
         this.content = content;
@@ -31,5 +32,6 @@ public class ReviewDetailDTO {
         this.createDate = createDate;
         this.nickname = nickname;
         this.imageUrl = imageUrl;
+        this.imageId = imageId;
     }
 }
