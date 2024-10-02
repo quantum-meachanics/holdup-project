@@ -6,7 +6,10 @@ import com.quantum.holdup.domain.dto.CreateReviewDTO;
 import com.quantum.holdup.domain.dto.ReviewDTO;
 import com.quantum.holdup.domain.dto.ReviewDetailDTO;
 import com.quantum.holdup.domain.dto.UpdateReviewDTO;
-import com.quantum.holdup.domain.entity.*;
+import com.quantum.holdup.domain.entity.Member;
+import com.quantum.holdup.domain.entity.Reservation;
+import com.quantum.holdup.domain.entity.Review;
+import com.quantum.holdup.domain.entity.ReviewImage;
 import com.quantum.holdup.repository.MemberRepository;
 import com.quantum.holdup.repository.ReservationRepository;
 import com.quantum.holdup.repository.ReviewImageRepository;
@@ -32,6 +35,7 @@ public class ReviewService {
     private final ReservationRepository reservationRepo;
     private final MemberRepository memberRepo;
     private final ReviewImageRepository reviewImageRepo;
+    private final S3Service s3Service;
 
     public Page<ReviewDTO> findAllReview(Pageable pageable) {
 
@@ -78,10 +82,24 @@ public class ReviewService {
         Review reviewEntity = repo.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Post not found with id " + id));
 
+        // 해당 리뷰의 이미지들 찾기
+        List<ReviewImage> reviewImages = reviewImageRepo.findByReviewId(id);
+
+        if (reviewImages.isEmpty()) {
+            throw new NoSuchElementException("No images found for review with id " + id);
+        }
+
         List<String> imageUrls = reviewImageRepo.findByReviewId(id)
                 .stream()
                 .map(ReviewImage::getImageUrl)
                 .toList();
+        System.out.println("============imageUrls"+ imageUrls);
+
+        List<Long> imageIds = reviewImages
+                .stream()
+                .map(ReviewImage::getId)
+                .toList();
+        System.out.println("==============imageIds"+ imageIds);
 
         return ReviewDetailDTO.builder()
                 .id(reviewEntity.getId())
@@ -92,6 +110,7 @@ public class ReviewService {
                 .nickname(reviewEntity.getMember().getNickname())
                 .reservation(reviewEntity.getReservation())
                 .imageUrl(imageUrls)
+                .imageId(imageIds)
                 .build();
     }
 
@@ -122,7 +141,7 @@ public class ReviewService {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
 
         // 가져온 이메일로 사용자 CKWRL
-        Member member = (Member ) memberRepo.findByEmail(email)
+        Member member = memberRepo.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         Reservation reservation = reservationRepo.findById(reviewInfo.getReservationId())
@@ -166,23 +185,85 @@ public class ReviewService {
     }
 
     // 리뷰 게시글 수정
-    public UpdateReviewDTO updateReview(Long id, UpdateReviewDTO modifyInfo) {
+    public Object updateReview(long id, UpdateReviewDTO modifyInfo,
+                                       List<String> newImageUrls,
+                                        List<Long> deleteImageId) {
+
+        // 로그인 되어있는 사용자의 이메일 가져옴
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        // 가져온 이메일로 사용자 찾기
+        Member member = memberRepo.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
         Review reviewEntity = repo.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Post not found with postId " + id));
 
-        // toBuilder()를 사용하여 기존 객체를 기반으로 새 객체 생성
-        Review updatedReview = reviewEntity.toBuilder()
-                .id(id)
+
+        Review updatedReview = Review.builder()
+                .id(reviewEntity.getId())
+                .member(member)
+                .reservation(reviewEntity.getReservation())
                 .title(modifyInfo.getTitle())
                 .content(modifyInfo.getContent())
+                .rating(modifyInfo.getRating())
                 .build();
 
-        // 새로운 엔티티 저장
-        repo.save(updatedReview);
+        Review savedReview = repo.save(updatedReview);
+
+        // 기존 이미지를 삭제할 경우
+        if (deleteImageId != null && !deleteImageId.isEmpty()) {
+
+            List<ReviewImage> imagesToDelete = reviewImageRepo.findAllById(deleteImageId);
+
+            for (ReviewImage image : imagesToDelete) {
+                if (deleteImage(image.getId())) {
+                    System.out.println("이미지 삭제 성공: " + image.getId());
+                } else {
+                    System.out.println("이미지 삭제 실패: " + image.getId());
+                }
+            }
+        }
+
+        // 새 이미지 추가
+        if (newImageUrls != null && !newImageUrls.isEmpty()) {
+            List<ReviewImage> images = newImageUrls.stream().map(url -> ReviewImage.builder()
+                    .imageUrl((url))
+                    .imageName(extractFileNameFromUrl((url)))
+                    .review(savedReview)
+                    .build()).toList();
+
+            reviewImageRepo.saveAll(images);
+        }
+
 
         // ReviewDTO 생성 및 반환
-        return new UpdateReviewDTO(updatedReview.getTitle(), updatedReview.getContent());
+        return UpdateReviewDTO.builder()
+                .title(savedReview.getTitle())
+                .content(savedReview.getContent())
+                .rating(savedReview.getRating())
+                .reservationId(savedReview.getReservation().getId())
+                .build();
+
+    }
+
+    public boolean deleteImage(Long imageId) {
+        try {
+            // 1. DB에서 이미지 정보 조회
+            ReviewImage image = reviewImageRepo.findById(imageId)
+                    .orElseThrow(() -> new RuntimeException("Image not found with id: " + imageId));
+
+            // 2. S3에서 이미지 파일 삭제
+            String fileName = image.getImageName(); // S3에 저장된 파일 이름
+            s3Service.deleteImage(fileName);
+
+            // 3. DB에서 이미지 정보 삭제
+            reviewImageRepo.delete(image);
+
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     public boolean deleteReview(long id) {

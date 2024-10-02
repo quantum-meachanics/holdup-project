@@ -38,7 +38,7 @@ public class ReviewController {
 
     // 리뷰글 상세페이지
     @GetMapping("/reviews/{id}")
-    public ResponseEntity<ResponseMessage> findReviewById(@PathVariable long id) {
+    public ResponseEntity<ResponseMessage> detailReview(@PathVariable long id) {
 
         ReviewDetailDTO reviews = service.findReviewById(id);
 
@@ -56,8 +56,6 @@ public class ReviewController {
 
         List<String> imageUrls = s3Service.uploadImage(images);
 
-
-        System.out.println("ReviewInfo ======================================> reviews Post 요청들어옴 : " + reviewInfo);
         return ResponseEntity.ok()
                 .body(new ResponseMessage(
                         "리뷰 등록에 성공하였습니다.",
@@ -66,17 +64,23 @@ public class ReviewController {
     }
 
     // 리뷰글 수정
-    @PutMapping("/reviews/{id}")
-    public ResponseEntity<?> modifyReview(@PathVariable Long id, @RequestBody UpdateReviewDTO modifyInfo) {
+    @PutMapping(value = "/reviews/{id}",consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> modifyReview(
+            @PathVariable long id,
+            @RequestPart(value = "modifyInfo", required = false) UpdateReviewDTO modifyInfo,
+            @RequestPart(value = "newImages", required = false) List<MultipartFile> newImages,
+            @RequestPart(value = "deleteImage", required = false) List<Long> deleteImage
+            ) {
 
-        UpdateReviewDTO updatedPost = service.updateReview(id, modifyInfo);
+        List<String> imageUrls = s3Service.uploadImage(newImages);
 
         return ResponseEntity.ok()
                 .body(new ResponseMessage(
                         "게시글 수정 완료",
-                        updatedPost
+                        service.updateReview(id, modifyInfo, imageUrls, deleteImage)
                 ));
     }
+
 
     @DeleteMapping("/reviews/{id}")
     public ResponseEntity<?> deleteReview(@PathVariable long id) {
