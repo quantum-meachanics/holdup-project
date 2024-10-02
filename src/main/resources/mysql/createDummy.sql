@@ -1,7 +1,7 @@
 # 회원 더미 데이터
 INSERT INTO member (email, password, birthday, credit, nickname, role, phone, name, is_ban, is_leave, ent_date, point,
                     address)
-VALUES ('test1', '$2a$10$Wvs.Wp11i7hRIgjhRUb1.uRWPBywcIrOgY5diaW/Uird2eyWUThRy', '1990-01-15',
+VALUES ('test', '$2a$10$Wvs.Wp11i7hRIgjhRUb1.uRWPBywcIrOgY5diaW/Uird2eyWUThRy', '1990-01-15',
         FLOOR(RAND() * 7000) + 3000, '닉네임1', 'USER', '010-1234-5678', '홍길동', FALSE, FALSE, '2024-09-01', 0,
         '서울시 강남구 테헤란로 삼성타운 123호'),
        ('test2', '$2a$10$Wvs.Wp11i7hRIgjhRUb1.uRWPBywcIrOgY5diaW/Uird2eyWUThRy', '1991-02-20',
@@ -84,7 +84,7 @@ VALUES ('test1', '서울시 강남구 역삼동', '역삼로 101', '강남구의
 
 
 # 예약 더미 데이터
-INSERT INTO reservation (member_id, space_id, create_date, start_date, end_date, is_accept, is_end)
+INSERT INTO reservation (member_id, space_id, create_date_time, start_date_time, end_date_time, is_accept, is_end)
 VALUES (1, 1, '2024-09-01 10:00:00', '2024-09-02 10:00:00', '2024-09-02 11:00:00', FALSE, FALSE),
        (1, 2, '2024-09-01 10:00:00', '2024-09-03 10:00:00', '2024-09-03 11:00:00', FALSE, FALSE),
        (2, 3, '2024-09-02 11:00:00', '2024-09-04 10:00:00', '2024-09-04 11:00:00', FALSE, FALSE),

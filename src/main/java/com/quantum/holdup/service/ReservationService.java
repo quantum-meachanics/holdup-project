@@ -22,23 +22,26 @@ public class ReservationService {
     private final MemberRepository memberRepo;
 
     // 예약 신청 메소드
-    public CreateReservationDTO createReservation(long spaceId, CreateReservationDTO reservationInfo) {
+    public CreateReservationDTO createReservation(CreateReservationDTO reservationInfo) {
 
         // 현재 로그인 되어있는 사용자의 이메일을 가져옴
         String clientEmail = SecurityContextHolder.getContext().getAuthentication().getName();
 
         // 가져온 이메일로 신청자 찾기
-        Member client = (Member) memberRepo.findByEmail(clientEmail)
+        Member client = memberRepo.findByEmail(clientEmail)
                 .orElseThrow(() -> new NoSuchElementException("사용자를 찾을 수 없습니다."));
 
         // PathVariable 로 받아온 공간 아이디로 예약할 공간 찾기
-        Space space = spaceRepo.findById(spaceId)
+        Space space = spaceRepo.findById(reservationInfo.getSpaceId())
                 .orElseThrow(() -> new NoSuchElementException("공간 정보를 찾을 수 없습니다."));
+
+        // 시작일과 종료일 설정
+
 
         // 새로운 예약 엔티티 생성
         Reservation newReservation = Reservation.builder()
-                .startDate(reservationInfo.getStartDate())
-                .endDate(reservationInfo.getEndDate())
+                .startDateTime(reservationInfo.getStartDateTime())
+                .endDateTime(reservationInfo.getEndDateTime())
                 .space(space)
                 .client(client)
                 .build();
@@ -48,8 +51,9 @@ public class ReservationService {
 
         // DTO 형식으로 반환
         return new CreateReservationDTO(
-                newReservation.getStartDate(),
-                newReservation.getEndDate()
+                newReservation.getId(),
+                newReservation.getStartDateTime(),
+                newReservation.getEndDateTime()
         );
     }
 }
