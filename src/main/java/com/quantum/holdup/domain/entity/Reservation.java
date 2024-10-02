@@ -1,5 +1,6 @@
 package com.quantum.holdup.domain.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -34,6 +35,7 @@ public class Reservation {
     @OneToOne(mappedBy = "reservation", // 예약 - 리뷰의 관계에서 예약이 주체를 가짐
             cascade = CascadeType.ALL, // 예약이 삭제되면 리뷰도 같이 삭제됨
             optional = true) // optional = 예약에 대한 리뷰가 존재하지 않아도 상관없음
+    @JsonBackReference
     private Review review; // 예약에 작성된 리뷰
 
     @Builder(toBuilder = true)

@@ -1,5 +1,6 @@
 package com.quantum.holdup.domain.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -24,9 +25,10 @@ public class Review {
     @ManyToOne
     @JoinColumn(name = "MEMBER_ID")
     private Member member; // 리뷰글 작성자
-    
+
     @OneToOne
     @JoinColumn(name = "RESERVATION_ID")
+    @JsonManagedReference
     private Reservation reservation; // 예약내용
 
     @Builder(toBuilder = true)
