@@ -13,7 +13,8 @@ import java.time.LocalDateTime;
 @Setter
 public class CreateReservationDTO {
 
-    private LocalDateTime startDate; // 이용 시작일시
-    private LocalDateTime endDate; // 이용 종료일시
+    private long spaceId; // 예약할 공간 아이디
+    private LocalDateTime startDateTime; // 이용 시작일시
+    private LocalDateTime endDateTime; // 이용 종료일시
 
 }
