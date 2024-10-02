@@ -17,6 +17,9 @@ public class SpaceImage {
     private Long id; // 이미지 아이디
 
     @Column(nullable = false)
+    private String imageName; // 이미지 이름
+
+    @Column(nullable = false)
     private String imageUrl; // 이미지 URL
 
     @ManyToOne
@@ -24,7 +27,8 @@ public class SpaceImage {
     private Space space; // 첨부된 공간
 
     @Builder
-    public SpaceImage(String imageUrl, Space space) {
+    public SpaceImage(String imageName, String imageUrl, Space space) {
+        this.imageName = imageName;
         this.imageUrl = imageUrl;
         this.space = space;
     }

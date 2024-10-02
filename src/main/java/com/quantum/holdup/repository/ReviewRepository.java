@@ -1,6 +1,5 @@
 package com.quantum.holdup.repository;
 
-import com.quantum.holdup.domain.entity.Report;
 import com.quantum.holdup.domain.entity.Review;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
