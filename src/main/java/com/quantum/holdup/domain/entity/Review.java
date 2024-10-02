@@ -4,8 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Table
@@ -26,20 +24,10 @@ public class Review {
     @ManyToOne
     @JoinColumn(name = "MEMBER_ID")
     private Member member; // 리뷰글 작성자
-
-    @ManyToOne
+    
+    @OneToOne
     @JoinColumn(name = "RESERVATION_ID")
     private Reservation reservation; // 예약내용
-
-
-//    @OneToMany
-//    @JoinColumn(name = "COMMENT_ID")
-//    private List<Comment> comments; // 리뷰에 달린 댓글
-
-    @PrePersist
-    protected void onCreate() { // 생성일시를 자동으로 입력해주는 메소드
-        this.createDate = LocalDateTime.now();
-    }
 
     @Builder(toBuilder = true)
     public Review(long id, String title, String content, boolean isHide, int rating, Member member, Reservation reservation) {
@@ -50,6 +38,10 @@ public class Review {
         this.rating = rating;
         this.member = member;
         this.reservation = reservation;
+    }
 
+    @PrePersist
+    protected void onCreate() { // 생성일시를 자동으로 입력해주는 메소드
+        this.createDate = LocalDateTime.now();
     }
 }

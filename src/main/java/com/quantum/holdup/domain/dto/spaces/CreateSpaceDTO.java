@@ -1,4 +1,4 @@
-package com.quantum.holdup.domain.dto;
+package com.quantum.holdup.domain.dto.spaces;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

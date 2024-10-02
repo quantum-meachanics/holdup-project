@@ -5,12 +5,15 @@ import com.quantum.holdup.domain.entity.Member;
 import com.quantum.holdup.message.ResponseMessage;
 import com.quantum.holdup.service.CustomUserDetails;
 import com.quantum.holdup.service.MemberService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
+import java.security.Principal;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -74,23 +77,67 @@ public class MemberController {
         return ResponseEntity.ok(response);
     }
 
-    @PutMapping("/update")
-    public ResponseEntity<?> updateUserInfo(@RequestBody UpdateMemberDTO memberDTO, @AuthenticationPrincipal CustomUserDetails userDetails) {
+    @PutMapping("/update/{email}")
+    public ResponseEntity<ResponseMessage> updateMember(
+            @PathVariable String email,
+            @RequestBody UpdateMemberDTO memberDTO) {
         try {
-            if (userDetails == null) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("사용자를 찾을 수 없습니다.");
-            }
-
-            String email = userDetails.getMember().getEmail(); // 현재 로그인한 사용자의 이메일 가져오기
-
-            // 서비스 메서드를 호출하여 사용자 정보 업데이트
-            service.updateUserInfoByEmail(email, memberDTO);
-            return ResponseEntity.ok("회원 정보가 성공적으로 수정되었습니다.");
+            service.updateUser(email, memberDTO);
+            return ResponseEntity.ok(new ResponseMessage("회원 정보가 수정되었습니다.", null));
+        } catch (IllegalArgumentException e) {
+            // 예외 처리: 잘못된 인자
+            return ResponseEntity.badRequest().body(new ResponseMessage("회원 정보 수정 요청이 잘못되었습니다.", e.getMessage()));
+        } catch (EntityNotFoundException e) {
+            // 예외 처리: 회원을 찾을 수 없음
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ResponseMessage("해당 회원을 찾을 수 없습니다.", e.getMessage()));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("회원 정보 수정 실패: " + e.getMessage());
+            // 기타 예외 처리
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseMessage("회원 정보 수정에 실패하였습니다.", e.getMessage()));
         }
     }
+
+    @PostMapping("/check-password")
+    public ResponseEntity<?> checkPassword(@RequestBody PasswordCheckRequestDTO request) {
+        try {
+            boolean isPasswordValid = service.checkPassword(request.getEmail(), request.getCurrentPassword());
+            if (isPasswordValid) {
+                return ResponseEntity.ok(new ResponseMessage("비밀번호가 확인되었습니다.", null));
+            } else {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ResponseMessage("비밀번호가 일치하지 않습니다.", null));
+            }
+        } catch (Exception e) {
+            // 예외 처리: 기타 예외
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseMessage("비밀번호 확인 중 오류가 발생했습니다.", e.getMessage()));
+        }
+    }
+
+    @PutMapping("/{email}/recharge-credits")
+    public ResponseEntity<String> rechargeCredits(@PathVariable String email, @RequestBody RechargeCreditsDTO rechargeCreditsDTO) {
+        // DTO에서 금액을 가져오기
+        String extractedEmail = rechargeCreditsDTO.getEmail(); // DTO에서 이메일 추출
+        int amount = rechargeCreditsDTO.getAmount();
+
+        // 이메일이 문자열 형태로 넘어오므로, 로그 출력
+        System.out.println("크레딧 충전 요청: 이메일 = " + email + ", 금액 = " + amount + ", email" + extractedEmail);
+
+        // 크레딧 충전 서비스 호출
+        try {
+            service.rechargeCredits(email, amount);
+            return ResponseEntity.ok("크레딧이 성공적으로 충전되었습니다.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (ResponseStatusException e) {
+            return ResponseEntity.status(e.getStatusCode()).body(e.getReason());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("크레딧 충전 중 오류가 발생했습니다.");
+        }
+    }
+
 }
+
 
 
 
