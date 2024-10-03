@@ -14,7 +14,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -44,13 +46,13 @@ public class CommentService {
 
         commentRepo.save(newComment);
 
-        return new CommentDTO(newComment.getContent());
+        return new CommentDTO(newComment.getContent(),newComment.getMember().getNickname(),newComment.getReview().getId());
     }
 
     public CommentDTO createReviewComment(long id, CommentDTO commentInfo) {
 
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        Member member = (Member) memberRepo.findByEmail(email)
+        Member member = memberRepo.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         Review review = reviewRepo.findById(id)
@@ -65,8 +67,31 @@ public class CommentService {
 
         commentRepo.save(newComment);
 
-        return new CommentDTO(newComment.getContent());
+        return new CommentDTO(newComment.getContent(),newComment.getMember().getNickname(),newComment.getReview().getId());
     }
 
 
+    public List<CommentDTO> findReviewComments(long id) {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        // 가져온 이메일로 사용자 CKWRL
+        Member member = memberRepo.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // 주어진 리뷰 ID에 해당하는 모든 댓글 조회
+        List<Comment> comments = commentRepo.findByReviewId(id);
+
+        // 댓글이 없을 경우 예외 처리
+        if (comments.isEmpty()) {
+            throw new NoSuchElementException("No comments found for review with id " + id);
+        }
+
+        // 댓글 엔티티를 DTO로 변환하여 리스트로 반환
+        return comments.stream()
+                .map(comment -> CommentDTO.builder()
+                        .content(comment.getContent())
+                        .nickname(member.getNickname())
+                        .build())
+                .collect(Collectors.toList());
+    }
 }

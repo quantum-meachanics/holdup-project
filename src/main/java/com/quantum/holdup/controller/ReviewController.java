@@ -115,4 +115,14 @@ public class ReviewController {
                         commentService.createReviewComment(id, commentInfo)
                 ));
     }
+
+    // 댓글 조회
+    @GetMapping("/reviews/{id}/comments")
+    public ResponseEntity<ResponseMessage> findReviewComments(@PathVariable long id) {
+        return ResponseEntity.ok()
+                .body(new ResponseMessage(
+                        "댓글 조회에 성공하였습니다.",
+                        commentService.findReviewComments(id)
+                ));
+    }
 }
