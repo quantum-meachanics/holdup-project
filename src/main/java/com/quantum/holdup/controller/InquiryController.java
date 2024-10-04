@@ -5,14 +5,19 @@ import com.quantum.holdup.domain.dto.InquiryDTO;
 import com.quantum.holdup.domain.dto.UpdateInquiryDTO;
 import com.quantum.holdup.message.ResponseMessage;
 import com.quantum.holdup.service.InquiryService;
+import com.quantum.holdup.service.S3Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -21,6 +26,7 @@ import java.util.Map;
 public class InquiryController {
 
     private final InquiryService service;
+    private final S3Service s3Service;
 
     // 문의글 전체조회
     @GetMapping("/inquiries")
@@ -42,13 +48,16 @@ public class InquiryController {
     }
 
     // 문의글 추가
-    @PostMapping("/inquiries")
-    public ResponseEntity<?> createInquiry(@RequestBody CreateInquiryDTO inquiryInfo) {
+    @PostMapping(value = "/inquiries", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> createInquiry(@RequestPart CreateInquiryDTO inquiryInfo,
+                                           @RequestPart(value = "images", required = false)List<MultipartFile> images) {
+
+        List<String> imageUrls = images != null ? s3Service.uploadImage(images) : new ArrayList<>();
 
         return ResponseEntity.ok()
                 .body(new ResponseMessage(
-                        "게시판 등록에 성공하였습니다.",
-                        service.createInquiry(inquiryInfo)
+                        "문의 등록에 성공하였습니다.",
+                        service.createInquiry(inquiryInfo, imageUrls)
                 ));
     }
 
