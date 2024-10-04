@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @NoArgsConstructor
 @Setter
 @Getter
@@ -16,13 +18,15 @@ public class InquiryDTO {
     private String title; // 문의글 제목
     private String content; // 문의글 본문
     private String nickname;
+    private LocalDateTime createDate;
     private PagingButtonInfo pagingInfo;
 
     @Builder
-    public InquiryDTO(long id, String title, String content, String nickname) {
+    public InquiryDTO(long id, String title, String content, String nickname, LocalDateTime createDate) {
         this.id = id;
         this.title = title;
         this.content = content;
         this.nickname = nickname;
+        this.createDate = createDate;
     }
 }

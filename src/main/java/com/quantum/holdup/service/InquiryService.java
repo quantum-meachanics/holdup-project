@@ -48,7 +48,8 @@ public class InquiryService {
                     inquiryEntity.getId(),
                     inquiryEntity.getTitle(),
                     inquiryEntity.getContent(),
-                    inquiryEntity.getMember().getNickname()
+                    inquiryEntity.getMember().getNickname(),
+                    inquiryEntity.getCreateDate()
             );
 
             // 각 InquiryDTO에 페이징 정보 설정
@@ -58,25 +59,26 @@ public class InquiryService {
 
     }
 
-    public Page<InquiryDTO> searchByNickname(String nickname, Pageable pageable) {
-
-        Page<Inquiry> inquiriesEntityList = repo.findByMemberNickname(nickname, pageable);
-        PagingButtonInfo paging = Pagination.getPagingButtonInfo(inquiriesEntityList);
-
-        return inquiriesEntityList.map(inquiryEntity -> {
-            // 각 Inquiry 엔티티로부터 새로운 InquiryDTO 생성
-            InquiryDTO inquiryDTO = new InquiryDTO(
-                    inquiryEntity.getId(),
-                    inquiryEntity.getTitle(),
-                    inquiryEntity.getContent(),
-                    inquiryEntity.getMember().getNickname()
-            );
-
-            // 각 InquiryDTO에 페이징 정보 설정
-            inquiryDTO.setPagingInfo(paging);
-            return inquiryDTO;
-        });
-    }
+//    public Page<InquiryDTO> searchByNickname(String nickname, Pageable pageable) {
+//
+//        Page<Inquiry> inquiriesEntityList = repo.findByMemberNickname(nickname, pageable);
+//        PagingButtonInfo paging = Pagination.getPagingButtonInfo(inquiriesEntityList);
+//
+//        return inquiriesEntityList.map(inquiryEntity -> {
+//            // 각 Inquiry 엔티티로부터 새로운 InquiryDTO 생성
+//            InquiryDTO inquiryDTO = new InquiryDTO(
+//                    inquiryEntity.getId(),
+//                    inquiryEntity.getTitle(),
+//                    inquiryEntity.getContent(),
+//                    inquiryEntity.getMember().getNickname(),
+//                    inquiryEntity.getCreateDate()
+//            );
+//
+//            // 각 InquiryDTO에 페이징 정보 설정
+//            inquiryDTO.setPagingInfo(paging);
+//            return inquiryDTO;
+//        });
+//    }
 
     public CreateInquiryDTO createInquiry(CreateInquiryDTO reportInfo) {
 
