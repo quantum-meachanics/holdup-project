@@ -24,22 +24,20 @@ public class InquiryController {
 
     // 문의글 전체조회
     @GetMapping("/inquiries")
-    public ResponseEntity<ResponseMessage> findAllInquiry(@PageableDefault Pageable pageable,
-                                                         @RequestParam(value = "nickname", required = false) String nickname,
-                                                         @RequestParam(value = "searchType", required = false) String searchType){
+    public ResponseEntity<ResponseMessage> findAllInquiry(@PageableDefault Pageable pageable){
 
-        Page<InquiryDTO> inquiries;
-
-        if (nickname != null && !nickname.isEmpty() && "nickname".equals(searchType)) {
-            inquiries = service.searchByNickname(nickname, pageable);
-        } else {
-            inquiries = service.findAllInquiry(pageable);
-        }
+//        Page<InquiryDTO> inquiries;
+//
+//        if (nickname != null && !nickname.isEmpty() && "nickname".equals(searchType)) {
+//            inquiries = service.searchByNickname(nickname, pageable);
+//        } else {
+//            inquiries = service.findAllInquiry(pageable);
+//        }
 
         return ResponseEntity.ok()
                 .body(new ResponseMessage(
                         "문의 전체조회를 성공했습니다.",
-                        inquiries
+                        service.findAllInquiry(pageable)
                 ));
     }
 
