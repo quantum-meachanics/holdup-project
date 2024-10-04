@@ -6,7 +6,10 @@ import com.quantum.holdup.domain.dto.CreateInquiryDTO;
 import com.quantum.holdup.domain.dto.InquiryDTO;
 import com.quantum.holdup.domain.dto.UpdateInquiryDTO;
 import com.quantum.holdup.domain.entity.Inquiry;
+import com.quantum.holdup.domain.entity.InquiryImage;
 import com.quantum.holdup.domain.entity.Member;
+import com.quantum.holdup.domain.entity.ReviewImage;
+import com.quantum.holdup.repository.InquiryImageRepository;
 import com.quantum.holdup.repository.InquiryRepository;
 import com.quantum.holdup.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +20,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 
 @Service
@@ -25,6 +29,7 @@ public class InquiryService {
 
     private final InquiryRepository repo;
     private final MemberRepository memberRepo;
+    private final InquiryImageRepository inquiryImageRepo;
 
     public Page<InquiryDTO> findAllInquiry(Pageable pageable) {
 
@@ -48,7 +53,8 @@ public class InquiryService {
                     inquiryEntity.getId(),
                     inquiryEntity.getTitle(),
                     inquiryEntity.getContent(),
-                    inquiryEntity.getMember().getNickname()
+                    inquiryEntity.getMember().getNickname(),
+                    inquiryEntity.getCreateDate()
             );
 
             // 각 InquiryDTO에 페이징 정보 설정
@@ -58,30 +64,32 @@ public class InquiryService {
 
     }
 
-    public Page<InquiryDTO> searchByNickname(String nickname, Pageable pageable) {
+//    public Page<InquiryDTO> searchByNickname(String nickname, Pageable pageable) {
+//
+//        Page<Inquiry> inquiriesEntityList = repo.findByMemberNickname(nickname, pageable);
+//        PagingButtonInfo paging = Pagination.getPagingButtonInfo(inquiriesEntityList);
+//
+//        return inquiriesEntityList.map(inquiryEntity -> {
+//            // 각 Inquiry 엔티티로부터 새로운 InquiryDTO 생성
+//            InquiryDTO inquiryDTO = new InquiryDTO(
+//                    inquiryEntity.getId(),
+//                    inquiryEntity.getTitle(),
+//                    inquiryEntity.getContent(),
+//                    inquiryEntity.getMember().getNickname(),
+//                    inquiryEntity.getCreateDate()
+//            );
+//
+//            // 각 InquiryDTO에 페이징 정보 설정
+//            inquiryDTO.setPagingInfo(paging);
+//            return inquiryDTO;
+//        });
+//    }
 
-        Page<Inquiry> inquiriesEntityList = repo.findByMemberNickname(nickname, pageable);
-        PagingButtonInfo paging = Pagination.getPagingButtonInfo(inquiriesEntityList);
-
-        return inquiriesEntityList.map(inquiryEntity -> {
-            // 각 Inquiry 엔티티로부터 새로운 InquiryDTO 생성
-            InquiryDTO inquiryDTO = new InquiryDTO(
-                    inquiryEntity.getId(),
-                    inquiryEntity.getTitle(),
-                    inquiryEntity.getContent(),
-                    inquiryEntity.getMember().getNickname()
-            );
-
-            // 각 InquiryDTO에 페이징 정보 설정
-            inquiryDTO.setPagingInfo(paging);
-            return inquiryDTO;
-        });
-    }
-
-    public CreateInquiryDTO createInquiry(CreateInquiryDTO reportInfo) {
+    public Object createInquiry(CreateInquiryDTO reportInfo, List<String> imageUrls) {
 
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        Member member = (Member) memberRepo.findByEmail(email)
+
+        Member member = memberRepo.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         Inquiry newInquiry = Inquiry.builder()
@@ -90,12 +98,28 @@ public class InquiryService {
                 .member(member)
                 .build();
 
-        repo.save(newInquiry);
+        Inquiry savedInquiry = repo.save(newInquiry);
 
-        return new CreateInquiryDTO(
-                newInquiry.getTitle(),
-                newInquiry.getContent()
-        );
+
+        if (imageUrls != null && !imageUrls.isEmpty()) {
+            List<InquiryImage> images = imageUrls.stream().map(url -> InquiryImage.builder()
+                    .imageUrl(url)
+                    .imageName(extractFileNameFromUrl(url))
+                    .inquiry(savedInquiry)
+                    .build()).toList();
+
+            inquiryImageRepo.saveAll(images);
+        }
+
+        return CreateInquiryDTO.builder()
+                .title(savedInquiry.getTitle())
+                .content(savedInquiry.getContent())
+                .build();
+    }
+
+    // url에서 이미지 name 추출
+    private String extractFileNameFromUrl(String url) {
+        return url.substring(url.lastIndexOf("/") + 1);
     }
 
     public UpdateInquiryDTO updateInquiry(long id, UpdateInquiryDTO modifyInfo) {
