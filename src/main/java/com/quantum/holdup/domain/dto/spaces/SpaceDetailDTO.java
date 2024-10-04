@@ -24,6 +24,7 @@ public class SpaceDetailDTO {
     private long depth; // 공간 깊이
     private int count; // 공간 갯수
     private int price; // 공간 가격
+
     private String ownerNickname; // 공간 등록자 닉네임
     private int reviewCount; // 공간에 등록된 리뷰수
     private long ratingAverage; // 공간 평균 별점

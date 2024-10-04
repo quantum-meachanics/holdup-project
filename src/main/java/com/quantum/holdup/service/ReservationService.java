@@ -21,6 +21,11 @@ public class ReservationService {
     private final SpaceRepository spaceRepo;
     private final MemberRepository memberRepo;
 
+    // 이미지 name 추출하는 메소드
+    private String extractFileNameFromUrl(String url) {
+        return url.substring(url.lastIndexOf("/") + 1);
+    }
+
     // 예약 신청 메소드
     public CreateReservationDTO createReservation(CreateReservationDTO reservationInfo) {
 
@@ -34,9 +39,6 @@ public class ReservationService {
         // PathVariable 로 받아온 공간 아이디로 예약할 공간 찾기
         Space space = spaceRepo.findById(reservationInfo.getSpaceId())
                 .orElseThrow(() -> new NoSuchElementException("공간 정보를 찾을 수 없습니다."));
-
-        // 시작일과 종료일 설정
-
 
         // 새로운 예약 엔티티 생성
         Reservation newReservation = Reservation.builder()
@@ -56,4 +58,23 @@ public class ReservationService {
                 newReservation.getEndDateTime()
         );
     }
+
+//    // 내가 신청한 예약 목록
+//    public ReservationListDTO findMyReservations(Pageable pageable) {
+//
+//        // 로그인 되어있는 사용자의 이메일 가져옴
+//        String ownerEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+//
+//        // 가져온 이메일로 사용자 찾기
+//        Member me = memberRepo.findByEmail(ownerEmail)
+//                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+//
+//        pageable = PageRequest.of(
+//                pageable.getPageNumber() <= 0 ? 0 : pageable.getPageNumber() - 1,
+//                pageable.getPageSize(),
+//                Sort.by("id").descending()
+//        );
+//
+//        Page<Reservation> myReservations = reservationRepo.findById(me.getId(), pageable);
+//    }
 }
