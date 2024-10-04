@@ -4,14 +4,13 @@
     import lombok.Getter;
     import lombok.NoArgsConstructor;
     import lombok.Setter;
-    import org.yaml.snakeyaml.comments.CommentType;
 
     import java.time.LocalDateTime;
 
     @NoArgsConstructor
     @Getter
     @Setter
-    public class CommentDTO {
+    public class ReviewCommentDTO {
 
         private String content; // 댓글내용
         private LocalDateTime createDate; // 댓글 작성일시
@@ -21,10 +20,11 @@
 
 
         @Builder
-        public CommentDTO(String content, String nickname, long reviewId) {
+        public ReviewCommentDTO(String content, String nickname, long reviewId, LocalDateTime createDate) {
             this.content = content;
             this.nickname = nickname;
             this.reviewId = reviewId;
+            this.createDate = createDate;
 
         }
     }

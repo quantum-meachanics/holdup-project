@@ -1,6 +1,6 @@
 package com.quantum.holdup.controller;
 
-import com.quantum.holdup.domain.dto.CommentDTO;
+import com.quantum.holdup.domain.dto.ReviewCommentDTO;
 import com.quantum.holdup.domain.dto.CreateReportDTO;
 import com.quantum.holdup.domain.dto.ReportDTO;
 import com.quantum.holdup.domain.dto.UpdateReportDTO;
@@ -110,7 +110,7 @@ public class ReportController {
 
     // 댓글 추가
     @PostMapping("/reports/{id}/comments")
-    public ResponseEntity<?> createComment(@PathVariable long id ,@RequestBody CommentDTO commentInfo) {
+    public ResponseEntity<?> createComment(@PathVariable long id ,@RequestBody ReviewCommentDTO commentInfo) {
         return ResponseEntity.ok()
                 .body(new ResponseMessage(
                         "댓글 등록에 성공하였습니다.",
