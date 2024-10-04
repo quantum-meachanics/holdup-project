@@ -1,8 +1,6 @@
 package com.quantum.holdup.controller;
 
-import com.quantum.holdup.domain.dto.CreateInquiryDTO;
-import com.quantum.holdup.domain.dto.InquiryDTO;
-import com.quantum.holdup.domain.dto.UpdateInquiryDTO;
+import com.quantum.holdup.domain.dto.*;
 import com.quantum.holdup.message.ResponseMessage;
 import com.quantum.holdup.service.InquiryService;
 import com.quantum.holdup.service.S3Service;
@@ -45,6 +43,19 @@ public class InquiryController {
                         "문의 전체조회를 성공했습니다.",
                         service.findAllInquiry(pageable)
                 ));
+    }
+
+    // 문의글 상세페이지
+    @GetMapping("/inquiries/{id}")
+    public ResponseEntity<ResponseMessage> detailInquiry(@PathVariable long id) {
+
+        InquiryDetailDTO inquiries = service.findInquiryById(id);
+
+        return ResponseEntity.ok()
+                .body(new ResponseMessage(
+                        "아이디로 게시글 조회 성공"
+                        , inquiries)
+                );
     }
 
     // 문의글 추가
