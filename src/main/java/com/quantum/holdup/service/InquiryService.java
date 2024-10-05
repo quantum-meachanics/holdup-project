@@ -64,12 +64,8 @@ public class InquiryService {
         Inquiry inquiryEntity = repo.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Post not found with id " + id));
 
-        // 해당 리뷰의 이미지들 찾기
+        // 해당 문의 이미지들 찾기
         List<InquiryImage> inquiryImages = inquiryImageRepo.findByInquiryId(id);
-
-        if (inquiryImages.isEmpty()) {
-            throw new NoSuchElementException("No images found for review with id " + id);
-        }
 
         List<String> imageUrls = inquiryImageRepo.findByInquiryId(id)
                 .stream()
