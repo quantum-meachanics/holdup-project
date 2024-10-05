@@ -2,13 +2,8 @@ package com.quantum.holdup.service;
 
 import com.quantum.holdup.Page.Pagination;
 import com.quantum.holdup.Page.PagingButtonInfo;
-import com.quantum.holdup.domain.dto.CreateInquiryDTO;
-import com.quantum.holdup.domain.dto.InquiryDTO;
-import com.quantum.holdup.domain.dto.UpdateInquiryDTO;
-import com.quantum.holdup.domain.entity.Inquiry;
-import com.quantum.holdup.domain.entity.InquiryImage;
-import com.quantum.holdup.domain.entity.Member;
-import com.quantum.holdup.domain.entity.ReviewImage;
+import com.quantum.holdup.domain.dto.*;
+import com.quantum.holdup.domain.entity.*;
 import com.quantum.holdup.repository.InquiryImageRepository;
 import com.quantum.holdup.repository.InquiryRepository;
 import com.quantum.holdup.repository.MemberRepository;
@@ -62,6 +57,35 @@ public class InquiryService {
             return inquiryDTO;
         });
 
+    }
+
+    public InquiryDetailDTO findInquiryById(long id) {
+
+        Inquiry inquiryEntity = repo.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Post not found with id " + id));
+
+        // 해당 문의 이미지들 찾기
+        List<InquiryImage> inquiryImages = inquiryImageRepo.findByInquiryId(id);
+
+        List<String> imageUrls = inquiryImageRepo.findByInquiryId(id)
+                .stream()
+                .map(InquiryImage::getImageUrl)
+                .toList();
+
+        List<Long> imageIds = inquiryImages
+                .stream()
+                .map(InquiryImage::getId)
+                .toList();
+
+        return InquiryDetailDTO.builder()
+                .id(inquiryEntity.getId())
+                .title(inquiryEntity.getTitle())
+                .content(inquiryEntity.getContent())
+                .createDate(inquiryEntity.getCreateDate())
+                .nickname(inquiryEntity.getMember().getNickname())
+                .imageUrl(imageUrls)
+                .imageId(imageIds)
+                .build();
     }
 
 //    public Page<InquiryDTO> searchByNickname(String nickname, Pageable pageable) {
