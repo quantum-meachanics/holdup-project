@@ -28,22 +28,20 @@ public class ReportController {
 
     // 신고글 전체조회
     @GetMapping("/reports")
-    public ResponseEntity<ResponseMessage> findAllReport(@PageableDefault Pageable pageable,
-                                                         @RequestParam(value = "nickname", required = false) String nickname,
-                                                         @RequestParam(value = "searchType", required = false) String searchType) {
+    public ResponseEntity<ResponseMessage> findAllReport(@PageableDefault Pageable pageable) {
 
-        Page<ReportDTO> reports;
-
-        if (nickname != null && !nickname.isEmpty() && "nickname".equals(searchType)) {
-            reports = service.searchByNickname(nickname, pageable);
-        } else {
-            reports = service.findAllReport(pageable);
-        }
+//        Page<ReportDTO> reports;
+//
+//        if (nickname != null && !nickname.isEmpty() && "nickname".equals(searchType)) {
+//            reports = service.searchByNickname(nickname, pageable);
+//        } else {
+//            reports = service.findAllReport(pageable);
+//        }
 
         return ResponseEntity.ok()
                 .body(new ResponseMessage(
                         "신고 전체조회를 성공했습니다.",
-                        reports
+                        service.findAllReport(pageable)
                 ));
     }
 
