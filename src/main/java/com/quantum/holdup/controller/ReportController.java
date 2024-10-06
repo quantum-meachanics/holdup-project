@@ -119,11 +119,21 @@ public class ReportController {
 
     // 댓글 추가
     @PostMapping("/reports/{id}/comments")
-    public ResponseEntity<?> createComment(@PathVariable long id ,@RequestBody ReviewCommentDTO commentInfo) {
+    public ResponseEntity<?> createComment(@PathVariable long id ,@RequestBody ReportCommentDTO commentInfo) {
         return ResponseEntity.ok()
                 .body(new ResponseMessage(
                         "댓글 등록에 성공하였습니다.",
                         commentService.createReportComment(id,commentInfo)
+                ));
+    }
+
+    // 댓글 조회
+    @GetMapping("/reports/{id}/comments")
+    public ResponseEntity<ResponseMessage> findReportComments(@PathVariable long id) {
+        return ResponseEntity.ok()
+                .body(new ResponseMessage(
+                        "댓글 조회에 성공하였습니다.",
+                        commentService.findReportComments(id)
                 ));
     }
 }
