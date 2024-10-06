@@ -78,14 +78,17 @@ public class ReportController {
 
     // 신고글 수정
     @PutMapping("/reports/{id}")
-    public ResponseEntity<?> modifyPost(@PathVariable long id, @RequestBody UpdateReportDTO modifyInfo) {
+    public ResponseEntity<?> modifyPost(@PathVariable long id,
+                                        @RequestPart(value = "modifyInfo" , required = false) UpdateReportDTO modifyInfo,
+                                        @RequestPart(value = "newImages" , required = false) List<MultipartFile> newImages,
+                                        @RequestPart(value = "deleteImage", required = false) List<Long> deleteImage) {
 
-        UpdateReportDTO updatedPost = service.updateReport(id, modifyInfo);
+        List<String> imageUrls = s3Service.uploadImage(newImages);
 
         return ResponseEntity.ok()
                 .body(new ResponseMessage(
                         "게시글 수정 완료",
-                        updatedPost)
+                        service.updateReport(id, modifyInfo, imageUrls, deleteImage))
                 );
     }
 

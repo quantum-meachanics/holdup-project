@@ -33,6 +33,7 @@ public class ReportService {
     private final ReportRepository repo;
     private final MemberRepository memberRepo;
     private final ReportImageRepository reportImageRepo;
+    private final S3Service s3Service;
 
     public Page<ReportDTO> findAllReport(Pageable pageable) {
 
@@ -161,7 +162,17 @@ public class ReportService {
         return url.substring(url.lastIndexOf("/") + 1);
     }
 
-    public UpdateReportDTO updateReport(Long id, UpdateReportDTO modifyInfo) {
+    // 신고 게시글 수정
+    public UpdateReportDTO updateReport(Long id, UpdateReportDTO modifyInfo,
+                                        List<String> newImageUrls,
+                                        List<Long> deleteImageId) {
+
+        // 로그인 되어있는 사용자의 이메일 가져옴
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        // 가져온 이메일로 사용자 찾기
+        Member member = memberRepo.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
         Report reportEntity = repo.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Post not found with postId " + id));
@@ -169,15 +180,63 @@ public class ReportService {
         // toBuilder()를 사용하여 기존 객체를 기반으로 새 객체 생성
         Report updatedReport = reportEntity.toBuilder()
                 .id(id)
+                .member(member)
                 .title(modifyInfo.getTitle())
                 .content(modifyInfo.getContent())
                 .build();
 
         // 새로운 엔티티 저장
-        repo.save(updatedReport);
+        Report savedReport = repo.save(updatedReport);
+
+        // 기존 이미지를 삭제할 경우
+        if (deleteImageId != null && !deleteImageId.isEmpty()) {
+
+            List<ReportImage> imagesToDelete = reportImageRepo.findAllById(deleteImageId);
+
+            for (ReportImage image : imagesToDelete) {
+                if (deleteImage(image.getId())) {
+                    System.out.println("이미지 삭제 성공: " + image.getId());
+                } else {
+                    System.out.println("이미지 삭제 실패: " + image.getId());
+                }
+            }
+        }
+
+        // 새 이미지 추가
+        if (newImageUrls != null && !newImageUrls.isEmpty()) {
+            List<ReportImage> images = newImageUrls.stream().map(url -> ReportImage.builder()
+                    .imageUrl((url))
+                    .imageName(extractFileNameFromUrl((url)))
+                    .report(savedReport)
+                    .build()).toList();
+
+            reportImageRepo.saveAll(images);
+        }
 
         // ReportDTO 생성 및 반환
-        return new UpdateReportDTO(updatedReport.getTitle(), updatedReport.getContent());
+        return UpdateReportDTO.builder()
+                .title(savedReport.getTitle())
+                .content(savedReport.getContent())
+                .build();
+    }
+
+    public boolean deleteImage(Long imageId) {
+        try {
+            // 1. DB에서 이미지 정보 조회
+            ReportImage image = reportImageRepo.findById(imageId)
+                    .orElseThrow(() -> new RuntimeException("Image not found with id: " + imageId));
+
+            // 2. S3에서 이미지 파일 삭제
+            String fileName = image.getImageName(); // S3에 저장된 파일 이름
+            s3Service.deleteImage(fileName);
+
+            // 3. DB에서 이미지 정보 삭제
+            reportImageRepo.delete(image);
+
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     public boolean deleteReport(long id) {
