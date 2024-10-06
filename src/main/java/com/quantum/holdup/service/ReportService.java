@@ -4,6 +4,7 @@ import com.quantum.holdup.Page.Pagination;
 import com.quantum.holdup.Page.PagingButtonInfo;
 import com.quantum.holdup.domain.dto.CreateReportDTO;
 import com.quantum.holdup.domain.dto.ReportDTO;
+import com.quantum.holdup.domain.dto.ReportDetailDTO;
 import com.quantum.holdup.domain.dto.UpdateReportDTO;
 import com.quantum.holdup.domain.entity.Member;
 import com.quantum.holdup.domain.entity.Report;
@@ -66,15 +67,36 @@ public class ReportService {
 
     }
 
-    public ReportDTO findReportById(long id) {
+    public ReportDetailDTO findReportById(long id) {
 
         Report postEntity = repo.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Post not found with id " + id));
 
-        return ReportDTO.builder()
+        // 해당 리뷰의 이미지들 찾기
+        List<ReportImage> reportImages = reportImageRepo.findByReportId(id);
+
+        if (reportImages.isEmpty()) {
+            throw new NoSuchElementException("No images found for review with id " + id);
+        }
+
+        List<String> imageUrls = reportImageRepo.findByReportId(id)
+                .stream()
+                .map(ReportImage::getImageUrl)
+                .toList();
+
+        List<Long> imageIds = reportImages
+                .stream()
+                .map(ReportImage::getId)
+                .toList();
+
+        return ReportDetailDTO.builder()
                 .id(postEntity.getId())
                 .title(postEntity.getTitle())
                 .content(postEntity.getContent())
+                .createDate(postEntity.getCreateDate())
+                .nickname(postEntity.getMember().getNickname())
+                .imageUrl(imageUrls)
+                .imageId(imageIds)
                 .build();
     }
 
