@@ -7,14 +7,18 @@ import com.quantum.holdup.domain.dto.UpdateReportDTO;
 import com.quantum.holdup.message.ResponseMessage;
 import com.quantum.holdup.service.CommentService;
 import com.quantum.holdup.service.ReportService;
+import com.quantum.holdup.service.S3Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -25,6 +29,7 @@ public class ReportController {
 
     private final ReportService service;
     private final CommentService commentService;
+    private final S3Service s3Service;
 
     // 신고글 전체조회
     @GetMapping("/reports")
@@ -45,17 +50,7 @@ public class ReportController {
                 ));
     }
 
-    // 신고글 추가
-    @PostMapping("/reports")
-    public ResponseEntity<?> createReport(@RequestBody CreateReportDTO reportInfo) {
-        return ResponseEntity.ok()
-                .body(new ResponseMessage(
-                        "게시판 등록에 성공하였습니다.",
-                        service.createReport(reportInfo)
-                ));
-    }
-
-    // 신고글 단건 조회
+    // 신고글 상세페이지
     @GetMapping("/reports/{id}")
     public ResponseEntity<ResponseMessage> findReportById(@PathVariable long id) {
 
@@ -67,6 +62,22 @@ public class ReportController {
                         , reports)
                 );
     }
+
+    // 신고글 추가
+    @PostMapping(value = "/reports", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> createReport(@RequestPart(value = "reportInfo") CreateReportDTO reportInfo,
+                                          @RequestPart(value = "images", required = false) List<MultipartFile> images) {
+
+        List<String> imageUrls = s3Service.uploadImage(images);
+
+        return ResponseEntity.ok()
+                .body(new ResponseMessage(
+                        "게시판 등록에 성공하였습니다.",
+                        service.createReport(reportInfo, imageUrls)
+                ));
+    }
+
+
 
     // 신고글 수정
     @PutMapping("/reports/{id}")
