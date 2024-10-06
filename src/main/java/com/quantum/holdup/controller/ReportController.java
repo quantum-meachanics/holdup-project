@@ -1,9 +1,6 @@
 package com.quantum.holdup.controller;
 
-import com.quantum.holdup.domain.dto.ReviewCommentDTO;
-import com.quantum.holdup.domain.dto.CreateReportDTO;
-import com.quantum.holdup.domain.dto.ReportDTO;
-import com.quantum.holdup.domain.dto.UpdateReportDTO;
+import com.quantum.holdup.domain.dto.*;
 import com.quantum.holdup.message.ResponseMessage;
 import com.quantum.holdup.service.CommentService;
 import com.quantum.holdup.service.ReportService;
@@ -54,12 +51,12 @@ public class ReportController {
     @GetMapping("/reports/{id}")
     public ResponseEntity<ResponseMessage> findReportById(@PathVariable long id) {
 
-        ReportDTO reports = service.findReportById(id);
+        ReportDetailDTO report = service.findReportById(id);
 
         return ResponseEntity.ok()
                 .body(new ResponseMessage(
                         "아이디로 게시글 조회 성공"
-                        , reports)
+                        , report)
                 );
     }
 
