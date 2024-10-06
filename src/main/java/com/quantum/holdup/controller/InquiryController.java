@@ -73,15 +73,19 @@ public class InquiryController {
     }
 
     // 문의글 수정
-    @PutMapping("/inquiries/{id}")
-    public ResponseEntity<?> modifyPost(@PathVariable long id, @RequestBody UpdateInquiryDTO modifyInfo) {
+    @PutMapping(value = "/inquiries/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> modifyPost(
+            @PathVariable long id,
+            @RequestPart(value = "modifyInfo", required = false) UpdateInquiryDTO modifyInfo,
+            @RequestPart(value = "newImages", required = false) List<MultipartFile> newImages,
+            @RequestPart(value = "deleteImage", required = false) List<Long> deleteImage) {
 
-        UpdateInquiryDTO updatedPost = service.updateInquiry(id, modifyInfo);
+        List<String> imageUrls = newImages != null ? s3Service.uploadImage(newImages) : new ArrayList<>();
 
         return ResponseEntity.ok()
                 .body(new ResponseMessage(
                         "게시글 수정 완료",
-                        updatedPost)
+                        service.updateInquiry(id,modifyInfo,imageUrls,deleteImage))
                 );
     }
 
