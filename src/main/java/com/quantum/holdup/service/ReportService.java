@@ -7,7 +7,10 @@ import com.quantum.holdup.domain.dto.ReportDTO;
 import com.quantum.holdup.domain.dto.UpdateReportDTO;
 import com.quantum.holdup.domain.entity.Member;
 import com.quantum.holdup.domain.entity.Report;
+import com.quantum.holdup.domain.entity.ReportImage;
+import com.quantum.holdup.domain.entity.ReviewImage;
 import com.quantum.holdup.repository.MemberRepository;
+import com.quantum.holdup.repository.ReportImageRepository;
 import com.quantum.holdup.repository.ReportRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +21,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 
 @Service
@@ -27,6 +31,7 @@ public class ReportService {
 
     private final ReportRepository repo;
     private final MemberRepository memberRepo;
+    private final ReportImageRepository reportImageRepo;
 
     public Page<ReportDTO> findAllReport(Pageable pageable) {
 
@@ -95,24 +100,43 @@ public class ReportService {
 //
 //    }
 
-    public CreateReportDTO createReport(CreateReportDTO reportInfo) {
+    public Object createReport(CreateReportDTO reportInfo, List<String> imageUrls) {
 
+        // 로그인 되어있는 사용자의 이메일 가져옴
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        Member member = (Member) memberRepo.findByEmail(email)
+
+        // 가져온 이메일로 사용자 찾기
+        Member member = memberRepo.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        Report newReport = Report.builder()
+        Report report = Report.builder()
                 .title(reportInfo.getTitle())
                 .content(reportInfo.getContent())
                 .member(member)
                 .build();
 
-        repo.save(newReport);
+        Report savedReport =  repo.save(report);
 
-        return new CreateReportDTO(
-                newReport.getTitle(),
-                newReport.getContent()
-        );
+        if (imageUrls != null && !imageUrls.isEmpty()) {
+            List<ReportImage> images = imageUrls.stream().map(url -> ReportImage.builder()
+                    .imageUrl(url)
+                    .imageName(extractFileNameFromUrl(url))
+                    .report(savedReport)
+                    .build()).toList();
+
+            reportImageRepo.saveAll(images);
+        }
+
+
+        return CreateReportDTO.builder()
+                .title(report.getTitle())
+                .content(report.getContent())
+                .build();
+    }
+
+    // url에서 이미지 name 추출
+    private String extractFileNameFromUrl(String url) {
+        return url.substring(url.lastIndexOf("/") + 1);
     }
 
     public UpdateReportDTO updateReport(Long id, UpdateReportDTO modifyInfo) {
