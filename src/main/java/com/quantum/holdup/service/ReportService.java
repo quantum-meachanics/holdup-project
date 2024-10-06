@@ -50,7 +50,8 @@ public class ReportService {
                     reportEntity.getId(),
                     reportEntity.getTitle(),
                     reportEntity.getContent(),
-                    reportEntity.getMember().getNickname()
+                    reportEntity.getMember().getNickname(),
+                    reportEntity.getCreateDate()
             );
 
             // 각 ReportDTO에 페이징 정보 설정
@@ -72,26 +73,27 @@ public class ReportService {
                 .build();
     }
 
-    public Page<ReportDTO> searchByNickname(String nickname, Pageable pageable) {
-
-        Page<Report> reportsEntityList = repo.findByMemberNickname(nickname, pageable);
-        PagingButtonInfo paging = Pagination.getPagingButtonInfo(reportsEntityList);
-
-        return reportsEntityList.map(reportEntity -> {
-            // 각 Report 엔티티로부터 새로운 ReportDTO 생성
-            ReportDTO reportDTO = new ReportDTO(
-                    reportEntity.getId(),
-                    reportEntity.getTitle(),
-                    reportEntity.getContent(),
-                    reportEntity.getMember().getNickname()
-            );
-
-            // 각 ReportDTO에 페이징 정보 설정
-            reportDTO.setPagingInfo(paging);
-            return reportDTO;
-        });
-
-    }
+//    public Page<ReportDTO> searchByNickname(String nickname, Pageable pageable) {
+//
+//        Page<Report> reportsEntityList = repo.findByMemberNickname(nickname, pageable);
+//        PagingButtonInfo paging = Pagination.getPagingButtonInfo(reportsEntityList);
+//
+//        return reportsEntityList.map(reportEntity -> {
+//            // 각 Report 엔티티로부터 새로운 ReportDTO 생성
+//            ReportDTO reportDTO = new ReportDTO(
+//                    reportEntity.getId(),
+//                    reportEntity.getTitle(),
+//                    reportEntity.getContent(),
+//                    reportEntity.getMember().getNickname(),
+//                    reportEntity.getCreateDate()
+//            );
+//
+//            // 각 ReportDTO에 페이징 정보 설정
+//            reportDTO.setPagingInfo(paging);
+//            return reportDTO;
+//        });
+//
+//    }
 
     public CreateReportDTO createReport(CreateReportDTO reportInfo) {
 
