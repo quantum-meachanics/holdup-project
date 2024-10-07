@@ -1,10 +1,13 @@
 package com.quantum.holdup.controller;
 
 import com.quantum.holdup.domain.dto.spaces.CreateSpaceDTO;
+import com.quantum.holdup.domain.dto.spaces.SpacePageDTO;
 import com.quantum.holdup.message.ResponseMessage;
 import com.quantum.holdup.service.S3Service;
 import com.quantum.holdup.service.SpaceService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.MediaType;
@@ -17,6 +20,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/holdup")
+@Slf4j
 public class SpaceController {
 
     private final SpaceService spaceService;
@@ -40,6 +44,11 @@ public class SpaceController {
     // 공간 전체 조회 페이징
     @GetMapping("/spaces")
     public ResponseEntity<ResponseMessage> findAllSpaces(@PageableDefault Pageable pageable) {
+
+        Page<SpacePageDTO> spaces = spaceService.findAllSpaces(pageable);
+
+        spaces.forEach(space -> log.info("가져온 공간 정보 : {}", space));
+
         return ResponseEntity.ok()
                 .body(new ResponseMessage(
                         "공간 전체 조회를 성공했습니다.",

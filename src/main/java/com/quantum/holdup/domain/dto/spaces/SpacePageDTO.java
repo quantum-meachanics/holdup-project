@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Setter
+@ToString
 public class SpacePageDTO {
 
     private long id; // 공간 아이디
