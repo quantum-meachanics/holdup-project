@@ -85,9 +85,9 @@ public class ReviewService {
         // 해당 리뷰의 이미지들 찾기
         List<ReviewImage> reviewImages = reviewImageRepo.findByReviewId(id);
 
-        if (reviewImages.isEmpty()) {
-            throw new NoSuchElementException("No images found for review with id " + id);
-        }
+//        if (reviewImages.isEmpty()) {
+//            throw new NoSuchElementException("No images found for review with id " + id);
+//        }
 
         List<String> imageUrls = reviewImageRepo.findByReviewId(id)
                 .stream()
@@ -207,6 +207,7 @@ public class ReviewService {
                 .title(modifyInfo.getTitle())
                 .content(modifyInfo.getContent())
                 .rating(modifyInfo.getRating())
+                .createDate(reviewEntity.getCreateDate())
                 .build();
 
         Review savedReview = repo.save(updatedReview);

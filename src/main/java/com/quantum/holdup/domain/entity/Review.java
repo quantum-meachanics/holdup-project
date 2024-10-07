@@ -32,7 +32,7 @@ public class Review {
     private Reservation reservation; // 예약내용
 
     @Builder(toBuilder = true)
-    public Review(long id, String title, String content, boolean isHide, int rating, Member member, Reservation reservation) {
+    public Review(long id, String title, String content, boolean isHide, int rating, Member member, Reservation reservation, LocalDateTime createDate) {
         this.id = id;
         this.title = title;
         this.content = content;
@@ -40,6 +40,7 @@ public class Review {
         this.rating = rating;
         this.member = member;
         this.reservation = reservation;
+        this.createDate = createDate;
     }
 
     @PrePersist
