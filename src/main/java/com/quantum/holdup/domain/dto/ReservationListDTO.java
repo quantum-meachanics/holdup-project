@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Setter
+@ToString
 public class ReservationListDTO {
 
     private long id; // 예약 아이디
@@ -20,13 +21,10 @@ public class ReservationListDTO {
     private long spaceId; // 예약한 공간 아이디
     private String spaceName; // 예약한 공간 이름
 
-    private long ownerId; // 공간 주인 아이디
-    private String ownerNickname; // 공간 주인 닉네임
-
     private PagingButtonInfo pagingButtonInfo; // 페이징 처리
 
     @Builder(toBuilder = true)
-    public ReservationListDTO(long id, LocalDateTime startDateTime, LocalDateTime endDateTime, boolean isAccept, boolean isEnd, LocalDateTime createDateTime, long spaceId, String spaceName, long ownerId, String ownerNickname) {
+    public ReservationListDTO(long id, LocalDateTime startDateTime, LocalDateTime endDateTime, boolean isAccept, boolean isEnd, LocalDateTime createDateTime, long spaceId, String spaceName) {
         this.id = id;
         this.startDateTime = startDateTime;
         this.endDateTime = endDateTime;
@@ -35,7 +33,5 @@ public class ReservationListDTO {
         this.createDateTime = createDateTime;
         this.spaceId = spaceId;
         this.spaceName = spaceName;
-        this.ownerId = ownerId;
-        this.ownerNickname = ownerNickname;
     }
 }

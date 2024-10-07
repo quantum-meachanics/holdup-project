@@ -1,5 +1,6 @@
 package com.quantum.holdup.repository;
 
+import com.quantum.holdup.domain.entity.Member;
 import com.quantum.holdup.domain.entity.Reservation;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,6 +24,6 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
             "WHERE r.space.id = :spaceId")
     Long findAverageRatingBySpaceId(@Param("spaceId") Long spaceId);
 
-    // 사용자 이름을 기준으로 공간을 페이징 처리하여 조회
-    Page<Reservation> findById(long id, Pageable pageable);
+    // 사용자 정보로 공간을 페이징 처리하여 조회
+    Page<Reservation> findByClient(Member client, Pageable pageable);
 }

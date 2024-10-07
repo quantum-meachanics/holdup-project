@@ -28,11 +28,6 @@ public class ReservationService {
     private final SpaceRepository spaceRepo;
     private final MemberRepository memberRepo;
 
-    // 이미지 name 추출하는 메소드
-    private String extractFileNameFromUrl(String url) {
-        return url.substring(url.lastIndexOf("/") + 1);
-    }
-
     // 예약 신청 메소드
     public CreateReservationDTO createReservation(CreateReservationDTO reservationInfo) {
 
@@ -67,13 +62,13 @@ public class ReservationService {
     }
 
     // 내가 신청한 예약 목록
-    public ReservationListDTO findMyReservations(Pageable pageable) {
+    public Page<ReservationListDTO> findMyReservations(Pageable pageable) {
 
         // 로그인 되어있는 사용자의 이메일 가져옴
-        String ownerEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        String clientEmail = SecurityContextHolder.getContext().getAuthentication().getName();
 
         // 가져온 이메일로 사용자 찾기
-        Member me = memberRepo.findByEmail(ownerEmail)
+        Member client = memberRepo.findByEmail(clientEmail)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
         pageable = PageRequest.of(
@@ -83,19 +78,15 @@ public class ReservationService {
         );
 
         // 내가 신청한 예약들 가져오기
-        Page<Reservation> myReservations = reservationRepo.findById(me.getId(), pageable);
+        Page<Reservation> myReservations = reservationRepo.findByClient(client, pageable);
 
         PagingButtonInfo paging = Pagination.getPagingButtonInfo(myReservations);
 
-        return (ReservationListDTO) myReservations.map(myReservationEntity -> {
+        return myReservations.map(myReservationEntity -> {
 
             // 예약한 공간 정보 가져오기
             Space space = spaceRepo.findById(myReservationEntity.getSpace().getId())
                     .orElseThrow(() -> new NoSuchElementException("공간 정보를 찾을 수 없습니다."));
-
-            // 공간 등록자 정보 가져오기
-            Member owner = memberRepo.findById(space.getOwner().getId())
-                    .orElseThrow(() -> new NoSuchElementException("공간 등록자 정보를 찾을 수 없습니다."));
 
             ReservationListDTO reservationListDTO = new ReservationListDTO(
                     myReservationEntity.getId(),
@@ -105,11 +96,10 @@ public class ReservationService {
                     myReservationEntity.isEnd(),
                     myReservationEntity.getCreateDateTime(),
                     space.getId(),
-                    space.getName(),
-                    owner.getId(),
-                    owner.getNickname()
+                    space.getName()
             );
 
+            // 페이징  정보 추가
             reservationListDTO.setPagingButtonInfo(paging);
 
             return reservationListDTO;
