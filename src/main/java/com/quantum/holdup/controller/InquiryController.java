@@ -1,6 +1,7 @@
 package com.quantum.holdup.controller;
 
 import com.quantum.holdup.domain.dto.*;
+import com.quantum.holdup.message.ResponseMessage;
 import com.quantum.holdup.service.InquiryService;
 import com.quantum.holdup.service.S3Service;
 import lombok.RequiredArgsConstructor;
