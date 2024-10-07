@@ -28,7 +28,7 @@ public class ReviewController {
     private final S3Service s3Service;
 
     @GetMapping("/reviews")
-    public ResponseEntity<ResponseMessage> findAllReview(@PageableDefault Pageable pageable){
+    public ResponseEntity<ResponseMessage> findAllReview(@PageableDefault Pageable pageable) {
 
         return ResponseEntity.ok()
                 .body(new ResponseMessage(
@@ -51,11 +51,14 @@ public class ReviewController {
     }
 
     // 리뷰글 추가
-    @PostMapping(value = "/reviews", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> createReview( @RequestPart(value = "reviewInfo") CreateReviewDTO reviewInfo,
-                                           @RequestPart(value = "images", required = false) List<MultipartFile> images) {
+    @PostMapping(value = "/reviews/{reservationId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> createReview(@PathVariable long reservationId,
+                                          @RequestPart(value = "reviewInfo") CreateReviewDTO reviewInfo,
+                                          @RequestPart(value = "images", required = false) List<MultipartFile> images) {
 
         List<String> imageUrls = s3Service.uploadImage(images);
+
+        reviewInfo.setReservationId(reservationId);
 
         return ResponseEntity.ok()
                 .body(new ResponseMessage(
@@ -65,13 +68,13 @@ public class ReviewController {
     }
 
     // 리뷰글 수정
-    @PutMapping(value = "/reviews/{id}",consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/reviews/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> modifyReview(
             @PathVariable long id,
             @RequestPart(value = "modifyInfo", required = false) UpdateReviewDTO modifyInfo,
             @RequestPart(value = "newImages", required = false) List<MultipartFile> newImages,
             @RequestPart(value = "deleteImage", required = false) List<Long> deleteImage
-            ) {
+    ) {
 
         List<String> imageUrls = newImages != null ? s3Service.uploadImage(newImages) : new ArrayList<>();
 
@@ -109,7 +112,7 @@ public class ReviewController {
 
     // 댓글 추가
     @PostMapping("/reviews/{id}/comments")
-    public ResponseEntity<?> createComment(@PathVariable long id ,@RequestBody ReviewCommentDTO commentInfo) {
+    public ResponseEntity<?> createComment(@PathVariable long id, @RequestBody ReviewCommentDTO commentInfo) {
         return ResponseEntity.ok()
                 .body(new ResponseMessage(
                         "댓글 등록에 성공하였습니다.",
