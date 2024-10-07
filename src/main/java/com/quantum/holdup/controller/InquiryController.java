@@ -1,8 +1,6 @@
 package com.quantum.holdup.controller;
 
-import com.quantum.holdup.domain.dto.CreateInquiryDTO;
-import com.quantum.holdup.domain.dto.InquiryDTO;
-import com.quantum.holdup.domain.dto.UpdateInquiryDTO;
+import com.quantum.holdup.domain.dto.*;
 import com.quantum.holdup.message.ResponseMessage;
 import com.quantum.holdup.service.InquiryService;
 import com.quantum.holdup.service.S3Service;
@@ -47,6 +45,19 @@ public class InquiryController {
                 ));
     }
 
+    // 문의글 상세페이지
+    @GetMapping("/inquiries/{id}")
+    public ResponseEntity<ResponseMessage> detailInquiry(@PathVariable long id) {
+
+        InquiryDetailDTO inquiries = service.findInquiryById(id);
+
+        return ResponseEntity.ok()
+                .body(new ResponseMessage(
+                        "아이디로 게시글 조회 성공"
+                        , inquiries)
+                );
+    }
+
     // 문의글 추가
     @PostMapping(value = "/inquiries", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> createInquiry(@RequestPart CreateInquiryDTO inquiryInfo,
@@ -62,15 +73,19 @@ public class InquiryController {
     }
 
     // 문의글 수정
-    @PutMapping("/inquiries/{id}")
-    public ResponseEntity<?> modifyPost(@PathVariable long id, @RequestBody UpdateInquiryDTO modifyInfo) {
+    @PutMapping(value = "/inquiries/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> modifyPost(
+            @PathVariable long id,
+            @RequestPart(value = "modifyInfo", required = false) UpdateInquiryDTO modifyInfo,
+            @RequestPart(value = "newImages", required = false) List<MultipartFile> newImages,
+            @RequestPart(value = "deleteImage", required = false) List<Long> deleteImage) {
 
-        UpdateInquiryDTO updatedPost = service.updateInquiry(id, modifyInfo);
+        List<String> imageUrls = newImages != null ? s3Service.uploadImage(newImages) : new ArrayList<>();
 
         return ResponseEntity.ok()
                 .body(new ResponseMessage(
                         "게시글 수정 완료",
-                        updatedPost)
+                        service.updateInquiry(id,modifyInfo,imageUrls,deleteImage))
                 );
     }
 
