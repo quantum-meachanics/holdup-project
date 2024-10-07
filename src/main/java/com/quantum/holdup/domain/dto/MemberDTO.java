@@ -17,6 +17,7 @@ public class MemberDTO {
     private String phone; // 회원 휴대전화번호
     private String name; // 회원 본명
     private String address; // 회원 주소
+    private String addressDetail;
     private LocalDate birthday; // 회원 생년월일
     private int credit; // 회원 보유 크레딧
     private int point; // 회원 보유 포인트
@@ -26,7 +27,7 @@ public class MemberDTO {
     private Role role; // 회원 등급
 
     @Builder
-    public MemberDTO(long id, String email, String password, String nickname, String phone, String name, String address, LocalDate birthday, int credit, int point, boolean isLeave, boolean isBan, LocalDateTime entDate, Role role) {
+    public MemberDTO(long id, String email, String password, String nickname, String phone, String name, String address,String addressDetail , LocalDate birthday, int credit, int point, boolean isLeave, boolean isBan, LocalDateTime entDate, Role role) {
         this.id = id;
         this.email = email;
         this.password = password;
@@ -34,6 +35,7 @@ public class MemberDTO {
         this.phone = phone;
         this.name = name;
         this.address = address;
+        this.addressDetail = addressDetail;
         this.birthday = birthday;
         this.credit = credit;
         this.point = point;

@@ -25,15 +25,6 @@ public class MemberController {
 
     private final MemberService service;
 
-    @GetMapping("/members")
-    public ResponseEntity<ResponseMessage> findAllMembers() {
-        return ResponseEntity.ok()
-                .body(new ResponseMessage(
-                        "전체 유저 조회를 성공했습니다.",
-                        service.findAllMember()
-                ));
-    }
-
     @PostMapping("/signup")
     public ResponseEntity<?> createMember(@RequestBody CreateMemberDTO memberInfo) {
         return ResponseEntity.ok()
