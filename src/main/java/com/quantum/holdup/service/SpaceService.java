@@ -39,7 +39,7 @@ public class SpaceService {
         String ownerEmail = SecurityContextHolder.getContext().getAuthentication().getName();
 
         // 가져온 이메일로 사용자 찾기
-        Member owner = (Member) memberRepo.findByEmail(ownerEmail)
+        Member owner = memberRepo.findByEmail(ownerEmail)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
         // 새로운 공간 엔티티 생성
@@ -109,25 +109,39 @@ public class SpaceService {
         PagingButtonInfo paging = Pagination.getPagingButtonInfo(spaces);
 
         return spaces.map(spaceEntity -> {
-            Member member = memberRepo.findById(spaceEntity.getOwner().getId())
+            // 공간 등록자 정보 가져오기
+            Member owner = memberRepo.findById(spaceEntity.getOwner().getId())
                     .orElseThrow(() -> new NoSuchElementException("공간 등록자 정보를 찾을 수 없습니다."));
+
+            // 공간에 등록된 리뷰의 총 갯수 찾아오기
+            int reviewCount = reservationRepo.countReviewsBySpaceId(spaceEntity.getId()) != null ?
+                    reservationRepo.countReviewsBySpaceId(spaceEntity.getId()) : 0;
+
+            // 공간 리뷰의 별점 평균 찾아오기
+            Long ratingAveraging = reservationRepo.findAverageRatingBySpaceId(spaceEntity.getId());
+            long ratingAverage = (ratingAveraging != null) ? ratingAveraging : 0;
+
+            // 공간에 등록된 이미지 찾아오기
+            String imageUrl = imageRepo.findBySpaceId(spaceEntity.getId()).stream().map(SpaceImage::getImageUrl).findFirst()
+                    .orElseThrow(() -> new NoSuchElementException("공간 대표사진 정보를 찾을 수 없습니다."));
 
             SpacePageDTO spacePageDTO = new SpacePageDTO(
                     spaceEntity.getId(),
-                    member.getId(),
                     spaceEntity.getName(),
-                    spaceEntity.getAddress(),
-                    spaceEntity.getDetailAddress(),
                     spaceEntity.getGu(),
                     spaceEntity.getDong(),
-                    spaceEntity.getDescription(),
                     spaceEntity.getWidth(),
                     spaceEntity.getHeight(),
                     spaceEntity.getDepth(),
                     spaceEntity.getCount(),
                     spaceEntity.getPrice(),
                     spaceEntity.isHide(),
-                    spaceEntity.getCreateDate()
+                    spaceEntity.getCreateDate(),
+                    imageUrl,
+                    owner.getId(),
+                    owner.getNickname(),
+                    ratingAverage,
+                    reviewCount
             );
 
             spacePageDTO.setPagingButtonInfo(paging);
