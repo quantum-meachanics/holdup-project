@@ -179,6 +179,7 @@ public class InquiryService {
                 .title(modifyInfo.getTitle())
                 .member(member)
                 .content(modifyInfo.getContent())
+                .createDate(inquiryEntity.getCreateDate())
                 .build();
 
         // 새로운 엔티티 저장

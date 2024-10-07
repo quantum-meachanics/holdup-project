@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -72,7 +73,7 @@ public class ReviewController {
             @RequestPart(value = "deleteImage", required = false) List<Long> deleteImage
             ) {
 
-        List<String> imageUrls = s3Service.uploadImage(newImages);
+        List<String> imageUrls = newImages != null ? s3Service.uploadImage(newImages) : new ArrayList<>();
 
         return ResponseEntity.ok()
                 .body(new ResponseMessage(

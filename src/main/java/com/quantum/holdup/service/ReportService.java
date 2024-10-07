@@ -183,6 +183,7 @@ public class ReportService {
                 .member(member)
                 .title(modifyInfo.getTitle())
                 .content(modifyInfo.getContent())
+                .createDate(reportEntity.getCreateDate())
                 .build();
 
         // 새로운 엔티티 저장

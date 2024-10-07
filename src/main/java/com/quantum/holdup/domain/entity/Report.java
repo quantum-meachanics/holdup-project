@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.cglib.core.Local;
 
 import java.time.LocalDateTime;
 
@@ -36,12 +37,13 @@ public class Report {
     }
 
     @Builder(toBuilder = true)
-    public Report(long id, String title, String content, Member member) {
+    public Report(long id, String title, String content, Member member, LocalDateTime createDate) {
         this.id = id;
         this.title = title;
         this.content = content;
         this.isHide = false;
         this.member = member;
+        this.createDate = createDate;
     }
 
 }
