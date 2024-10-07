@@ -18,7 +18,7 @@ public class AdminController {
 
     private final AdminMemberService service;
 
-    @GetMapping("/members")
+    @GetMapping("/admin/members")
     public ResponseEntity<ResponseMessage> findAllMembers() {
         return ResponseEntity.ok()
                 .body(new ResponseMessage(

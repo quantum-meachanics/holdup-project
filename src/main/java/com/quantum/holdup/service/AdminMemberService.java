@@ -63,8 +63,8 @@ public class AdminMemberService {
                 .role(member.getRole() != null ? memberDTO.getRole() : member.getRole()) // 역할 유지
                 .credit(member.getCredit()) // 크레딧 유지
                 .point(member.getPoint()) // 포인트 유지
-                .isLeave(member.isLeave()) // 탈퇴 여부 유지
-                .isBan(member.isBan()) // 정지 여부 유지
+                .isLeave(memberDTO.getIsLeave() != null ? memberDTO.getIsLeave() : member.isLeave()) // 탈퇴 여부 업데이트
+                .isBan(memberDTO.getIsBan() != null ? memberDTO.getIsBan() : member.isBan()) // 정지 여부 업데이트
                 .verificationCode(member.getVerificationCode()) // 인증 코드 유지
                 .verificationCodeSentAt(member.getVerificationCodeSentAt()) // 인증 코드 발송 시간 유지
                 .build();

@@ -6,17 +6,16 @@ import com.quantum.holdup.domain.dto.SearchMemberEmailDTO;
 import com.quantum.holdup.domain.dto.UpdateMemberDTO;
 import com.quantum.holdup.domain.entity.Member;
 import com.quantum.holdup.domain.entity.Role;
+import com.quantum.holdup.repository.MemberEmailRepository;
 import com.quantum.holdup.repository.MemberRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -25,6 +24,7 @@ public class MemberService {
 
     private final MemberRepository repo;
     private final PasswordEncoder passwordEncoder;
+    private final MemberEmailRepository memberEmailRepository;
 
     // 멤버 등록 메소드
     public CreateMemberDTO createMember(CreateMemberDTO memberInfo) {
@@ -170,6 +170,30 @@ public class MemberService {
     }
 
 
+    public MemberDTO findUserByEmail(String email) {
+        Member memberEntity = memberEmailRepository.findByEmail(email); // 이메일로 사용자 조회
+
+        if (memberEntity != null) {
+            return new MemberDTO( // 새로운 DTO를 생성하여 반환
+                    memberEntity.getId(),
+                    memberEntity.getEmail(),
+                    memberEntity.getPassword(),
+                    memberEntity.getNickname(),
+                    memberEntity.getPhone(),
+                    memberEntity.getName(),
+                    memberEntity.getAddress(),
+                    memberEntity.getAddressDetail(),
+                    memberEntity.getBirthday(),
+                    memberEntity.getCredit(),
+                    memberEntity.getPoint(),
+                    memberEntity.isLeave(),
+                    memberEntity.isBan(),
+                    memberEntity.getEntDate(),
+                    memberEntity.getRole()
+            );
+        }
+        return null; // 사용자가 존재하지 않을 경우 null 반환
+    }
 }
 
 
