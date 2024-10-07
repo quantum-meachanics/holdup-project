@@ -1,6 +1,9 @@
 package com.quantum.holdup.service;
 
+import com.quantum.holdup.Page.Pagination;
+import com.quantum.holdup.Page.PagingButtonInfo;
 import com.quantum.holdup.domain.dto.CreateReservationDTO;
+import com.quantum.holdup.domain.dto.ReservationListDTO;
 import com.quantum.holdup.domain.entity.Member;
 import com.quantum.holdup.domain.entity.Reservation;
 import com.quantum.holdup.domain.entity.Space;
@@ -8,6 +11,10 @@ import com.quantum.holdup.repository.MemberRepository;
 import com.quantum.holdup.repository.ReservationRepository;
 import com.quantum.holdup.repository.SpaceRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -59,22 +66,53 @@ public class ReservationService {
         );
     }
 
-//    // 내가 신청한 예약 목록
-//    public ReservationListDTO findMyReservations(Pageable pageable) {
-//
-//        // 로그인 되어있는 사용자의 이메일 가져옴
-//        String ownerEmail = SecurityContextHolder.getContext().getAuthentication().getName();
-//
-//        // 가져온 이메일로 사용자 찾기
-//        Member me = memberRepo.findByEmail(ownerEmail)
-//                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
-//
-//        pageable = PageRequest.of(
-//                pageable.getPageNumber() <= 0 ? 0 : pageable.getPageNumber() - 1,
-//                pageable.getPageSize(),
-//                Sort.by("id").descending()
-//        );
-//
-//        Page<Reservation> myReservations = reservationRepo.findById(me.getId(), pageable);
-//    }
+    // 내가 신청한 예약 목록
+    public ReservationListDTO findMyReservations(Pageable pageable) {
+
+        // 로그인 되어있는 사용자의 이메일 가져옴
+        String ownerEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        // 가져온 이메일로 사용자 찾기
+        Member me = memberRepo.findByEmail(ownerEmail)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+
+        pageable = PageRequest.of(
+                pageable.getPageNumber() <= 0 ? 0 : pageable.getPageNumber() - 1,
+                pageable.getPageSize(),
+                Sort.by("id").descending()
+        );
+
+        // 내가 신청한 예약들 가져오기
+        Page<Reservation> myReservations = reservationRepo.findById(me.getId(), pageable);
+
+        PagingButtonInfo paging = Pagination.getPagingButtonInfo(myReservations);
+
+        return (ReservationListDTO) myReservations.map(myReservationEntity -> {
+
+            // 예약한 공간 정보 가져오기
+            Space space = spaceRepo.findById(myReservationEntity.getSpace().getId())
+                    .orElseThrow(() -> new NoSuchElementException("공간 정보를 찾을 수 없습니다."));
+
+            // 공간 등록자 정보 가져오기
+            Member owner = memberRepo.findById(space.getOwner().getId())
+                    .orElseThrow(() -> new NoSuchElementException("공간 등록자 정보를 찾을 수 없습니다."));
+
+            ReservationListDTO reservationListDTO = new ReservationListDTO(
+                    myReservationEntity.getId(),
+                    myReservationEntity.getStartDateTime(),
+                    myReservationEntity.getEndDateTime(),
+                    myReservationEntity.isAccept(),
+                    myReservationEntity.isEnd(),
+                    myReservationEntity.getCreateDateTime(),
+                    space.getId(),
+                    space.getName(),
+                    owner.getId(),
+                    owner.getNickname()
+            );
+
+            reservationListDTO.setPagingButtonInfo(paging);
+
+            return reservationListDTO;
+        });
+    }
 }
