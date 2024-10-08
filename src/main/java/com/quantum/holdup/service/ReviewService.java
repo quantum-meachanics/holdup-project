@@ -131,7 +131,7 @@ public class ReviewService {
         // 로그인 되어있는 사용자의 이메일 가져옴
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
 
-        // 가져온 이메일로 사용자 CKWRL
+        // 가져온 이메일로 사용자 찾기
         Member member = memberRepo.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 

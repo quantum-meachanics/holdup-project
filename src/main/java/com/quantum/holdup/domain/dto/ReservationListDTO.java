@@ -21,10 +21,12 @@ public class ReservationListDTO {
     private long spaceId; // 예약한 공간 아이디
     private String spaceName; // 예약한 공간 이름
 
+    private boolean hasReview; // 예약에 대한 리뷰가 있는지 여부
+
     private PagingButtonInfo pagingButtonInfo; // 페이징 처리
 
     @Builder(toBuilder = true)
-    public ReservationListDTO(long id, LocalDateTime startDateTime, LocalDateTime endDateTime, boolean isAccept, boolean isEnd, LocalDateTime createDateTime, long spaceId, String spaceName) {
+    public ReservationListDTO(long id, LocalDateTime startDateTime, LocalDateTime endDateTime, boolean isAccept, boolean isEnd, LocalDateTime createDateTime, long spaceId, String spaceName, boolean hasReview) {
         this.id = id;
         this.startDateTime = startDateTime;
         this.endDateTime = endDateTime;
@@ -33,5 +35,6 @@ public class ReservationListDTO {
         this.createDateTime = createDateTime;
         this.spaceId = spaceId;
         this.spaceName = spaceName;
+        this.hasReview = hasReview;
     }
 }
