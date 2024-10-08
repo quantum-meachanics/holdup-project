@@ -10,4 +10,6 @@ import org.springframework.stereotype.Repository;
 public interface ReviewRepository extends JpaRepository<Review, Long> {
 
     Page<Review> findByMemberNickname(String nickname, Pageable pageable);
+
+    boolean existsByReservationId(long id);
 }

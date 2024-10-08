@@ -9,6 +9,7 @@ import com.quantum.holdup.domain.entity.Reservation;
 import com.quantum.holdup.domain.entity.Space;
 import com.quantum.holdup.repository.MemberRepository;
 import com.quantum.holdup.repository.ReservationRepository;
+import com.quantum.holdup.repository.ReviewRepository;
 import com.quantum.holdup.repository.SpaceRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -27,6 +28,7 @@ public class ReservationService {
     private final ReservationRepository reservationRepo;
     private final SpaceRepository spaceRepo;
     private final MemberRepository memberRepo;
+    private final ReviewRepository reviewRepo;
 
     // 예약 신청 메소드
     public CreateReservationDTO createReservation(CreateReservationDTO reservationInfo) {
@@ -88,6 +90,9 @@ public class ReservationService {
             Space space = spaceRepo.findById(myReservationEntity.getSpace().getId())
                     .orElseThrow(() -> new NoSuchElementException("공간 정보를 찾을 수 없습니다."));
 
+            // 리뷰 작성 여부 확인
+            boolean hasReview = reviewRepo.existsByReservationId(myReservationEntity.getId());
+
             ReservationListDTO reservationListDTO = new ReservationListDTO(
                     myReservationEntity.getId(),
                     myReservationEntity.getStartDateTime(),
@@ -96,7 +101,8 @@ public class ReservationService {
                     myReservationEntity.isEnd(),
                     myReservationEntity.getCreateDateTime(),
                     space.getId(),
-                    space.getName()
+                    space.getName(),
+                    hasReview
             );
 
             // 페이징  정보 추가
