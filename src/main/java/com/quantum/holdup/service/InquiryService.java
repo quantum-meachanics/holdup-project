@@ -34,8 +34,6 @@ public class InquiryService {
 
     public Page<InquiryDTO> findAllInquiry(Pageable pageable) {
 
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
-
         // 페이지 번호 조정 (0보다 크면 1을 빼고) 및 정렬 설정
         pageable = PageRequest.of(
                 pageable.getPageNumber() <= 0 ? 0 : pageable.getPageNumber() - 1,
@@ -52,15 +50,12 @@ public class InquiryService {
         // Page<Inquiry>를 Page<InquiryDTO>로 변환하고 페이징 정보 추가
         return inquiriesEntityList.map(inquiryEntity -> {
 
-            Member member = memberRepo.findByEmail(email)
-                    .orElseThrow(() -> new RuntimeException("User not found"));
-
             // 각 Inquiry 엔티티로부터 새로운 InquiryDTO 생성
             InquiryDTO inquiryDTO = InquiryDTO.builder()
                     .id(inquiryEntity.getId())
                     .title(inquiryEntity.getTitle())
                     .content(inquiryEntity.getContent())
-                    .nickname(member.getNickname())
+                    .nickname(inquiryEntity.getMember().getNickname()   )
                     .createDate(inquiryEntity.getCreateDate())
                     .build();
 
@@ -73,10 +68,6 @@ public class InquiryService {
 
     public InquiryDetailDTO findInquiryById(long id) {
 
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
-
-        Member member = memberRepo.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
 
         Inquiry inquiryEntity = repo.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Post not found with id " + id));
@@ -99,7 +90,7 @@ public class InquiryService {
                 .title(inquiryEntity.getTitle())
                 .content(inquiryEntity.getContent())
                 .createDate(inquiryEntity.getCreateDate())
-                .nickname(member.getNickname())
+                .nickname(inquiryEntity.getMember().getNickname())
                 .imageUrl(imageUrls)
                 .imageId(imageIds)
                 .build();
