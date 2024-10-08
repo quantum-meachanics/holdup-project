@@ -1,6 +1,9 @@
 package com.quantum.holdup.controller;
 
-import com.quantum.holdup.domain.dto.*;
+import com.quantum.holdup.domain.dto.CreateReviewDTO;
+import com.quantum.holdup.domain.dto.ReviewCommentDTO;
+import com.quantum.holdup.domain.dto.ReviewDetailDTO;
+import com.quantum.holdup.domain.dto.UpdateReviewDTO;
 import com.quantum.holdup.message.ResponseMessage;
 import com.quantum.holdup.service.CommentService;
 import com.quantum.holdup.service.ReviewService;
@@ -83,9 +86,9 @@ public class ReviewController {
     }
 
 
+    // 리뷰글 삭제
     @DeleteMapping("/reviews/{id}")
     public ResponseEntity<?> deleteReview(@PathVariable long id) {
-
         Map<String, Object> responseMap = new HashMap<>();
 
         boolean isDeleted = service.deleteReview(id);
@@ -94,17 +97,27 @@ public class ReviewController {
 
         if (isDeleted) {
             msg = "게시글 삭제에 성공하였습니다.";
+            responseMap.put("result", msg);
+
+            return ResponseEntity
+                    .ok()
+                    .body(new ResponseMessage(
+                            "게시글 삭제 성공",
+                            responseMap)
+                    );
         } else {
             msg = "게시글 삭제에 실패하였습니다.";
-        }
-        responseMap.put("result", msg);
+            responseMap.put("result", msg);
 
-        return ResponseEntity
-                .ok()
-                .body(new ResponseMessage(
-                        "게시글 삭제 성공",
-                        responseMap)
-                );
+            return ResponseEntity
+                    .ok()
+                    .body(new ResponseMessage(
+                            "게시글 삭제 실패",
+                            responseMap)
+                    );
+        }
+
+
     }
 
     // 댓글 추가

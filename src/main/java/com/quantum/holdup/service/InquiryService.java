@@ -2,8 +2,13 @@ package com.quantum.holdup.service;
 
 import com.quantum.holdup.Page.Pagination;
 import com.quantum.holdup.Page.PagingButtonInfo;
-import com.quantum.holdup.domain.dto.*;
-import com.quantum.holdup.domain.entity.*;
+import com.quantum.holdup.domain.dto.CreateInquiryDTO;
+import com.quantum.holdup.domain.dto.InquiryDTO;
+import com.quantum.holdup.domain.dto.InquiryDetailDTO;
+import com.quantum.holdup.domain.dto.UpdateInquiryDTO;
+import com.quantum.holdup.domain.entity.Inquiry;
+import com.quantum.holdup.domain.entity.InquiryImage;
+import com.quantum.holdup.domain.entity.Member;
 import com.quantum.holdup.repository.InquiryImageRepository;
 import com.quantum.holdup.repository.InquiryRepository;
 import com.quantum.holdup.repository.MemberRepository;
@@ -234,15 +239,20 @@ public class InquiryService {
         }
     }
 
+    // 문의글 삭제
     public boolean deleteInquiry(long id) {
         try {
-            if (repo.existsById(id)) {
-                repo.deleteById(id);
-                return true; // 게시글 삭제 성공
-            } else {
-                return false;
-            }
+            Inquiry inquiry = repo.findById(id)
+                    .orElseThrow(() -> new NoSuchElementException("Review not found with id " + id));
+
+            inquiryImageRepo.deleteByInquiryId(inquiry.getId());
+
+            // 리뷰 삭제
+            repo.deleteById(inquiry.getId());
+
+            return true;  // 모든 작업이 성공적으로 완료되면 true 반환
         } catch (Exception e) {
+            // 예외 발생 시 false 반환
             return false;
         }
     }

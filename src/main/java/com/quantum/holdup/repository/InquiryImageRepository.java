@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface InquiryImageRepository extends JpaRepository<InquiryImage, Long> {
     List<InquiryImage> findByInquiryId(long id);
+
+    void deleteByInquiryId(long id);
 }
