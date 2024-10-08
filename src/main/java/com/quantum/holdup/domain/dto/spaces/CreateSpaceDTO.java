@@ -22,4 +22,5 @@ public class CreateSpaceDTO {
     private long depth; // 공간 깊이
     private int count; // 공간 갯수
     private int price; // 공간 가격
+
 }

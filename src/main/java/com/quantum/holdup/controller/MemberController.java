@@ -1,20 +1,15 @@
 package com.quantum.holdup.controller;
 
 import com.quantum.holdup.domain.dto.*;
-import com.quantum.holdup.domain.entity.Member;
 import com.quantum.holdup.message.ResponseMessage;
-import com.quantum.holdup.service.CustomUserDetails;
 import com.quantum.holdup.service.MemberService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.security.Principal;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,13 +20,24 @@ public class MemberController {
 
     private final MemberService service;
 
-    @GetMapping("/members")
-    public ResponseEntity<ResponseMessage> findAllMembers() {
-        return ResponseEntity.ok()
-                .body(new ResponseMessage(
-                        "전체 유저 조회를 성공했습니다.",
-                        service.findAllMember()
-                ));
+    @GetMapping("/member")
+    public ResponseEntity<ResponseMessage> findMemberByEmail(@RequestParam String email) {
+        // 이메일로 회원 정보를 조회
+        MemberDTO memberInfo = service.findUserByEmail(email);
+
+        if (memberInfo != null) {
+            return ResponseEntity.ok()
+                    .body(new ResponseMessage(
+                            "사용자 조회를 성공했습니다.",
+                            memberInfo
+                    ));
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new ResponseMessage(
+                            "사용자를 찾을 수 없습니다.",
+                            null
+                    ));
+        }
     }
 
     @PostMapping("/signup")
