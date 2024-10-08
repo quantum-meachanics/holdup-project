@@ -83,9 +83,9 @@ public class CommentService {
         List<Comment> comments = commentRepo.findByReviewId(id);
 
         // 댓글이 없을 경우 예외 처리
-        if (comments.isEmpty()) {
-            throw new NoSuchElementException("No comments found for review with id " + id);
-        }
+//        if (comments.isEmpty()) {
+//            throw new NoSuchElementException("No comments found for review with id " + id);
+//        }
 
         // 댓글 엔티티를 DTO로 변환하여 리스트로 반환
         return comments.stream()

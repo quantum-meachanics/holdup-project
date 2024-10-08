@@ -85,7 +85,7 @@ public class ReviewController {
 
     @DeleteMapping("/reviews/{id}")
     public ResponseEntity<?> deleteReview(@PathVariable long id) {
-
+        System.out.println("======================== id" + id);
         Map<String, Object> responseMap = new HashMap<>();
 
         boolean isDeleted = service.deleteReview(id);
@@ -94,17 +94,27 @@ public class ReviewController {
 
         if (isDeleted) {
             msg = "게시글 삭제에 성공하였습니다.";
+            responseMap.put("result", msg);
+
+            return ResponseEntity
+                    .ok()
+                    .body(new ResponseMessage(
+                            "게시글 삭제 성공",
+                            responseMap)
+                    );
         } else {
             msg = "게시글 삭제에 실패하였습니다.";
-        }
-        responseMap.put("result", msg);
+            responseMap.put("result", msg);
 
-        return ResponseEntity
-                .ok()
-                .body(new ResponseMessage(
-                        "게시글 삭제 성공",
-                        responseMap)
-                );
+            return ResponseEntity
+                    .ok()
+                    .body(new ResponseMessage(
+                            "게시글 삭제 실패",
+                            responseMap)
+                    );
+        }
+
+
     }
 
     // 댓글 추가

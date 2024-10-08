@@ -6,14 +6,8 @@ import com.quantum.holdup.domain.dto.CreateReviewDTO;
 import com.quantum.holdup.domain.dto.ReviewDTO;
 import com.quantum.holdup.domain.dto.ReviewDetailDTO;
 import com.quantum.holdup.domain.dto.UpdateReviewDTO;
-import com.quantum.holdup.domain.entity.Member;
-import com.quantum.holdup.domain.entity.Reservation;
-import com.quantum.holdup.domain.entity.Review;
-import com.quantum.holdup.domain.entity.ReviewImage;
-import com.quantum.holdup.repository.MemberRepository;
-import com.quantum.holdup.repository.ReservationRepository;
-import com.quantum.holdup.repository.ReviewImageRepository;
-import com.quantum.holdup.repository.ReviewRepository;
+import com.quantum.holdup.domain.entity.*;
+import com.quantum.holdup.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -22,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -36,6 +31,8 @@ public class ReviewService {
     private final MemberRepository memberRepo;
     private final ReviewImageRepository reviewImageRepo;
     private final S3Service s3Service;
+    private final CommentRepository commentRepo;
+    private final ReservationRepository ReservationRepo;
 
     public Page<ReviewDTO> findAllReview(Pageable pageable) {
 
@@ -85,21 +82,15 @@ public class ReviewService {
         // 해당 리뷰의 이미지들 찾기
         List<ReviewImage> reviewImages = reviewImageRepo.findByReviewId(id);
 
-//        if (reviewImages.isEmpty()) {
-//            throw new NoSuchElementException("No images found for review with id " + id);
-//        }
-
         List<String> imageUrls = reviewImageRepo.findByReviewId(id)
                 .stream()
                 .map(ReviewImage::getImageUrl)
                 .toList();
-        System.out.println("============imageUrls"+ imageUrls);
 
         List<Long> imageIds = reviewImages
                 .stream()
                 .map(ReviewImage::getId)
                 .toList();
-        System.out.println("==============imageIds"+ imageIds);
 
         return ReviewDetailDTO.builder()
                 .id(reviewEntity.getId())
@@ -186,8 +177,8 @@ public class ReviewService {
 
     // 리뷰 게시글 수정
     public Object updateReview(long id, UpdateReviewDTO modifyInfo,
-                                       List<String> newImageUrls,
-                                        List<Long> deleteImageId) {
+                               List<String> newImageUrls,
+                               List<Long> deleteImageId) {
 
         // 로그인 되어있는 사용자의 이메일 가져옴
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -248,6 +239,7 @@ public class ReviewService {
 
     }
 
+    // 이미지 삭제
     public boolean deleteImage(Long imageId) {
         try {
             // 1. DB에서 이미지 정보 조회
@@ -267,15 +259,47 @@ public class ReviewService {
         }
     }
 
-    public boolean deleteReview(long id) {
+    // 리뷰 삭제
+    @Transactional
+    public boolean deleteReview(long reviewId) {
+
+        System.out.println("======================= 서비스 요청");
+
         try {
-            if (repo.existsById(id)) {
-                repo.deleteById(id);
-                return true; // 게시글 삭제 성공
-            } else {
-                return false;
-            }
+            Review review = repo.findById(reviewId)
+                    .orElseThrow(() -> new NoSuchElementException("Review not found with id " + reviewId));
+
+            System.out.println("=================== 아이디 찾기 id " + reviewId);
+
+//            // 이미지 삭제 (이미지가 없어도 오류 발생하지 않음)
+//            int deleteImage =  reviewImageRepo.deleteByReviewId(review.getId());
+//            System.out.println("=========================== deleteImage" + review.getId() + deleteImage);
+//
+//            // 댓글 삭제 (댓글이 없어도 오류 발생하지 않음)
+//            commentRepo.deleteByReviewId(review.getId());
+
+
+            reviewImageRepo.deleteByReviewId(review.getId());
+            System.out.println("=========================== 이미지 삭제 완료: reviewId = " + review.getId());
+
+            // 댓글 삭제
+
+            commentRepo.deleteByReviewId(review.getId());
+            System.out.println("=========================== 댓글 삭제 완료: reviewId = " + review.getId());
+
+
+            // 리뷰 삭제
+            System.out.println("============ 리뷰삭제 전");
+
+            repo.deleteReviewWithReservationJoin(reviewId);
+
+//            repo.deleteById(reviewId);
+
+            System.out.println("============ 리뷰삭제 reviewID" + reviewId);
+
+            return true;  // 모든 작업이 성공적으로 완료되면 true 반환
         } catch (Exception e) {
+            // 예외 발생 시 false 반환
             return false;
         }
     }
