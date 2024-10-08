@@ -1,6 +1,9 @@
 package com.quantum.holdup.controller;
 
-import com.quantum.holdup.domain.dto.*;
+import com.quantum.holdup.domain.dto.CreateReviewDTO;
+import com.quantum.holdup.domain.dto.ReviewCommentDTO;
+import com.quantum.holdup.domain.dto.ReviewDetailDTO;
+import com.quantum.holdup.domain.dto.UpdateReviewDTO;
 import com.quantum.holdup.message.ResponseMessage;
 import com.quantum.holdup.service.CommentService;
 import com.quantum.holdup.service.ReviewService;
@@ -83,9 +86,9 @@ public class ReviewController {
     }
 
 
+    // 리뷰글 삭제
     @DeleteMapping("/reviews/{id}")
     public ResponseEntity<?> deleteReview(@PathVariable long id) {
-        System.out.println("======================== id" + id);
         Map<String, Object> responseMap = new HashMap<>();
 
         boolean isDeleted = service.deleteReview(id);

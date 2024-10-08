@@ -6,7 +6,10 @@ import com.quantum.holdup.domain.dto.CreateReviewDTO;
 import com.quantum.holdup.domain.dto.ReviewDTO;
 import com.quantum.holdup.domain.dto.ReviewDetailDTO;
 import com.quantum.holdup.domain.dto.UpdateReviewDTO;
-import com.quantum.holdup.domain.entity.*;
+import com.quantum.holdup.domain.entity.Member;
+import com.quantum.holdup.domain.entity.Reservation;
+import com.quantum.holdup.domain.entity.Review;
+import com.quantum.holdup.domain.entity.ReviewImage;
 import com.quantum.holdup.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -259,43 +262,21 @@ public class ReviewService {
         }
     }
 
-    // 리뷰 삭제
+    // 리뷰글 삭제
     @Transactional
     public boolean deleteReview(long reviewId) {
-
-        System.out.println("======================= 서비스 요청");
 
         try {
             Review review = repo.findById(reviewId)
                     .orElseThrow(() -> new NoSuchElementException("Review not found with id " + reviewId));
 
-            System.out.println("=================== 아이디 찾기 id " + reviewId);
-
-//            // 이미지 삭제 (이미지가 없어도 오류 발생하지 않음)
-//            int deleteImage =  reviewImageRepo.deleteByReviewId(review.getId());
-//            System.out.println("=========================== deleteImage" + review.getId() + deleteImage);
-//
-//            // 댓글 삭제 (댓글이 없어도 오류 발생하지 않음)
-//            commentRepo.deleteByReviewId(review.getId());
-
-
             reviewImageRepo.deleteByReviewId(review.getId());
-            System.out.println("=========================== 이미지 삭제 완료: reviewId = " + review.getId());
 
             // 댓글 삭제
-
             commentRepo.deleteByReviewId(review.getId());
-            System.out.println("=========================== 댓글 삭제 완료: reviewId = " + review.getId());
-
 
             // 리뷰 삭제
-            System.out.println("============ 리뷰삭제 전");
-
             repo.deleteReviewWithReservationJoin(reviewId);
-
-//            repo.deleteById(reviewId);
-
-            System.out.println("============ 리뷰삭제 reviewID" + reviewId);
 
             return true;  // 모든 작업이 성공적으로 완료되면 true 반환
         } catch (Exception e) {

@@ -1,6 +1,8 @@
 package com.quantum.holdup.controller;
 
-import com.quantum.holdup.domain.dto.*;
+import com.quantum.holdup.domain.dto.CreateInquiryDTO;
+import com.quantum.holdup.domain.dto.InquiryDetailDTO;
+import com.quantum.holdup.domain.dto.UpdateInquiryDTO;
 import com.quantum.holdup.message.ResponseMessage;
 import com.quantum.holdup.service.InquiryService;
 import com.quantum.holdup.service.S3Service;
@@ -100,16 +102,28 @@ public class InquiryController {
 
         if (isDeleted) {
             msg = "게시글 삭제에 성공하였습니다.";
+
+            responseMap.put("result", msg);
+
+            return ResponseEntity
+                    .ok()
+                    .body(new ResponseMessage(
+                            "게시글 삭제 성공",
+                            responseMap)
+                    );
         } else {
             msg = "게시글 삭제에 실패하였습니다.";
-        }
-        responseMap.put("result", msg);
 
-        return ResponseEntity
-                .ok()
-                .body(new ResponseMessage(
-                        "게시글 삭제 성공",
-                        responseMap)
-                );
+            responseMap.put("result", msg);
+
+            return ResponseEntity
+                    .ok()
+                    .body(new ResponseMessage(
+                            "게시글 삭제 실패",
+                            responseMap)
+                    );
+        }
+
+
     }
 }
